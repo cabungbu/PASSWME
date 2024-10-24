@@ -78,11 +78,13 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required." });
+    return res.status(400).json({
+      error: "Email và mật khẩu không được để trống.",
+    });
   }
 
   try {
-    // Sử dụng truy vấn để tìm người dùng theo email
+    // Tìm người dùng theo email
     const userCollection = collection(firestoreDb, "user");
     const q = query(userCollection, where("email", "==", email));
     const querySnapshot = await getDocs(q);
@@ -103,38 +105,40 @@ const login = async (req, res) => {
 
     // Tạo token JWT
     const accessToken = jwt.sign(
-      {
-        id: userData.id,
-      },
+      { id: userData.id },
       process.env.JWT_ACCESS_KEY,
       { expiresIn: "30min" }
     );
     const refreshToken = jwt.sign(
-      {
-        id: userData.id,
-      },
+      { id: userData.id },
       process.env.JWT_REFRESH_KEY,
       { expiresIn: "30d" }
     );
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
     });
-    updatedAccessTokenInDatabase(userData, refreshToken);
+
+    // Cập nhật refreshToken trong Firestore
+    await updateDoc(userDoc.ref, { refreshToken: refreshToken });
+
+    // Kiểm tra dữ liệu trong Firestore sau khi cập nhật
+    const updatedUserDoc = await getDoc(userDoc.ref);
+    const updatedUserData = updatedUserDoc.data();
 
     res.status(200).json({
       message: "Login successful.",
-      user: userData,
+      user: updatedUserData, // Trả về userData đã được cập nhật
       accessToken: accessToken,
-      refreshToken: refreshToken,
+      refreshToken: refreshToken, // Trả về refreshToken mới
     });
   } catch (error) {
     console.error("Error logging in user:", error);
     res.status(500).json({ error: error.message });
   }
 };
-
 const generateAccessToken = async (user) => {
   return jwt.sign(
     {
@@ -149,8 +153,12 @@ const updatedAccessTokenInDatabase = async (user, refreshToken) => {
   const firestoreDb = getFirestoreDb();
   try {
     const userDoc = doc(firestoreDb, "user", user.id);
+    if (!user || !user.id) {
+      console.error("User or user.id is undefined.");
+      return;
+    }
     await updateDoc(userDoc, { refreshToken: refreshToken }); // Cập nhật refreshToken
-    return 1;
+    return refreshToken;
   } catch (error) {
     console.error("Error resetting refreshToken:", error);
   }

@@ -8,7 +8,13 @@ const postRoutes = require("./routes/post-routes.js");
 const authRoutes = require("./routes/auth.js");
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+const corsOptions = {
+  origin: ["http://localhost:3000"], // Add your frontend URL
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/user", userRoutes.routes);
 app.use("/post", postRoutes.routes);
