@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Alert,
   Animated,
@@ -11,8 +11,12 @@ import {
 import styles from "./style";
 import { Button } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setUser } from "../../redux/authSlice";
 
 const WelcomePage = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
 
   return (

@@ -9,14 +9,16 @@ import {
 } from "react-native";
 import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
 
 import { COLOR } from "../../assets/constant/color";
 import jwt_decode from "jwt-decode";
 import { useSelector } from "react-redux";
 
 export default function Home() {
-  const user = useSelector((state) => state.user);
-  const accessToken = useSelector((state) => state.accessToken);
+  const navigation = useNavigation();
+  const user = useSelector((state) => state.auth.user);
+  const accessToken = useSelector((state) => state.auth.accessToken);
   // let axiosJWT =axios.create();
   // axiosJWT.interceptors.request.use(
   //   async(config) => {
@@ -24,27 +26,20 @@ export default function Home() {
   //   }
   // )
   return (
-    <LinearGradient
-      colors={COLOR.gradientColor}
-      start={[0, 0]}
-      end={[1, 1]}
-      location={[0.96, 0.99, 1]}
-    >
-      <View style={styles.container}>
-        <Text style={{ fontFamily: "light", fontWeight: "300" }}>
-          Chào! hehe nè
-        </Text>
-        <Text style={{ fontFamily: "bold", fontWeight: "900" }}>
-          Chào! hehe nè
-        </Text>
-        <Text style={{ fontFamily: "semiBold", fontWeight: "600" }}>
-          Chào! hehe nè
-        </Text>
-        <Text style={{ fontFamily: "black", fontWeight: "600" }}>
-          Chào! hehe nè
-        </Text>
-      </View>
-    </LinearGradient>
+    <View style={styles.container}>
+      <Text style={{ fontFamily: "light", fontWeight: "300" }}>
+        Chào! {user.email}
+      </Text>
+      <TouchableOpacity
+        style={styles.login}
+        onPress={() => {
+          console.log("Press login");
+          navigation.navigate("Login");
+        }}
+      >
+        <Text style={{ color: "#E30414" }}>Đăng nhập</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 const styles = StyleSheet.create({

@@ -15,12 +15,13 @@ const authSlide = createSlice({
     loginSuccess(state, action) {
       state.isFetching = false;
       state.user = action.payload;
-      console.log(action.payload);
       state.error = null;
+      console.log(action.payload);
     },
     loginFailure(state, action) {
       state.isFetching = false;
       state.error = action.payload;
+      console.log(state.error);
     },
     logout(state) {
       state.user = null;
@@ -39,8 +40,11 @@ const authSlide = createSlice({
     },
     registerFailure(state, action) {
       state.isFetching = false;
-      state.error = true;
+      state.error = action.payload;
       state.registerSuccess = false;
+    },
+    setUser(state, action) {
+      state.user = action.payload;
     },
   },
 });
@@ -53,5 +57,6 @@ export const {
   registerStart,
   registerFailure,
   registerSuccess,
+  setUser,
 } = authSlide.actions;
 export default authSlide.reducer;

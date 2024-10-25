@@ -317,7 +317,6 @@ const updateShopCart = async (req, res) => {
 };
 
 const removeProductFromCart = async (req, res) => {
-  console.log("Removing product from cart");
   const firestoreDb = getFirestoreDb();
   const userId = req.params.id;
   const { postId, productId } = req.body; // Lấy postId và productId từ body
@@ -339,7 +338,6 @@ const removeProductFromCart = async (req, res) => {
       return res.status(404).json({ error: "Post not found in cart" });
     }
 
-    console.log(postIndex);
     const existingPost = userCart[postIndex];
 
     // Kiểm tra xem mảng product có tồn tại không
@@ -350,7 +348,6 @@ const removeProductFromCart = async (req, res) => {
     const existingProductIndex = existingPost.product.findIndex(
       (p) => p.productId === productId
     );
-    console.log(existingProductIndex);
     if (existingProductIndex === -1) {
       return res.status(404).json({ error: "Product not found in cart" });
     }

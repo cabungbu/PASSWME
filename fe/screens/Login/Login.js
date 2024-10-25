@@ -28,14 +28,14 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const error = useSelector((state) => state.auth.error);
   const handleLogin = () => {
-    console.log("Login");
     const newUser = {
       email: username,
       password: password,
     };
-
-    console.log("Sending login request with data:", newUser);
     loginUser(newUser, dispatch, navigation);
+  };
+  const moveToRegister = () => {
+    navigation.navigate("Register");
   };
   return (
     <View style={{ flex: 1 }}>
@@ -80,7 +80,22 @@ const LoginPage = () => {
           source={require("../../assets/logoPasswme1.png")}
           style={{ width: 150, height: 150, marginVertical: 50 }}
         />
-        <View style={styles.inputContainer}>
+        {error && (
+          <Text
+            style={{
+              color: "red",
+              textAlign: "center",
+              width: "80%",
+              textAlign: "left",
+              marginBottom: 10,
+              fontFamily: "lightItalic",
+              fontSize: "10px",
+            }}
+          >
+            *{error}
+          </Text>
+        )}
+        <View style={[styles.inputContainer, error && { borderColor: "red" }]}>
           <MaterialCommunityIcons
             name="email-outline"
             size={24}
@@ -88,13 +103,13 @@ const LoginPage = () => {
             style={{ marginRight: 10 }}
           />
           <TextInput
-            style={styles.input}
+            style={[styles.input, { flex: 1 }]}
             placeholder="Email"
             placeholderTextColor="#CCCCCC"
             onChangeText={(text) => setUsername(text)}
           />
         </View>
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, error && { borderColor: "red" }]}>
           <Feather
             name="lock"
             size={24}
@@ -103,7 +118,7 @@ const LoginPage = () => {
           />
           <TextInput
             secureTextEntry={true}
-            style={styles.input}
+            style={[styles.input, { flex: 1 }]}
             placeholder="Mật khẩu"
             placeholderTextColor="#CCCCCC"
             onChangeText={(text) => setPassword(text)}
@@ -119,7 +134,7 @@ const LoginPage = () => {
             flexDirection: "row",
           }}
         >
-          <TouchableOpacity>
+          <TouchableOpacity onPress={moveToRegister}>
             <Text style={styles.register}>Đăng ký</Text>
           </TouchableOpacity>
           <TouchableOpacity>
@@ -131,11 +146,6 @@ const LoginPage = () => {
           <Text style={styles.logintext}>Đăng nhập</Text>
         </TouchableOpacity>
 
-        {error && (
-          <Text style={{ color: "red", textAlign: "center" }}>
-            Đăng nhập thất bại
-          </Text>
-        )}
         <View
           style={{
             display: "flex",
@@ -143,6 +153,7 @@ const LoginPage = () => {
             alignItems: "center",
             width: "80%",
             flexDirection: "row",
+            marginVertical: 10,
           }}
         >
           <View style={styles.greyline} />

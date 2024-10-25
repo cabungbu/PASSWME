@@ -17,9 +17,10 @@ const jwt = require("jsonwebtoken");
 const register = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   const data = req.body;
+  const { email, password, phone, username } = req.body;
 
-  if (!data || Object.keys(data).length === 0) {
-    return res.status(400).json({ error: "Data is required." });
+  if (!email || !password || !phone || !username) {
+    return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin." });
   }
 
   try {
