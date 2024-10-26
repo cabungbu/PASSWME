@@ -6,6 +6,8 @@ const authSlide = createSlice({
     isFetching: false,
     error: null,
     registerSuccess: false,
+    accessToken: null,
+    refreshToken: null,
   },
   reducers: {
     loginStart(state) {
@@ -16,7 +18,12 @@ const authSlide = createSlice({
       state.isFetching = false;
       state.user = action.payload;
       state.error = null;
-      console.log(action.payload);
+    },
+    setAccessToken(state, action) {
+      state.accessToken = action.payload;
+    },
+    setRefreshToken(state, action) {
+      state.refreshToken = action.payload;
     },
     loginFailure(state, action) {
       state.isFetching = false;
@@ -34,7 +41,6 @@ const authSlide = createSlice({
     registerSuccess(state, action) {
       state.isFetching = false;
       state.user = action.payload;
-
       state.error = false;
       state.registerSuccess = true;
     },
@@ -58,5 +64,7 @@ export const {
   registerFailure,
   registerSuccess,
   setUser,
+  setAccessToken,
+  setRefreshToken,
 } = authSlide.actions;
 export default authSlide.reducer;

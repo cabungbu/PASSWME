@@ -355,6 +355,7 @@ export default function MainContainer() {
           <Stack.Screen name="Welcome" component={WelcomePage} />
           <Stack.Screen name="Login" component={LoginPage} />
           <Stack.Screen name="Register" component={RegisterPage} />
+          <Stack.Screen name="BottomBar" component={BottomBar} />
         </>
       ) : (
         <>

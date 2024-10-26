@@ -6,15 +6,18 @@ import {
   loginStart,
   loginSuccess,
   loginFailure,
+  setAccessToken,
+  setRefreshToken,
 } from "./authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 export const loginUser = async (user, dispatch, navigation) => {
   try {
     dispatch(loginStart());
-    const res = await axios.post("http://192.168.1.7:3000/auth/login", user);
+    const res = await axios.post("http://localhost:3000/auth/login", user);
     const userData = res.data.user; // Lấy thông tin người dùng
     dispatch(loginSuccess(userData)); // Gọi action với thông tin người dùng
-
+    dispatch(setAccessToken(res.data.accessToken));
+    dispatch(setRefreshToken(res.data.refreshToken));
     // Lưu chỉ thông tin người dùng vào AsyncStorage
     await AsyncStorage.setItem("user", JSON.stringify(userData));
     navigation.navigate("BottomBar");
@@ -35,10 +38,13 @@ export const registerUser = async (user, dispatch, navigation) => {
       return;
     }
 
-    const res = await axios.post("http://192.168.1.7:3000/auth/register", user);
+    const res = await axios.post("http://localhost:3000/auth/register", user);
 
     if (res.data) {
-      dispatch(registerSuccess(res.data));
+      dispatch(registerSuccess(res.data.user));
+      dispatch(setAccessToken(res.data.accessToken));
+      dispatch(setRefreshToken(res.data.refreshToken));
+      await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
       navigation.navigate("BottomBar");
     }
   } catch (error) {

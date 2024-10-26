@@ -19,6 +19,7 @@ export default function Home() {
   const navigation = useNavigation();
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
+  console.log(user);
   // let axiosJWT =axios.create();
   // axiosJWT.interceptors.request.use(
   //   async(config) => {
@@ -28,7 +29,7 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <Text style={{ fontFamily: "light", fontWeight: "300" }}>
-        Chào! {user.email}
+        Chào! {user.username}
       </Text>
       <TouchableOpacity
         style={styles.login}

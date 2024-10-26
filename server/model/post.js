@@ -4,7 +4,6 @@ class post {
     category,
     image,
     status,
-    price,
     description,
     service,
     start,
@@ -17,7 +16,6 @@ class post {
     this.category = category;
     this.image = image;
     this.status = status;
-    this.price = price;
     this.description = description;
     this.service = service;
     this.start = start;
@@ -33,7 +31,6 @@ class post {
       category: this.category,
       image: this.image,
       status: this.status,
-      price: this.price,
       description: this.description,
       service: this.service,
       start: this.start,

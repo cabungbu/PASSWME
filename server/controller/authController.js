@@ -23,6 +23,12 @@ const register = async (req, res) => {
     return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin." });
   }
 
+  const userRef = doc(firestoreDb, "user", data.email);
+  const userDoc = await getDoc(userRef);
+  if (userDoc.exists()) {
+    return res.status(405).json({ message: "Email đã được đăng ký" });
+  }
+
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(data.password, salt);
