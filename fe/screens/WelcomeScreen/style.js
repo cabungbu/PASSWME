@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
 
 const styles = StyleSheet.create({
   container: {
@@ -12,7 +13,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 20,
     color: "#E30414",
-    fontWeight: "medium",
+    fontFamily: "bold"
   },
   login: {
     color: "#E30414",
@@ -38,7 +39,10 @@ const styles = StyleSheet.create({
   },
   image: {
     position: "absolute",
-    bottom: 0,
+    bottom: 0, 
+    width: scaleWidth(430),
+    height: scaleHeight(230),
+    resizeMode: 'contain',
   },
 });
 

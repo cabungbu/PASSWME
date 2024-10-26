@@ -45,7 +45,7 @@ const WelcomePage = () => {
       </TouchableOpacity>
       <Image
         style={styles.image}
-        source={require("../../assets/imageWelcome.png")}
+        source={require("../../assets/imgWelcome.png")}
       />
     </View>
   );
