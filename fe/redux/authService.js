@@ -10,8 +10,7 @@ import {
 export const loginUser = async (user, dispatch, navigation) => {
   try {
     dispatch(loginStart());
-
-    const res = await axios.post("http://localhost:3000/auth/login", user);
+    const res = await axios.post("http://192.168.1.5:3000/auth/login", user);
     dispatch(loginSuccess(res.data));
     navigation.navigate("BottomBar");
   } catch (e) {
@@ -23,7 +22,7 @@ export const loginUser = async (user, dispatch, navigation) => {
 export const registerUser = async (user, dispatch, navigate) => {
   dispatch(registerStart());
   try {
-    const res = await axios.post("http://localhost:3000/auth/register", user);
+    const res = await axios.post("http://10.0.2.2:3000/auth/register", user);
     dispatch(registerSuccess(res.data));
     navigate("BottomBar");
   } catch (e) {
