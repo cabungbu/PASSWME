@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   Alert,
   Animated,
@@ -28,6 +28,10 @@ import LoginPage from "../screens/Login/Login";
 import { useNavigation } from "@react-navigation/native";
 import { COLOR } from "../assets/constant/color";
 import RegisterPage from "../screens/Register/register";
+import { useSelector, useDispatch } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setUser } from "../redux/authSlice";
+
 const Stack = createNativeStackNavigator();
 
 function HomeStack() {
@@ -327,12 +331,39 @@ function BottomBar() {
   );
 }
 export default function MainContainer() {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth?.user);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const storedUser = await AsyncStorage.getItem("user");
+        if (storedUser) {
+          dispatch(setUser(JSON.parse(storedUser)));
+        }
+      } catch (error) {
+        console.error("Error loading user data:", error);
+      }
+    };
+
+    checkLoginStatus();
+  }, [dispatch]);
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Welcome" component={WelcomePage} />
-      <Stack.Screen name="BottomBar" component={BottomBar} />
-      <Stack.Screen name="Login" component={LoginPage} />
-      <Stack.Screen name="Register" component={RegisterPage} />
+      {!user ? (
+        <>
+          <Stack.Screen name="Welcome" component={WelcomePage} />
+          <Stack.Screen name="Login" component={LoginPage} />
+          <Stack.Screen name="Register" component={RegisterPage} />
+          <Stack.Screen name="BottomBar" component={BottomBar} />
+        </>
+      ) : (
+        <>
+          <Stack.Screen name="BottomBar" component={BottomBar} />
+          <Stack.Screen name="Login" component={LoginPage} />
+          <Stack.Screen name="Register" component={RegisterPage} />
+        </>
+      )}
     </Stack.Navigator>
   );
 }
