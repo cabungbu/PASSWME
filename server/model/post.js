@@ -7,9 +7,8 @@ class post {
     description,
     service,
     start,
-    end,
     owner,
-    oldNew,
+    condition,
     soldQuantity = 0, // Giá trị mặc định
   }) {
     this.title = title;
@@ -19,9 +18,8 @@ class post {
     this.description = description;
     this.service = service;
     this.start = start;
-    this.end = end;
     this.owner = owner;
-    this.oldNew = oldNew;
+    this.condition = condition;
     this.soldQuantity = soldQuantity;
   }
 
@@ -34,9 +32,8 @@ class post {
       description: this.description,
       service: this.service,
       start: this.start,
-      end: this.end,
       owner: this.owner,
-      oldNew: this.oldNew,
+      condition: this.condition,
       soldQuantity: this.soldQuantity,
     };
   }

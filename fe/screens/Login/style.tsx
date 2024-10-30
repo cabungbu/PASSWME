@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
   logintext: {
     textAlign: "center",
-    fontWeight: "heavy",
+    fontFamily: "medium",
     fontSize: 16,
     color: "#fff",
   },

@@ -27,7 +27,7 @@ const addUser = async (req, res) => {
     if (!data || Object.keys(data).length === 0) {
       return res.status(400).json({ error: "Data is required." });
     }
-    const userCollection = collection(firestoreDb, "user");
+    const userCollection = collection(firestoreDb, "users");
     const docRef = await addDoc(userCollection, newUser.toPlainObject());
     res.status(200).json({
       message: "User added successfully.",
@@ -41,7 +41,7 @@ const addUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   try {
-    const userCollection = collection(firestoreDb, "user"); // Lấy collection "user"
+    const userCollection = collection(firestoreDb, "users"); // Lấy collection "user"
     const snapshot = await getDocs(userCollection); // Lấy tất cả document trong collection
 
     // Chuyển đổi snapshot thành mảng người dùng
@@ -61,7 +61,7 @@ const getUserById = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   try {
     const userId = req.params.id;
-    const userDoc = doc(firestoreDb, "user", userId);
+    const userDoc = doc(firestoreDb, "users", userId);
     const userSnapshot = await getDoc(userDoc);
 
     if (!userSnapshot.exists()) {
@@ -81,7 +81,7 @@ const getUserShopCart = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   try {
     const userId = req.params.id;
-    const userDoc = doc(firestoreDb, "user", userId);
+    const userDoc = doc(firestoreDb, "users", userId);
     const userSnapshot = await getDoc(userDoc);
 
     if (!userSnapshot.exists()) {
@@ -110,7 +110,7 @@ const updateUser = async (req, res) => {
       return res.status(400).json({ error: "Update data is required." });
     }
 
-    const userDoc = doc(firestoreDb, "user", userId);
+    const userDoc = doc(firestoreDb, "users", userId);
     await updateDoc(userDoc, updateData);
 
     res.status(200).json({
@@ -127,7 +127,7 @@ const deleteUser = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   try {
     const userId = req.params.id;
-    const userDoc = doc(firestoreDb, "user", userId);
+    const userDoc = doc(firestoreDb, "users", userId);
     await deleteDoc(userDoc);
 
     res.status(200).json({
@@ -145,7 +145,7 @@ const addToShopCart = async (req, res) => {
   const userId = req.params.id;
   const input = req.body;
   try {
-    const postRef = doc(firestoreDb, "post", input.postId);
+    const postRef = doc(firestoreDb, "posts", input.postId);
     const postDoc = await getDoc(postRef);
 
     if (!postDoc.exists()) {
@@ -153,7 +153,7 @@ const addToShopCart = async (req, res) => {
     }
 
     const postData = postDoc.data();
-    const productsRef = collection(postRef, "product");
+    const productsRef = collection(postRef, "products");
     const productsSnapshot = await getDocs(productsRef);
 
     const product = productsSnapshot.docs.map((doc) => ({
@@ -176,7 +176,7 @@ const addToShopCart = async (req, res) => {
       });
     }
 
-    const userRef = doc(firestoreDb, "user", userId);
+    const userRef = doc(firestoreDb, "users", userId);
     const userDoc = await getDoc(userRef);
 
     if (!userDoc.exists()) {
@@ -263,7 +263,7 @@ const updateShopCart = async (req, res) => {
   const userId = req.params.id;
   const input = req.body;
   try {
-    const userRef = doc(firestoreDb, "user", userId);
+    const userRef = doc(firestoreDb, "users", userId);
     const userDoc = await getDoc(userRef);
 
     if (!userDoc.exists()) {
@@ -310,7 +310,7 @@ const removeProductFromCart = async (req, res) => {
   const { postId, productId } = req.body; // Lấy postId và productId từ body
 
   try {
-    const userRef = doc(firestoreDb, "user", userId);
+    const userRef = doc(firestoreDb, "users", userId);
     const userDoc = await getDoc(userRef);
 
     if (!userDoc.exists()) {
@@ -366,7 +366,7 @@ const addToLike = async (req, res) => {
   const { postId } = req.body;
 
   try {
-    const userRef = doc(firestoreDb, "user", userId);
+    const userRef = doc(firestoreDb, "users", userId);
     const userDoc = await getDoc(userRef);
     if (!userDoc.exists()) {
       return res.status(404).json({ error: "User not found" });
@@ -396,7 +396,7 @@ const removeFromLike = async (req, res) => {
   const { postId } = req.body;
 
   try {
-    const userRef = doc(firestoreDb, "user", userId);
+    const userRef = doc(firestoreDb, "users", userId);
     const userDoc = await getDoc(userRef);
 
     if (!userDoc.exists()) {
