@@ -23,7 +23,7 @@ const register = async (req, res) => {
     return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin." });
   }
 
-  const userRef = doc(firestoreDb, "user", data.email);
+  const userRef = doc(firestoreDb, "users", data.email);
   const userDoc = await getDoc(userRef);
   if (userDoc.exists()) {
     return res.status(405).json({ message: "Email đã được đăng ký" });
@@ -43,7 +43,7 @@ const register = async (req, res) => {
       refreshToken: "", // Set refreshToken to an empty string initially
     };
 
-    const userCollection = collection(firestoreDb, "user");
+    const userCollection = collection(firestoreDb, "users");
     const docRef = await addDoc(userCollection, newUser);
 
     // Create tokens after user is successfully registered
@@ -92,7 +92,7 @@ const login = async (req, res) => {
 
   try {
     // Tìm người dùng theo email
-    const userCollection = collection(firestoreDb, "user");
+    const userCollection = collection(firestoreDb, "users");
     const q = query(userCollection, where("email", "==", email));
     const querySnapshot = await getDocs(q);
 
@@ -159,7 +159,7 @@ const generateAccessToken = async (user) => {
 const updatedAccessTokenInDatabase = async (user, refreshToken) => {
   const firestoreDb = getFirestoreDb();
   try {
-    const userDoc = doc(firestoreDb, "user", user.id);
+    const userDoc = doc(firestoreDb, "users", user.id);
     if (!user || !user.id) {
       console.error("User or user.id is undefined.");
       return;
@@ -217,7 +217,7 @@ const resetPassword = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(data.password, salt);
 
-    const userDoc = doc(firestoreDb, "user", userId);
+    const userDoc = doc(firestoreDb, "users", userId);
     await updateDoc(userDoc, { password: hashedPassword }); // Cập nhật mật khẩu
 
     res.status(200).json({
@@ -236,7 +236,7 @@ const logout = async (req, res) => {
   const db = getFirestoreDb();
   try {
     // Cập nhật document user trong Firestore
-    const userRef = db.collection("user").doc(id);
+    const userRef = db.collection("users").doc(id);
     await userRef.update({
       refreshToken: null, // hoặc firebase.firestore.FieldValue.delete() nếu bạn muốn xóa trường này
     });

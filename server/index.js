@@ -6,6 +6,7 @@ const { initializeFirebaseApp, upLoadData } = require("./config/firebase.js");
 const userRoutes = require("./routes/user-routes.js");
 const postRoutes = require("./routes/post-routes.js");
 const authRoutes = require("./routes/auth.js");
+const categoryRoutes = require("./routes/category-route.js")
 const app = express();
 app.use(bodyParser.json());
 const corsOptions = {
@@ -19,6 +20,8 @@ app.use(express.json());
 app.use("/user", userRoutes.routes);
 app.use("/post", postRoutes.routes);
 app.use("/auth", authRoutes.routes);
+app.use("/category", categoryRoutes.routes);
+
 const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
