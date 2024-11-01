@@ -195,18 +195,9 @@ const addToShopCart = async (req, res) => {
       // Post chưa có trong giỏ hàng -> thêm mới
       userCart.unshift({
         postId: input.postId,
-        title: postData.title,
-        image: postData.image,
-        category: postData.category,
-        status: postData.status,
-        service: postData.service,
-        condition: postData.condition,
         product: [
           {
             productId: input.productId,
-            name: selectedProduct.name,
-            price: selectedProduct.price,
-            image: selectedProduct.image,
             quantity: input.quantity,
             selectedAt: new Date().toISOString(),
           },
@@ -225,9 +216,6 @@ const addToShopCart = async (req, res) => {
         // Product chưa có -> thêm mới vào mảng products
         existingPost.product.push({
           productId: input.productId,
-          name: selectedProduct.name,
-          price: selectedProduct.price,
-          image: selectedProduct.image,
           quantity: input.quantity,
           selectedAt: new Date().toISOString(),
         });
