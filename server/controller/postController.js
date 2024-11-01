@@ -91,6 +91,7 @@ const addPost = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 const getAllPost = async (req, res) => {
   const firestoreDb = getFirestoreDb();
 

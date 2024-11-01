@@ -418,12 +418,4 @@ export const styles = StyleSheet.create({
     width: 30,
     height: 30,
   },
-  screen1: {
-    flex: 1,
-    backgroundColor: "#BFEFFF",
-  },
-  screen2: {
-    flex: 1,
-    backgroundColor: "#FFEBCD",
-  },
 });
