@@ -8,6 +8,7 @@ import {
   loginFailure,
   setAccessToken,
   setRefreshToken,
+  logout,
 } from "./authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 export const loginUser = async (user, dispatch, navigation) => {
@@ -69,5 +70,17 @@ export const registerUser = async (user, dispatch, navigation) => {
     }
 
     dispatch(registerFailure(errorMessage));
+  }
+};
+
+export const logoutUser = async (user, dispatch, navigation) => {
+  try {
+    const res = await axios.post(
+      `http://localhost:3000/auth/logout/${user.id}` // Dùng backticks
+    );
+
+    dispatch(logout());
+  } catch (e) {
+    console.error("Logout error:", e);
   }
 };

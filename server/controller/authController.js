@@ -84,6 +84,7 @@ const login = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   const { email, password } = req.body;
 
+  // Check if email and password are provided
   if (!email || !password) {
     return res.status(400).json({
       error: "Email và mật khẩu không được để trống.",
@@ -91,26 +92,27 @@ const login = async (req, res) => {
   }
 
   try {
-    // Tìm người dùng theo email
+    // Find the user by email
     const userCollection = collection(firestoreDb, "users");
     const q = query(userCollection, where("email", "==", email));
     const querySnapshot = await getDocs(q);
 
+    // Check if the user exists
     if (querySnapshot.empty) {
-      return res.status(401).json({ error: "Invalid email" });
+      return res.status(401).json({ message: "Email không tồn tại" });
     }
 
-    // Có người dùng
+    // User found
     const userDoc = querySnapshot.docs[0];
     const userData = userDoc.data();
 
-    // So sánh mật khẩu
+    // Compare passwords
     const isMatch = await bcrypt.compare(password, userData.password);
     if (!isMatch) {
-      return res.status(401).json({ error: "Invalid password." });
+      return res.status(402).json({ message: "Sai mật khẩu" });
     }
 
-    // Tạo token JWT
+    // Create JWT tokens
     const accessToken = jwt.sign(
       { id: userData.id },
       process.env.JWT_ACCESS_KEY,
@@ -122,24 +124,29 @@ const login = async (req, res) => {
       { expiresIn: "30d" }
     );
 
+    // Set refresh token in a cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
     });
 
-    // Cập nhật refreshToken trong Firestore
+    // Update refreshToken in Firestore
     await updateDoc(userDoc.ref, { refreshToken: refreshToken });
 
-    // Kiểm tra dữ liệu trong Firestore sau khi cập nhật
+    // Check updated user data in Firestore
     const updatedUserDoc = await getDoc(userDoc.ref);
-    const updatedUserData = updatedUserDoc.data();
+    const updatedUserData = {
+      id: updatedUserDoc.id, // Get the document ID
+      ...updatedUserDoc.data(), // Include the rest of the user data
+    };
 
+    // Respond with success
     res.status(200).json({
       message: "Login successful.",
-      user: updatedUserData, // Trả về userData đã được cập nhật
+      user: updatedUserData, // Return updated user data
       accessToken: accessToken,
-      refreshToken: refreshToken, // Trả về refreshToken mới
+      refreshToken: refreshToken, // Return the new refresh token
     });
   } catch (error) {
     console.error("Error logging in user:", error);
@@ -231,25 +238,25 @@ const resetPassword = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  const auth = getAuth();
+  const firestoreDb = getFirestoreDb();
   const id = req.params.id;
-  const db = getFirestoreDb();
   try {
-    // Cập nhật document user trong Firestore
-    const userRef = db.collection("users").doc(id);
-    await userRef.update({
-      refreshToken: null, // hoặc firebase.firestore.FieldValue.delete() nếu bạn muốn xóa trường này
+    // Truy cập collection users và document với id
+    const userRef = doc(firestoreDb, "users", id);
+    if (!userRef || !id) {
+      return res.status(401).json({ message: "User không tồn tại" });
+    }
+    // Cập nhật document để xóa refreshToken
+    await updateDoc(userRef, {
+      refreshToken: null,
     });
-
-    // Vô hiệu hóa tất cả refreshToken của user
-    await auth.revokeRefreshTokens(id);
-
     return res.status(200).json({ message: "Đăng xuất thành công" });
   } catch (error) {
     console.error("Lỗi khi đăng xuất:", error);
-    return res
-      .status(500)
-      .json({ message: "Đã xảy ra lỗi server khi đăng xuất" });
+    return res.status(500).json({
+      message: "Đã xảy ra lỗi server khi đăng xuất",
+      error: error.message,
+    });
   }
 };
 
@@ -258,4 +265,5 @@ module.exports = {
   register,
   takeRefreshToken,
   logout,
+  resetPassword,
 };

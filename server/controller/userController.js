@@ -1,5 +1,6 @@
 // userController.js
 const { getFirestoreDb } = require("../config/firebase.js");
+
 const user = require("../model/user.js");
 const {
   collection,
@@ -10,6 +11,11 @@ const {
   doc,
   setDoc,
   getDocs,
+  writeBatch,
+  arrayUnion,
+  query,
+  Timestamp,
+  orderBy,
 } = require("firebase/firestore");
 
 const addUser = async (req, res) => {
@@ -79,29 +85,34 @@ const getUserById = async (req, res) => {
 };
 const getUserShopCart = async (req, res) => {
   const firestoreDb = getFirestoreDb();
-  try {
-    const userId = req.params.id;
-    const userDoc = doc(firestoreDb, "users", userId);
-    const userSnapshot = await getDoc(userDoc);
+  const userId = req.params.id;
 
-    if (!userSnapshot.exists()) {
-      return res.status(404).json({ error: "User not found." });
+  try {
+    const userRef = doc(firestoreDb, "users", userId);
+    const userDoc = await getDoc(userRef);
+
+    if (!userDoc.exists()) {
+      return res.status(404).json({ error: "User not found" });
     }
 
-    res.status(200).json({
-      id: userSnapshot.id,
-      shopcart: {
-        ...userSnapshot.data().shopcart,
-      },
-    });
+    const shopCartRef = collection(userRef, "shopcart");
+    const shopCartQuery = query(shopCartRef, orderBy("updatedAt", "desc"));
+    const shopCartSnapshot = await getDocs(shopCartQuery);
+
+    const shopCart = shopCartSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.status(200).json(shopCart);
   } catch (error) {
-    console.error("Error getting user:", error);
+    console.error("Error getting user's shop cart:", error);
     res.status(400).json({ error: error.message });
   }
 };
 
 const updateUser = async (req, res) => {
-  const firestoreDb = getFirestoreDb();
+  const firestoreDb = require("firebase-admin");
   try {
     const userId = req.params.id;
     const updateData = req.body;
@@ -140,12 +151,135 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// const addToShopCart = async (req, res) => {
+//   const firestoreDb = getFirestoreDb();
+//   const userId = req.params.id;
+//   const { sellerId, postId, productId, quantity } = req.body;
+
+//   try {
+//     const sellerRef = doc(firestoreDb, "users", sellerId);
+//     const sellerDoc = await getDoc(sellerRef);
+//     if (!sellerDoc.exists()) {
+//       return res.status(404).json({ error: "Seller not found" });
+//     }
+
+//     // 1. Lấy thông tin về post
+//     const postRef = doc(firestoreDb, "posts", postId);
+//     const postDoc = await getDoc(postRef);
+
+//     if (!postDoc.exists()) {
+//       return res.status(404).json({ error: "Post not found" });
+//     }
+
+//     const postData = postDoc.data();
+
+//     // 2. Lấy thông tin về sản phẩm trong post
+//     const productsRef = collection(postRef, "products");
+//     const productsSnapshot = await getDocs(productsRef);
+
+//     const product = productsSnapshot.docs.map((doc) => ({
+//       id: doc.id,
+//       ...doc.data(),
+//     }));
+
+//     // 3. Tìm sản phẩm được chọn
+//     const selectedProduct = product.find((p) => p.id === productId);
+
+//     if (!selectedProduct) {
+//       return res.status(404).json({ error: "Product not found in this post" });
+//     }
+
+//     // 4. Kiểm tra số lượng có sẵn
+//     if (selectedProduct.quantity < quantity) {
+//       return res.status(400).json({
+//         error: "Not enough quantity available",
+//         available: selectedProduct.quantity,
+//       });
+//     }
+
+//     // 5. Lấy thông tin về người dùng
+//     const userRef = doc(firestoreDb, "users", userId);
+//     const userDoc = await getDoc(userRef);
+
+//     if (!userDoc.exists()) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
+
+//     const shopCartRef = doc(userRef, "shopcart", sellerId);
+//     const shopCartDoc = await getDoc(shopCartRef);
+
+//     const batch = writeBatch(firestoreDb);
+
+//     // 6. Kiểm tra và cập nhật giỏ hàng
+//     if (!shopCartDoc.exists()) {
+//       // Nếu shopId chưa có, thêm mới vào giỏ hàng
+//       batch.set(shopCartRef, {
+//         listItem: [
+//           {
+//             postId,
+//             productId,
+//             quantity,
+//             selectedAt: new Date().toISOString(),
+//           },
+//         ],
+//       });
+//     } else {
+//       // Nếu shopId đã có, cập nhật sản phẩm trong giỏ hàng
+
+//       const existingProduct = shopCartDoc
+//         .data()
+//         .listItem.find((p) => p.productId === productId);
+
+//       if (existingProduct) {
+//         const newQuantity = Number(existingProduct.quantity) + Number(quantity);
+//         batch.update(
+//           shopCartRef,
+//           {
+//             "listItem.$[elem].quantity": newQuantity,
+//           },
+//           {
+//             arrayFilters: [{ "elem.productId": productId }],
+//           }
+//         );
+//       } else {
+//         // Nếu sản phẩm chưa có, thêm mới vào giỏ hàng
+//         batch.update(shopCartRef, {
+//           listItem: arrayUnion({
+//             postId,
+//             productId,
+//             quantity,
+//             selectedAt: new Date().toISOString(),
+//           }),
+//         });
+//       }
+//     }
+//     await batch.commit();
+
+//     res.status(200).json({
+//       message: "Product added to cart successfully",
+//     });
+//   } catch (error) {
+//     console.error("Error adding to cart:", error);
+//     res.status(400).json({ error: error.message });
+//   }
+// };
+
 const addToShopCart = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   const userId = req.params.id;
-  const input = req.body;
+  const { sellerId, postId, productId, quantity } = req.body;
+
   try {
-    const postRef = doc(firestoreDb, "posts", input.postId);
+    // 1. Lấy thông tin về seller
+    const sellerRef = doc(firestoreDb, "users", sellerId);
+    const sellerDoc = await getDoc(sellerRef);
+
+    if (!sellerDoc.exists()) {
+      return res.status(404).json({ error: "Seller not found" });
+    }
+
+    // 2. Lấy thông tin về post
+    const postRef = doc(firestoreDb, "posts", postId);
     const postDoc = await getDoc(postRef);
 
     if (!postDoc.exists()) {
@@ -153,6 +287,8 @@ const addToShopCart = async (req, res) => {
     }
 
     const postData = postDoc.data();
+
+    // 3. Lấy thông tin về sản phẩm trong post
     const productsRef = collection(postRef, "products");
     const productsSnapshot = await getDocs(productsRef);
 
@@ -161,21 +297,20 @@ const addToShopCart = async (req, res) => {
       ...doc.data(),
     }));
 
-    // Find the selected product
-    const selectedProduct = product.find((p) => p.id === input.productId);
+    const selectedProduct = product.find((p) => p.id === productId);
 
     if (!selectedProduct) {
       return res.status(404).json({ error: "Product not found in this post" });
     }
 
-    // Kiểm tra số lượng có sẵn
-    if (selectedProduct.quantity < input.quantity) {
+    if (selectedProduct.quantity < quantity) {
       return res.status(400).json({
         error: "Not enough quantity available",
         available: selectedProduct.quantity,
       });
     }
 
+    // 4. Lấy thông tin về user
     const userRef = doc(firestoreDb, "users", userId);
     const userDoc = await getDoc(userRef);
 
@@ -183,74 +318,63 @@ const addToShopCart = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const userData = userDoc.data();
-    const userCart = userData.shopcart || [];
+    // 5. Cập nhật giỏ hàng của user
+    const shopCartRef = doc(userRef, "shopcart", sellerId);
+    const batch = writeBatch(firestoreDb);
 
-    // 3. Kiểm tra và cập nhật giỏ hàng
-    const existingPostIndex = userCart.findIndex(
-      (item) => item.postId === input.postId
-    );
+    const shopCartDoc = await getDoc(shopCartRef);
 
-    if (existingPostIndex === -1) {
-      // Post chưa có trong giỏ hàng -> thêm mới
-      userCart.unshift({
-        postId: input.postId,
-        product: [
+    if (!shopCartDoc.exists()) {
+      batch.set(shopCartRef, {
+        listItem: [
           {
-            productId: input.productId,
-            quantity: input.quantity,
-            selectedAt: new Date().toISOString(),
+            postId,
+            productId,
+            quantity,
+            selectedAt: Timestamp.now(),
           },
         ],
+        updatedAt: Timestamp.now(),
       });
     } else {
-      // Post đã có trong giỏ hàng
-      const existingPost = userCart[existingPostIndex];
-      existingPost.product = existingPost.product || [];
-
-      const existingProductIndex = existingPost.product.findIndex(
-        (p) => p.productId === input.productId
+      const existingItems = shopCartDoc.data().listItem;
+      const existingProduct = existingItems.find(
+        (p) => p.productId === productId
       );
 
-      if (existingProductIndex === -1) {
-        // Product chưa có -> thêm mới vào mảng products
-        existingPost.product.push({
-          productId: input.productId,
-          quantity: input.quantity,
-          selectedAt: new Date().toISOString(),
+      if (existingProduct) {
+        const newQuantity = Number(existingProduct.quantity) + Number(quantity);
+        const updatedItems = existingItems.map((item) =>
+          item.productId === productId
+            ? { ...item, quantity: newQuantity }
+            : item
+        );
+
+        batch.update(shopCartRef, {
+          listItem: updatedItems,
+          updatedAt: Timestamp.now(),
         });
       } else {
-        // Product đã có -> cộng thêm số lượng
-        const newQuantity =
-          Number(existingPost.product[existingProductIndex].quantity) +
-          Number(input.quantity);
+        const newItem = {
+          postId,
+          productId,
+          quantity,
+          selectedAt: Timestamp.now(),
+        };
 
-        console.log(newQuantity);
-        if (newQuantity > selectedProduct.quantity) {
-          return res.status(400).json({
-            error: "Total quantity exceeds available stock",
-            available: selectedProduct.quantity,
-            currentInCart:
-              userCart[existingPostIndex].products[existingProductIndex]
-                .quantity,
-          });
-        }
+        const updatedItems = [newItem, ...existingItems];
 
-        userCart[existingPostIndex].product[existingProductIndex].quantity =
-          newQuantity;
+        batch.update(shopCartRef, {
+          listItem: updatedItems,
+          updatedAt: Timestamp.now(),
+        });
       }
-      userCart.splice(existingPostIndex, 1);
-      userCart.unshift(existingPost);
     }
 
-    // 4. Cập nhật user document với giỏ hàng mới
-    await updateDoc(userRef, {
-      shopcart: userCart,
-    });
+    await batch.commit();
 
     res.status(200).json({
       message: "Product added to cart successfully",
-      cart: userCart,
     });
   } catch (error) {
     console.error("Error adding to cart:", error);
@@ -259,45 +383,82 @@ const addToShopCart = async (req, res) => {
 };
 
 const updateShopCart = async (req, res) => {
-  const firestoreDb = getFirestoreDb();
+  const db = getFirestoreDb();
   const userId = req.params.id;
-  const input = req.body;
   try {
-    const userRef = doc(firestoreDb, "users", userId);
-    const userDoc = await getDoc(userRef);
+    const { sellerId, postId, productIdBefore, productIdAfter, quantity } =
+      req.body;
 
-    if (!userDoc.exists()) {
-      return res.status(404).json({ error: "User not found" });
-    }
+    // Reference to user's shopcart collection
+    const userDocRef = doc(db, "users", userId);
+    const shopcartRef = doc(collection(userDocRef, "shopcart"), sellerId);
 
-    const userData = userDoc.data();
-    const userCart = userData.shopcart || [];
+    // Get the current shopcart data
+    const shopcartDoc = await getDoc(shopcartRef);
+    const shopcartData = shopcartDoc.data() || { listItem: [] };
+    let { listItem } = shopcartData;
 
-    const postIndex = userCart.findIndex(
-      (item) => item.postId === input.postId
+    const beforeIndex = listItem.findIndex(
+      (item) => item.productId === productIdBefore
     );
-    if (postIndex === -1) {
-      return res.status(404).json({ error: "Post not found in cart" });
+
+    if (beforeIndex === -1) {
+      return res.status(400).json({ message: "ProductId not found" });
     }
 
-    const existingPost = userCart[postIndex];
-    existingPost.product = existingPost.product || [];
+    let afterIndex = beforeIndex;
 
-    const existingProductIndex = existingPost.product.findIndex(
-      (p) => p.productId === input.productId
-    );
-    if (existingProductIndex === -1) {
-      return res.status(404).json({ error: "Product not found in cart" });
+    // Case 1: Update quantity only
+    if (productIdBefore === productIdAfter && quantity) {
+      listItem[beforeIndex].quantity = quantity;
+      listItem[beforeIndex].updatedAt = Timestamp.now();
+    }
+    // Case 2: Change product ID (with possible merge)
+    else {
+      // Find if productIdAfter already exists
+      afterIndex = listItem.findIndex(
+        (item) => item.productId === productIdAfter
+      );
+
+      if (afterIndex !== -1) {
+        // Merge quantities and remove old item
+        listItem[afterIndex].quantity += listItem[beforeIndex].quantity;
+        listItem[afterIndex].updatedAt = Timestamp.now();
+        listItem.splice(beforeIndex, 1);
+      } else {
+        // Just update the productId
+        listItem[beforeIndex].productId = productIdAfter;
+        listItem[beforeIndex].updatedAt = Timestamp.now();
+      }
     }
 
-    existingPost.product[existingProductIndex].quantity = input.quantity;
-    existingPost.product[existingProductIndex].name = input.name;
+    // Update the document first
+    await setDoc(shopcartRef, { listItem }, { merge: true });
 
-    await setDoc(userRef, { shopcart: userCart });
+    // Check maximum quantity
+    const postDocRef = doc(db, "posts", postId);
+    const productRef = doc(collection(postDocRef, "products"), productIdAfter);
+    const maxQuantityDoc = await getDoc(productRef);
 
-    res
-      .status(200)
-      .json({ message: "ShopCart updated successfully", shopcart: userCart });
+    if (!maxQuantityDoc.exists()) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const maxQuantityData = maxQuantityDoc.data();
+
+    if (
+      afterIndex >= 0 &&
+      maxQuantityData.quantity < listItem[afterIndex].quantity
+    ) {
+      console.log(listItem[afterIndex].quantity);
+      console.log(maxQuantityData.quantity);
+      listItem[afterIndex].quantity = maxQuantityData.quantity;
+      await setDoc(shopcartRef, { listItem }, { merge: true });
+      return res.status(401).json({ message: "Đã đạt số lượng tối đa" });
+    }
+
+    await setDoc(shopcartRef, { listItem }, { merge: true });
+    return res.status(200).json({ message: "Cập nhật giỏ hàng thành công" });
   } catch (error) {
     console.error("Error updating cart:", error);
     res.status(400).json({ error: error.message });
