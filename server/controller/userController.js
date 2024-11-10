@@ -305,7 +305,7 @@ const addToShopCart = async (req, res) => {
 
     if (selectedProduct.quantity < quantity) {
       return res.status(400).json({
-        error: "Not enough quantity available",
+        message: "Đã vượt quá số lượng còn lại trong kho",
         available: selectedProduct.quantity,
       });
     }
