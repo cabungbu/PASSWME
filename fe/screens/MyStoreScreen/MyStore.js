@@ -14,12 +14,13 @@ import {
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 
 //import các tab trong screen
-import ActiveListings from './ActiveListings';
-import HiddenListings from './HiddenListings';
+import ActiveListings from './ActivePosts';
+import HiddenListings from './ClosedPosts';
 import SoldItems from './SoldItems';
 
 //hehe
 import { COLOR } from "../../assets/constant/color";
+import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
 
 export default function MyStore() {
   const layout = useWindowDimensions();
@@ -60,7 +61,7 @@ export default function MyStore() {
       {...props}
       indicatorStyle={{
         backgroundColor: COLOR.mainColor,
-        height: 2,
+        height: scaleHeight(2),
         bottom: 0,
         borderRadius: 100
       }}
@@ -123,11 +124,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerL: {
-    // height: scale(30),
-    height: 70,
+    height: scaleHeight(80),
     alignItems: "center",
     justifyContent: "center",
-    // marginBottom: scale(10),
     borderBottomEndRadius: 10,
     borderBottomStartRadius: 10,
     flexDirection: "row",
@@ -135,10 +134,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: "#FFFFFF",
-    // fontSize: scale(20),
-    marginTop: 20,
+    marginTop: scaleHeight(30),
     fontSize: 20,
-    // height: 20,
     fontFamily: "bold",
   },
 });

@@ -23,14 +23,16 @@ const addPost = async (req, res) => {
     const newPost = new post({
       title: data.title,
       category: data.category,
-      image: data.image,
+      images: data.images || [],
       status: data.status,
       description: data.description,
       service: data.service,
-      start: data.start,
-      owner: data.owner,
+      start: new Date(),
+      owner: data.owner, 
       condition: data.condition,
       soldQuantity: data.soldQuantity || 0,
+      rating: data.rating || 0,
+
     });
     const postDocRef = doc(firestoreDb, "posts", newPostId);
 
@@ -44,6 +46,20 @@ const addPost = async (req, res) => {
     if (!userDoc.exists()) {
       return res.status(404).json({ error: "User not found" });
     }
+
+    // Thêm postId vào mảng sold của user
+    // const userData = userDoc.data();
+    // const currentSold = userData.sold || [];
+    // batch.update(userRef, {
+    //   sold: [...currentSold, newPostId] // Thêm postId mới vào cuối mảng
+    // });
+
+    //Thêm postId vào mảng posts của user
+    const userData = userDoc.data();
+    const currentPosts = userData.posts || [];
+    batch.update(userRef, {
+      posts: [...currentPosts, newPostId] // Thêm postId mới vào cuối mảng
+    });
 
     if (data.products && Array.isArray(data.products)) {
       const productCollection = collection(postDocRef, "products");
