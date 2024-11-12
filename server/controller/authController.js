@@ -37,6 +37,7 @@ const register = async (req, res) => {
       username: data.username || "", // Default to empty string if not provided
       email: data.email || "",
       password: hashedPassword,
+      dateOfBirth: data.dateOfBirth || Date.now,
       phone: data.phone || "",
       avatar: data.avatar || "",
       gender: data.gender || "",
