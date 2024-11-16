@@ -14,6 +14,84 @@ const {
 const post = require("../model/post.js");
 const product = require("../model/productOfPost.js");
 
+// const addPost = async (req, res) => {
+//   const firestoreDb = getFirestoreDb();
+//   const data = req.body;
+
+//   try {
+//     const newPostId = doc(collection(firestoreDb, "posts")).id;
+//     const newPost = new post({
+//       title: data.title,
+//       category: data.category,
+//       image: data.image,
+//       status: data.status,
+//       description: data.description,
+//       service: data.service,
+//       start: data.start,
+//       owner: data.owner,
+//       condition: data.condition,
+//       soldQuantity: data.soldQuantity || 0,
+//     });
+//     const postDocRef = doc(firestoreDb, "posts", newPostId);
+
+//     const batch = writeBatch(firestoreDb);
+//     batch.set(postDocRef, newPost.toPlainObject());
+
+//     const categoryRef = doc(firestoreDb, "categories", data.category);
+//     const userRef = doc(firestoreDb, "users", data.owner);
+//     const userDoc = await getDoc(userRef);
+
+//     if (!userDoc.exists()) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
+
+//     if (data.products && Array.isArray(data.products)) {
+//       const productCollection = collection(postDocRef, "products");
+
+//       const productPromises = data.products.map(async (productData) => {
+//         const newProduct = new product(
+//           productData.name,
+//           productData.price,
+//           productData.quantity,
+//           productData.image
+//         );
+//         const newProductId = doc(productCollection).id;
+
+//         batch.set(
+//           doc(productCollection, newProductId),
+//           newProduct.toPlainObject()
+//         );
+//         batch.set(
+//           doc(
+//             firestoreDb,
+//             `categories/${data.category}/posts/${newPostId}/products`,
+//             newProductId
+//           ),
+//           productData
+//         );
+//       });
+
+//       await Promise.all(productPromises);
+//     }
+
+//     batch.set(
+//       doc(firestoreDb, `categories/${data.category}/posts`, newPostId),
+//       newPost.toPlainObject()
+//     );
+//     batch.update(categoryRef, { quantityOfPost: increment(1) });
+
+//     await batch.commit();
+
+//     res.status(200).json({
+//       message: "Post added successfully.",
+//       postId: newPostId,
+//     });
+//   } catch (error) {
+//     console.error("Error adding post:", error);
+//     res.status(400).json({ error: error.message });
+//   }
+// };
+
 const addPost = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   const data = req.body;
@@ -32,8 +110,8 @@ const addPost = async (req, res) => {
       condition: data.condition,
       soldQuantity: data.soldQuantity || 0,
     });
-    const postDocRef = doc(firestoreDb, "posts", newPostId);
 
+    const postDocRef = doc(firestoreDb, "posts", newPostId);
     const batch = writeBatch(firestoreDb);
     batch.set(postDocRef, newPost.toPlainObject());
 
@@ -47,7 +125,6 @@ const addPost = async (req, res) => {
 
     if (data.products && Array.isArray(data.products)) {
       const productCollection = collection(postDocRef, "products");
-
       const productPromises = data.products.map(async (productData) => {
         const newProduct = new product(
           productData.name,
@@ -56,29 +133,19 @@ const addPost = async (req, res) => {
           productData.image
         );
         const newProductId = doc(productCollection).id;
-
         batch.set(
           doc(productCollection, newProductId),
           newProduct.toPlainObject()
         );
-        batch.set(
-          doc(
-            firestoreDb,
-            `categories/${data.category}/posts/${newPostId}/products`,
-            newProductId
-          ),
-          productData
-        );
       });
-
       await Promise.all(productPromises);
     }
 
-    batch.set(
-      doc(firestoreDb, `categories/${data.category}/posts`, newPostId),
-      newPost.toPlainObject()
-    );
-    batch.update(categoryRef, { quantityOfPost: increment(1) });
+    // Thêm ID bài đăng vào mảng "posts" trong collection "categories"
+    batch.update(categoryRef, {
+      posts: arrayUnion(newPostId),
+      quantityOfPost: increment(1),
+    });
 
     await batch.commit();
 
@@ -91,7 +158,6 @@ const addPost = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
 const getAllPost = async (req, res) => {
   const firestoreDb = getFirestoreDb();
 
