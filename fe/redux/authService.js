@@ -8,11 +8,17 @@ import {
   loginFailure,
   setAccessToken,
   setRefreshToken,
+  logout,
 } from "./authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 export const loginUser = async (user, dispatch, navigation) => {
   try {
     dispatch(loginStart());
+    if (!user.email || !user.password) {
+      dispatch(loginFailure("Vui lòng nhập đầy đủ thông tin."));
+      return;
+    }
+
     const res = await axios.post("http://localhost:3000/auth/login", user);
     const userData = res.data.user; // Lấy thông tin người dùng
     dispatch(loginSuccess(userData)); // Gọi action với thông tin người dùng
@@ -34,7 +40,31 @@ export const registerUser = async (user, dispatch, navigation) => {
 
     // Validate data before sending
     if (!user.email || !user.password || !user.phone || !user.username) {
-      dispatch(registerFailure("Vui lòng nhập đầy đủ thông tin."));
+      dispatch(registerFailure("Vui lòng nhập đầy đủ thông tin"));
+      return;
+    }
+
+    if (user.username.length <= 8) {
+      dispatch(registerFailure("Tên người dùng phải có hơn 8 ký tự"));
+      return;
+    }
+
+    // Validate phone number length
+    const phonePattern = /^\d{9,12}$/;
+    if (!phonePattern.test(user.phone)) {
+      dispatch(registerFailure("Số điện thoại phải gồm 9-12 số"));
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(user.email)) {
+      dispatch(registerFailure("Email này không hợp lệ"));
+      return;
+    }
+
+    // Validate password length
+    if (user.password.length < 6) {
+      dispatch(registerFailure("Mật khẩu phải có ít nhất 6 ký tự"));
       return;
     }
 
@@ -69,5 +99,17 @@ export const registerUser = async (user, dispatch, navigation) => {
     }
 
     dispatch(registerFailure(errorMessage));
+  }
+};
+
+export const logoutUser = async (user, dispatch, navigation) => {
+  try {
+    const res = await axios.post(
+      `http://localhost:3000/auth/logout/${user.id}` // Dùng backticks
+    );
+
+    dispatch(logout());
+  } catch (e) {
+    console.error("Logout error:", e);
   }
 };

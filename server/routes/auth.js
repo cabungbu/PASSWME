@@ -5,10 +5,13 @@ const {
   register,
   takeRefreshToken,
   logout,
+  resetPassword,
 } = require("../controller/authController");
 
 router.post("/login", login);
 router.post("/register", register);
 router.post("/refresh", takeRefreshToken);
 router.post("/logout/:id", logout);
+router.post("/resetPassword", resetPassword);
 module.exports = { routes: router };
+  
