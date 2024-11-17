@@ -97,32 +97,44 @@ const addPost = async (req, res) => {
   const data = req.body;
 
   try {
+    // Tạo ID mới cho post
     const newPostId = doc(collection(firestoreDb, "posts")).id;
+
+    // Tạo reference cho post mới
+    const postDocRef = doc(firestoreDb, "posts", newPostId);
+
+    // Tạo object post mới
     const newPost = new post({
       title: data.title,
-      category: data.category,
+      category: doc(firestoreDb, "categories", data.category), // Lưu reference tới category
       image: data.image,
       status: data.status,
       description: data.description,
       service: data.service,
       start: data.start,
-      owner: data.owner,
+      owner: doc(firestoreDb, "users", data.owner), // Lưu reference tới owner
       condition: data.condition,
       soldQuantity: data.soldQuantity || 0,
+      feedbacks: [],
     });
 
-    const postDocRef = doc(firestoreDb, "posts", newPostId);
+    // Khởi tạo batch write
     const batch = writeBatch(firestoreDb);
+
+    // Set dữ liệu cho post mới
     batch.set(postDocRef, newPost.toPlainObject());
 
+    // Lấy reference của category và user
     const categoryRef = doc(firestoreDb, "categories", data.category);
     const userRef = doc(firestoreDb, "users", data.owner);
-    const userDoc = await getDoc(userRef);
 
+    // Kiểm tra user có tồn tại
+    const userDoc = await getDoc(userRef);
     if (!userDoc.exists()) {
       return res.status(404).json({ error: "User not found" });
     }
 
+    // Xử lý products nếu có
     if (data.products && Array.isArray(data.products)) {
       const productCollection = collection(postDocRef, "products");
       const productPromises = data.products.map(async (productData) => {
@@ -141,17 +153,45 @@ const addPost = async (req, res) => {
       await Promise.all(productPromises);
     }
 
-    // Thêm ID bài đăng vào mảng "posts" trong collection "categories"
+    // Thêm reference của post vào category
     batch.update(categoryRef, {
-      posts: arrayUnion(newPostId),
+      posts: arrayUnion(postDocRef), // Thêm reference thay vì ID
+      quantityOfPost: increment(1),
+    });
+
+    batch.update(userRef, {
+      posts: arrayUnion(postDocRef), // Thêm reference thay vì ID
+    });
+
+    // Thực hiện batch write
+
+    const categoryDoc = await getDoc(categoryRef);
+    if (!categoryDoc.exists()) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    const categoryAllRef = doc(
+      firestoreDb,
+      "categories",
+      "26tBjcXpgwcYT5y9V4g1"
+    );
+    const categoryAllDoc = await getDoc(categoryAllRef);
+    batch.update(categoryAllRef, {
+      posts: arrayUnion(postDocRef), // Thêm reference thay vì ID
       quantityOfPost: increment(1),
     });
 
     await batch.commit();
-
     res.status(200).json({
       message: "Post added successfully.",
-      postId: newPostId,
+      post: {
+        id: newPostId,
+        ...newPost,
+      },
+      category: {
+        id: data.category,
+        ...categoryDoc.data(),
+      },
     });
   } catch (error) {
     console.error("Error adding post:", error);
@@ -162,14 +202,29 @@ const getAllPost = async (req, res) => {
   const firestoreDb = getFirestoreDb();
 
   try {
-    const postCollection = collection(firestoreDb, "posts");
-    const snapshot = await getDocs(postCollection);
-    const posts = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const snapshot = await getDocs(collection(firestoreDb, "posts"));
+    const posts = await Promise.all(
+      snapshot.docs.map(async (doc) => {
+        const postData = doc.data();
 
-    res.status(200).json(posts);
+        // Fetch buyer data
+        const categoryDoc = await getDoc(postData.category);
+        const catagoryData = categoryDoc.data();
+
+        // Fetch seller data
+        const ownerDoc = await getDoc(postData.owner);
+        const ownerData = ownerDoc.data();
+
+        // Return order với đầy đủ dữ liệu
+        return {
+          id: doc.id,
+          ...postData,
+          category: { id: categoryDoc.id, ...catagoryData },
+          owner: { id: ownerDoc.id, ...ownerData },
+        };
+      })
+    );
+    return res.status(200).json(posts);
   } catch (error) {
     console.error("Error fetching posts:", error);
     res.status(400).json({ error: error.message });
@@ -202,14 +257,31 @@ const getPostById = async (req, res) => {
       });
     });
 
-    // Kết hợp thông tin post và products
-    const postData = {
+    const categoryDoc = await getDoc(postDoc.data().category);
+    const catagoryData = categoryDoc.data();
+
+    // Fetch seller data
+    const ownerDoc = await getDoc(postDoc.data().owner);
+    const ownerData = ownerDoc.data();
+
+    const feedbacksData = [];
+    if (postDoc.feedbacks.length > 0) {
+      feedbacksData = await Promise.all(
+        postDoc.feedbacks.map(async (feedbackId) => {
+          const feedbackDoc = await getDoc(feedbackId);
+          return { id: feedbackDoc.id, ...feedbackDoc.data() };
+        })
+      );
+    }
+
+    return res.status(200).json({
       id: postId,
       ...postDoc.data(),
       products: products,
-    };
-
-    res.status(200).json(postData);
+      feedback: feedbacksData,
+      category: { id: categoryDoc.id, ...catagoryData },
+      owner: { id: ownerDoc.id, ...ownerData },
+    });
   } catch (error) {
     console.error("Error fetching posts:", error);
     res.status(400).json({ error: error.message });

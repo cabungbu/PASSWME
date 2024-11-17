@@ -15,29 +15,32 @@ const CategoryController = {
   addCategory: async (req, res) => {
     const firestoreDb = getFirestoreDb();
     const data = req.body;
-    
-    const newCategoryData = { 
+
+    const newCategoryData = {
       nameOfCategory: data.nameOfCategory,
-      quantityOfPost: 0, // Khởi tạo quantityOfPost bằng 0
+      quantityOfPost: 0,
+      posts: [], // Khởi tạo quantityOfPost bằng 0
     };
 
     try {
-        // Tạo danh mục mới
-        const newCategoryRef = await addDoc(collection(firestoreDb, "categories"), newCategoryData);
-  
-        // Tạo subcollection 'posts' cho danh mục mới
-        const postsCollectionRef = collection(newCategoryRef, "posts");
-  
-        res.status(201).json({
-          message: "Category added successfully.",
-          categoryId: newCategoryRef.id,
-        });
-      } catch (error) {
-        console.error("Error adding category:", error);
-        res.status(400).json({ error: error.message });
-      }
-    },
+      // Tạo danh mục mới
+      const newCategoryRef = await addDoc(
+        collection(firestoreDb, "categories"),
+        newCategoryData
+      );
 
+      // Tạo subcollection 'posts' cho danh mục mới
+      // const postsCollectionRef = collection(newCategoryRef, "posts");
+
+      res.status(201).json({
+        message: "Category added successfully.",
+        categoryId: newCategoryRef.id,
+      });
+    } catch (error) {
+      console.error("Error adding category:", error);
+      res.status(400).json({ error: error.message });
+    }
+  },
 
   // Lấy tất cả danh mục
   getAllCategories: async (req, res) => {
@@ -45,7 +48,10 @@ const CategoryController = {
 
     try {
       const snapshot = await getDocs(collection(firestoreDb, "categories"));
-      const categories = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const categories = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
       res.status(200).json(categories);
     } catch (error) {
@@ -66,8 +72,26 @@ const CategoryController = {
       if (!categoryDoc.exists()) {
         return res.status(404).json({ error: "Category not found" });
       }
+      const postData = await Promise.all(
+        categoryDoc.data().posts.map(async (postRef) => {
+          const postDoc = await getDoc(postRef);
+          if (postDoc.exists()) {
+            return { id: postDoc.id, ...postDoc.data() };
+          } else {
+            return null;
+          }
+        })
+      );
 
-      res.status(200).json({ id: categoryId, ...categoryDoc.data() });
+      const validPosts = postData.filter((post) => post !== null);
+
+      res.status(200).json({
+        id: categoryId,
+        nameOfCategory: categoryDoc.data().nameOfCategory,
+        quantityOfPost: categoryDoc.data().quantityOfPost,
+        posts: validPosts,
+        // ...các field khác của category nếu có
+      });
     } catch (error) {
       console.error("Error fetching category:", error);
       res.status(400).json({ error: error.message });
@@ -111,7 +135,7 @@ const CategoryController = {
 
       const batch = writeBatch(firestoreDb);
       batch.delete(categoryDocRef);
-      
+
       // Xóa tất cả các bài đăng trong danh mục
       const postsCollection = collection(categoryDocRef, "posts");
       const postsSnapshot = await getDocs(postsCollection);

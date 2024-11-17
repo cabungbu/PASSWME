@@ -50,13 +50,23 @@ const getAllUsers = async (req, res) => {
     const userCollection = collection(firestoreDb, "users"); // Lấy collection "user"
     const snapshot = await getDocs(userCollection); // Lấy tất cả document trong collection
 
-    // Chuyển đổi snapshot thành mảng người dùng
-    const users = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(), // Kết hợp ID với dữ liệu người dùng
-    }));
-
-    res.status(200).json(users); // Trả về danh sách người dùng
+    const users = await Promise.all(
+      snapshot.docs.map(async (doc) => {
+        const userData = doc.data();
+        const posts = await Promise.all(
+          userData.posts.map(async (postRef) => {
+            const postDoc = await getDoc(postRef);
+            if (postDoc.exists()) {
+              return { id: postDoc.id, ...postDoc.data() };
+            } else {
+              return null;
+            }
+          })
+        );
+      })
+    );
+    const validPosts = posts.filter((post) => post !== null);
+    res.status(200).json({ users, posts: validPosts }); // Trả về danh sách người dùng
   } catch (error) {
     console.error("Error getting users:", error);
     res.status(400).json({ error: error.message });
@@ -73,10 +83,22 @@ const getUserById = async (req, res) => {
     if (!userSnapshot.exists()) {
       return res.status(404).json({ error: "User not found." });
     }
-
+    const userData = userSnapshot.docs.data();
+    const posts = await Promise.all(
+      userData.posts.map(async (postRef) => {
+        const postDoc = await getDoc(postRef);
+        if (postDoc.exists()) {
+          return { id: postDoc.id, ...postDoc.data() };
+        } else {
+          return null;
+        }
+      })
+    );
+    const validPosts = posts.filter((post) => post !== null);
     res.status(200).json({
       id: userSnapshot.id,
       ...userSnapshot.data(),
+      posts: validPosts,
     });
   } catch (error) {
     console.error("Error getting user:", error);

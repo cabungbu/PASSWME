@@ -6,8 +6,9 @@ const { initializeFirebaseApp, upLoadData } = require("./config/firebase.js");
 const userRoutes = require("./routes/user-routes.js");
 const postRoutes = require("./routes/post-routes.js");
 const authRoutes = require("./routes/auth.js");
-const categoryRoutes = require("./routes/category-route.js")
+const categoryRoutes = require("./routes/category-route.js");
 const orderRoutes = require("./routes/order-route.js");
+const feedbackRoutes = require("./routes/feedback-route.js");
 
 const app = express();
 app.use(bodyParser.json());
@@ -24,6 +25,7 @@ app.use("/post", postRoutes.routes);
 app.use("/auth", authRoutes.routes);
 app.use("/category", categoryRoutes.routes);
 app.use("/order", orderRoutes.routes);
+app.use("/feedback", feedbackRoutes.routes);
 
 const PORT = process.env.PORT;
 
