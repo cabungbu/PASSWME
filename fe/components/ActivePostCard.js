@@ -18,9 +18,9 @@ export default function ActiveListingCard({post}) {
 
   return (
     <View style={styles.container_card}>
-      {post.image ? (
+      {post.images ? (
         <Image 
-          source={{ uri: post.image }} 
+          source={{ uri: post.images[0] }} 
           style={styles.image} 
         />
       ) : (

@@ -29,6 +29,10 @@ const addUser = async (req, res) => {
       phone: data.phone, // Nếu không có phone thì để rỗng
       avatar: data.avatar, // Nếu không có avatar thì để rỗng
       gender: data.gender, // Nếu không có gender thì để rỗng
+      // sold: data.sold || [],
+      posts: data.posts || [],
+      order: data.order || [],
+      customerOrder: data.order || [],
     });
     if (!data || Object.keys(data).length === 0) {
       return res.status(400).json({ error: "Data is required." });
@@ -44,6 +48,7 @@ const addUser = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 const getAllUsers = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   try {

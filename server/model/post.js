@@ -2,7 +2,7 @@ class post {
   constructor({
     title,
     category,
-    image,
+    images,
     status,
     description,
     service,
@@ -10,10 +10,11 @@ class post {
     owner,
     condition,
     soldQuantity = 0, // Giá trị mặc định
+    rating = 0,
   }) {
     this.title = title;
     this.category = category;
-    this.image = image;
+    this.images = images || [];
     this.status = status;
     this.description = description;
     this.service = service;
@@ -21,13 +22,14 @@ class post {
     this.owner = owner;
     this.condition = condition;
     this.soldQuantity = soldQuantity;
+    this.rating = rating;
   }
 
   toPlainObject() {
     return {
       title: this.title,
       category: this.category,
-      image: this.image,
+      images: this.images,
       status: this.status,
       description: this.description,
       service: this.service,
@@ -35,6 +37,7 @@ class post {
       owner: this.owner,
       condition: this.condition,
       soldQuantity: this.soldQuantity,
+      rating: this.rating
     };
   }
 }

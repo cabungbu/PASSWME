@@ -6,7 +6,10 @@ class user {
     this.phone = phone;
     this.avatar = avatar;
     this.gender = gender;
-    this.sold = [];
+    // this.sold = sold || []; 
+    this.posts = posts || []; 
+    this.order = order || [];
+    this.customerOrder = customerOrder || [];
     this.bought = [];
     this.shopcart = [];
     this.like = [];
@@ -21,7 +24,10 @@ class user {
       phone: this.phone,
       avatar: this.avatar,
       gender: this.gender,
-      sold: this.sold,
+      // sold: this.sold,
+      posts: this.posts,
+      order:this.order,
+      customerOrder: this.customerOrder,
       bought: this.bought,
       shopcart: this.shopcart,
       like: this.like,

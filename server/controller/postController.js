@@ -116,6 +116,8 @@ const addPost = async (req, res) => {
       condition: data.condition,
       soldQuantity: data.soldQuantity || 0,
       feedbacks: [],
+//       rating: data.rating || 0,
+
     });
 
     // Khởi tạo batch write
@@ -134,7 +136,7 @@ const addPost = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Xử lý products nếu có
+
     if (data.products && Array.isArray(data.products)) {
       const productCollection = collection(postDocRef, "products");
       const productPromises = data.products.map(async (productData) => {
