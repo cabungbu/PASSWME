@@ -18,7 +18,7 @@ export default function ActiveListings() {
   useEffect(() => {
     const fetchAllPosts = async () => {
       try {
-        const res = await axios.get("http://192.168.1.4:3000/post/getAllPost");
+        const res = await axios.get("http://192.168.1.3:3000/post/getAllPost");
         const postsData = res.data;
         setPosts(postsData);
       } catch (error) {
@@ -33,7 +33,7 @@ export default function ActiveListings() {
     <View style={styles.container}>
       <FlatList
         data={posts}
-        renderItem={({ item }) => <ActiveListingCard post={item} />}
+        renderItem={({ item }) => <ActiveListingCard key={item.id} post={item} />}
         keyExtractor={item => item.id?.toString()}
         showsVerticalScrollIndicator={true}
         contentContainerStyle={styles.flatListContent}

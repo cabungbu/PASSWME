@@ -44,22 +44,35 @@ const styles = StyleSheet.create({
   //Order
   order: {
     marginTop: scaleHeight(10),
-    height: scaleHeight(140),
+    height: "auto",
     width: "100%",
     backgroundColor: "white",
-    paddingHorizontal: scaleWidth(15)
+    paddingHorizontal: scaleWidth(15),
+    paddingTop: scaleHeight(10),
+    paddingBottom: scaleHeight(15),
+    // display:"flex", 
+    // flexDirection:"column",
+    justifyContent:"space-between"
   },
   iconTextPair: {
     alignItems:"center",
-    marginVertical: scaleHeight(25)
+    marginTop:  scaleHeight(25)
   },
   orderText: {
     fontFamily: "regular",
     fontSize: 13,
     color: "black",
-    marginTop: scaleHeight(2)
   },
-  //Another blabla
+  //Other Utilities
+  otherUtilities: {
+    marginTop: scaleHeight(10),
+    height: "auto",
+    width: "100%",
+    backgroundColor: "white",
+    paddingHorizontal: scaleWidth(15),
+    paddingTop: scaleHeight(10),
+    paddingBottom: scaleHeight(15),
+  },
   //Support
 
   //Text

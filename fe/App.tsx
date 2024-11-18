@@ -1,16 +1,8 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { useCallback } from "react";
-import BottomTabBar from "./components/BottomTabBar";
-import AppLoading from "expo-app-loading";
-import WelcomePage from "./screens/WelcomeScreen/welcome";
-import { CurvedBottomBarExpo } from "react-native-curved-bottom-bar";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginPage from "./screens/Login/Login";
-import MainContainer from "./components/BottomTabBar";
+import { StyleSheet } from "react-native";
 import { Provider } from "react-redux";
+import MainContainer from "./components/BottomTabBar";
 import Store from "./redux/store";
 
 export default function App() {
@@ -38,7 +30,6 @@ export default function App() {
   // }
 
   return (
-    // // <BottomTabBar />
     <Provider store={Store}>
       <NavigationContainer>
         <MainContainer />
