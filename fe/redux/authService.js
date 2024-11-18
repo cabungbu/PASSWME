@@ -11,6 +11,7 @@ import {
   logout,
 } from "./authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BE_ENDPOINT } from "../settings/localVars";
 export const loginUser = async (user, dispatch, navigation) => {
   try {
     dispatch(loginStart());
@@ -19,7 +20,7 @@ export const loginUser = async (user, dispatch, navigation) => {
       return;
     }
 
-    const res = await axios.post("http://localhost:3000/auth/login", user);
+    const res = await axios.post(BE_ENDPOINT + "/auth/login", user);
     const userData = res.data.user; // Lấy thông tin người dùng
     dispatch(loginSuccess(userData)); // Gọi action với thông tin người dùng
     dispatch(setAccessToken(res.data.accessToken));
@@ -68,7 +69,7 @@ export const registerUser = async (user, dispatch, navigation) => {
       return;
     }
 
-    const res = await axios.post("http://localhost:3000/auth/register", user);
+    const res = await axios.post(BE_ENDPOINT + "/auth/register", user);
 
     if (res.data) {
       dispatch(registerSuccess(res.data.user));
@@ -105,7 +106,7 @@ export const registerUser = async (user, dispatch, navigation) => {
 export const logoutUser = async (user, dispatch, navigation) => {
   try {
     const res = await axios.post(
-      `http://localhost:3000/auth/logout/${user.id}` // Dùng backticks
+      BE_ENDPOINT + `/auth/logout/${user.id}` // Dùng backticks
     );
 
     dispatch(logout());
