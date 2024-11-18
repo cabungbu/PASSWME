@@ -10,7 +10,7 @@ import {
   FlatList
 } from 'react-native';
 import axios from 'axios';
-import ActiveListingCard from '../../components/ActiveListingCard';
+import ActiveListingCard from '../../components/ActivePostCard';
 
 export default function ActiveListings() {
   const [posts, setPosts] = useState([]);
@@ -18,7 +18,7 @@ export default function ActiveListings() {
   useEffect(() => {
     const fetchAllPosts = async () => {
       try {
-        const res = await axios.get("http://192.168.1.6:3000/post/getAllPost");
+        const res = await axios.get("http://192.168.1.4:3000/post/getAllPost");
         const postsData = res.data;
         setPosts(postsData);
       } catch (error) {
