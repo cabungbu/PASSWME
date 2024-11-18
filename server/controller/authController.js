@@ -38,7 +38,8 @@ const register = async (req, res) => {
       email: data.email || "",
       password: hashedPassword,
       phone: data.phone || "",
-      avatar: data.avatar || "",
+      avatar:
+        "https://cdn.kona-blue.com/upload/kona-blue_com/post/images/2024/09/18/457/avatar-mac-dinh-12.jpg",
       gender: data.gender || "",
       refreshToken: "", // Set refreshToken to an empty string initially
     };

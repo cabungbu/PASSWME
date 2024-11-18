@@ -1,5 +1,5 @@
 // ActiveListings.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Animated,
@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   View,
   Text,
-  FlatList
-} from 'react-native';
-import axios from 'axios';
-import ActiveListingCard from '../../components/ActivePostCard';
+  FlatList,
+} from "react-native";
+import axios from "axios";
+import ActiveListingCard from "../../components/ActivePostCard";
+import { BE_ENDPOINT } from "../../settings/localVars";
 
 export default function ActiveListings() {
   const [posts, setPosts] = useState([]);
@@ -18,7 +19,7 @@ export default function ActiveListings() {
   useEffect(() => {
     const fetchAllPosts = async () => {
       try {
-        const res = await axios.get("http://192.168.1.3:3000/post/getAllPost");
+        const res = await axios.get(BE_ENDPOINT + "/post/getAllPost");
         const postsData = res.data;
         setPosts(postsData);
       } catch (error) {
@@ -33,8 +34,10 @@ export default function ActiveListings() {
     <View style={styles.container}>
       <FlatList
         data={posts}
-        renderItem={({ item }) => <ActiveListingCard key={item.id} post={item} />}
-        keyExtractor={item => item.id?.toString()}
+        renderItem={({ item }) => (
+          <ActiveListingCard key={item.id} post={item} />
+        )}
+        keyExtractor={(item) => item.id?.toString()}
         showsVerticalScrollIndicator={true}
         contentContainerStyle={styles.flatListContent}
         onEndReachedThreshold={0.5}
@@ -49,9 +52,9 @@ export default function ActiveListings() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EFEFEF',
+    backgroundColor: "#EFEFEF",
   },
   flatListContent: {
-    paddingBottom: 90
+    paddingBottom: 90,
   },
 });
