@@ -37,6 +37,7 @@ const LoginPage = () => {
   const moveToRegister = () => {
     navigation.navigate("Register");
   };
+  
   return (
     <View style={{ flex: 1 }}>
       {Platform.OS === "android" ? (
@@ -89,7 +90,7 @@ const LoginPage = () => {
               textAlign: "left",
               marginBottom: 10,
               fontFamily: "lightItalic",
-              fontSize: "10px",
+              fontSize: "10",
             }}
           >
             *{error}

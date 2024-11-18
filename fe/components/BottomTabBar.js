@@ -8,7 +8,6 @@ import {
   Text,
 } from "react-native";
 
-import { NavigationContainer } from "@react-navigation/native";
 import { CurvedBottomBarExpo } from "react-native-curved-bottom-bar";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -144,95 +143,8 @@ const getTabLabel = (routeName) => {
   }
 };
 
-const renderTabBar = ({ routeName, selectedTab, navigate }) => {
-  return (
-    <TouchableOpacity
-      onPress={() => navigate(routeName)}
-      style={styles.tabbarItem}
-    >
-      {_renderIcon(routeName, selectedTab)}
-      {routeName === selectedTab && ( // Chỉ hiển thị tabLabel khi tab được chọn
-        <Text
-          style={{
-            color: "white",
-            marginTop: 2,
-            fontFamily: "medium",
-            fontSize: 14,
-          }}
-        >
-          {getTabLabel(routeName)}
-        </Text>
-      )}
-    </TouchableOpacity>
-  );
-};
-
-// function BottomBar() {
-//   return (
-//     <CurvedBottomBarExpo.Navigator
-//       screenOptions={{ headerShown: false }}
-//       type="DOWN"
-//       style={styles.bottomBar}
-//       shadowStyle={styles.shawdow}
-//       height={60}
-//       circleWidth={55}
-//       bgColor="#E30414"
-//       initialRouteName="title1"
-//       borderTopLeftRight
-//       renderCircle={({ selectedTab, navigate }) => (
-//         <Animated.View style={styles.btnCircleUp}>
-//           <TouchableOpacity
-//             style={styles.button}
-//             onPress={() => navigate("title3")}
-//           >
-//             {_renderIcon("title3", selectedTab)}
-//             {"title3" === selectedTab && ( // Chỉ hiển thị tabLabel khi tab được chọn
-//               <Text
-//                 style={{
-//                   color: COLOR.mainColor,
-//                   marginTop: 2,
-//                   fontFamily: "medium",
-//                   fontSize: 14,
-//                 }}
-//               >
-//                 Post
-//               </Text>
-//             )}
-//           </TouchableOpacity>
-//         </Animated.View>
-//       )}
-//       tabBar={renderTabBar}
-//     >
-//       <CurvedBottomBarExpo.Screen
-//         name="title1"
-//         position="LEFT"
-//         component={() => <HomeStack />}
-//       />
-//       <CurvedBottomBarExpo.Screen
-//         name="title2"
-//         component={() => <MyStoreStack />}
-//         position="LEFT"
-//       />
-//       <CurvedBottomBarExpo.Screen
-//         name="title3"
-//         component={() => <PostStack />}
-//         position="CENTER"
-//       />
-//       <CurvedBottomBarExpo.Screen
-//         name="title4"
-//         position="RIGHT"
-//         component={() => <ChatStack />}
-//       />
-//       <CurvedBottomBarExpo.Screen
-//         name="title5"
-//         position="RIGHT"
-//         component={() => <ProfileStack />}
-//       />
-//     </CurvedBottomBarExpo.Navigator>
-//   );
-// }
 function BottomBar() {
-  const navigation = useNavigation(); // Thêm hook này
+  const navigation = useNavigation(); 
 
   const handleTabPress = useCallback(
     (routeName) => {
@@ -242,7 +154,7 @@ function BottomBar() {
   );
 
   const renderTabBar = useCallback(
-    ({ routeName, selectedTab, navigate }) => {
+    ({ routeName, selectedTab }) => {
       return (
         <TouchableOpacity
           onPress={() => handleTabPress(routeName)}
@@ -255,7 +167,8 @@ function BottomBar() {
                 color: "white",
                 marginTop: 2,
                 fontFamily: "medium",
-                fontSize: 14,
+                fontSize: 12,
+                fontFamily:"regular"
               }}
             >
               {getTabLabel(routeName)}
@@ -278,7 +191,7 @@ function BottomBar() {
       bgColor="#E30414"
       initialRouteName="title1"
       borderTopLeftRight
-      renderCircle={({ selectedTab, navigate }) => (
+      renderCircle={({ selectedTab }) => (
         <Animated.View style={styles.btnCircleUp}>
           <TouchableOpacity
             style={styles.button}
@@ -330,6 +243,7 @@ function BottomBar() {
     </CurvedBottomBarExpo.Navigator>
   );
 }
+
 export default function MainContainer() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth?.user);
@@ -362,6 +276,7 @@ export default function MainContainer() {
           <Stack.Screen name="BottomBar" component={BottomBar} />
           <Stack.Screen name="Login" component={LoginPage} />
           <Stack.Screen name="Register" component={RegisterPage} />
+          <Stack.Screen name="Welcome" component={WelcomePage} />
         </>
       )}
     </Stack.Navigator>
