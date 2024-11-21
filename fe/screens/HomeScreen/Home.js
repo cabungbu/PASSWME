@@ -26,6 +26,17 @@ export default function Home() {
   const user = useSelector((state) => state.auth.user);
   const accessToken = useSelector((state) => state.auth.accessToken);
 
+  //   const navigation = useNavigation();
+//   const user = useSelector((state) => state.auth.user);
+//   const dispatch = useDispatch();
+
+//   // Đổi tên function
+//   const handleLogout = () => {
+//     const id = { id: user.id };
+//     navigation.navigate("Welcome");
+//     logoutUserService(id, dispatch, navigation);
+//   };
+
   // let axiosJWT =axios.create();
   // axiosJWT.interceptors.request.use(
   //   async(config) => {
@@ -35,7 +46,6 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <BannerSection />
-
       <CategorySection />
     </View>
   );
