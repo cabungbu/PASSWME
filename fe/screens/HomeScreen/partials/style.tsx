@@ -3,7 +3,7 @@ import BannerSection from "./bannerSection";
 
 const styles = StyleSheet.create({
   bannerSection: {
-    height: 220, // Adjust this value based on your needs
+    height: 200, // Adjust this value based on your needs
     width: "100%",
   },
   banner: {
@@ -59,12 +59,33 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginHorizontal: "5%",
+    marginHorizontal: 20,
+    paddingHorizontal: 10,
     backgroundColor: "white",
     top: -10,
+    minHeight: 45,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   categoryContainer: {
     backgroundColor: "#E30414",
+  },
+  coinText: {
+    fontFamily: "regular",
+    color: "#737373",
+    fontSize: 13,
+  },
+  coin: {
+    fontFamily: "semibold",
+    fontSize: 15,
+    marginLeft: 5,
   },
 });
 
