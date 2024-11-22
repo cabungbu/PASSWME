@@ -9,11 +9,12 @@ const authRoutes = require("./routes/auth.js");
 const categoryRoutes = require("./routes/category-route.js");
 const orderRoutes = require("./routes/order-route.js");
 const feedbackRoutes = require("./routes/feedback-route.js");
+const servicePostRoutes = require("./routes/servicePost-routes.js");
 
 const app = express();
 app.use(bodyParser.json());
 const corsOptions = {
-  origin: ["http://192.168.1.3:3000"], // Add your frontend URL
+  origin: ["http://192.168.1.8:3000"], // Add your frontend URL
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -26,6 +27,7 @@ app.use("/auth", authRoutes.routes);
 app.use("/category", categoryRoutes.routes);
 app.use("/order", orderRoutes.routes);
 app.use("/feedback", feedbackRoutes.routes);
+app.use("/servicePost", servicePostRoutes.routes);
 
 const PORT = process.env.PORT;
 

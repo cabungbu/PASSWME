@@ -6,7 +6,7 @@ import { BE_ENDPOINT } from "../../../settings/localVars";
 
 export default function CategorySection() {
   const [categories, setCategories] = useState([]);
-
+  const numColumns = Math.ceil(categories.length / 2);
   useEffect(() => {
     fetch(BE_ENDPOINT + "/category/")
       .then((res) => res.json())
@@ -17,11 +17,6 @@ export default function CategorySection() {
         console.error("Error fetching categories:", error);
       });
   }, []);
-
-  // Chia categories thành 2 mảng con, mảng con 1 luôn >= mảng con 2
-  const halfIndex = Math.ceil(categories.length / 2);
-  const firstHalf = categories.slice(0, halfIndex);
-  const secondHalf = categories.slice(halfIndex);
 
   return (
     <View style={styles.categoryContainer}>
@@ -43,58 +38,58 @@ export default function CategorySection() {
         <Text style={styles.coinText}>Nhấn để nhận xu mỗi ngày</Text>
       </TouchableOpacity>
 
-      <View style={{ flexDirection: "row" }}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ flexWrap: "wrap", flexDirection: "row" }}
-          style={{ flex: 1 }}
-        >
-          {firstHalf.map((item, index) => (
-            <TouchableOpacity
-              key={index}
+      <ScrollView
+        style={styles.categoriesContainer}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+      >
+        <View style={{ flexDirection: "column" }}>
+          {[0, 1].map((rowIndex) => (
+            <View
+              key={rowIndex}
               style={{
-                width: 50,
-                height: 50,
-                borderRadius: 10,
-                backgroundColor: "#fff",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: 8,
+                flexDirection: "row",
+                marginBottom: 8,
               }}
             >
-              <SvgUri width={24} height={24} uri={item.icon} />
-              <Text style={styles.categoryText}>{item.nameOfCategory}</Text>
-            </TouchableOpacity>
+              {categories
+                .slice(rowIndex * numColumns, (rowIndex + 1) * numColumns)
+                .map((item, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      alignItems: "center",
+                      width: 80,
+                      marginRight: 10,
+                      marginBottom: 10,
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 10,
+                        backgroundColor: "#fff",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        marginBottom: 8,
+                      }}
+                    >
+                      <SvgUri width={24} height={24} uri={item.icon} />
+                    </TouchableOpacity>
+                    <Text
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                      style={styles.categoryText}
+                    >
+                      {item.nameOfCategory}
+                    </Text>
+                  </View>
+                ))}
+            </View>
           ))}
-        </ScrollView>
-      </View>
-      <View style={{ flexDirection: "row" }}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ flexWrap: "wrap", flexDirection: "row" }}
-          style={{ flex: 1 }}
-        >
-          {secondHalf.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: 10,
-                backgroundColor: "#fff",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: 8,
-              }}
-            >
-              <SvgUri width={24} height={24} uri={item.icon} />
-              <Text style={styles.categoryText}>{item.nameOfCategory}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }

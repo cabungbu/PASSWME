@@ -87,6 +87,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginLeft: 5,
   },
+  categoryText: {
+    color: "#ffffff",
+    fontSize: 10,
+    fontFamily: "regular",
+    textAlign: "center",
+  },
+  categoriesContainer: {
+    paddingTop: 10,
+    paddingLeft: 15,
+  },
 });
 
 export default styles;
