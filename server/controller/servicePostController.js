@@ -57,15 +57,12 @@ const getAllServicePosts = async (req, res) => {
     const servicePosts = await Promise.all(
       snapshot.docs.map(async (doc) => {
         const postData = doc.data();
-        console.log("postData:", postData);
         if (!postData.postRef) {
           console.error("postRef is undefined for document:", doc.id);
-          return { id: doc.id, ...postData };
         }
         const postDoc = await getDoc(postData.postRef);
         return {
           id: doc.id,
-          ...postData,
           post: { id: postDoc.id, ...postDoc.data() },
         };
       })
