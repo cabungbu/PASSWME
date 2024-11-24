@@ -76,7 +76,20 @@ const CategoryController = {
         categoryDoc.data().posts.map(async (postRef) => {
           const postDoc = await getDoc(postRef);
           if (postDoc.exists()) {
-            return { id: postDoc.id, ...postDoc.data() };
+            const productsCollection = collection(postRef, "products");
+            const productsSnapshot = await getDocs(productsCollection);
+
+            // Convert products snapshot thành array data
+            const products = productsSnapshot.docs.map((productDoc) => ({
+              id: productDoc.id,
+              ...productDoc.data(),
+            }));
+
+            return {
+              id: postDoc.id,
+              ...postDoc.data(),
+              products: products, // Thêm products vào post data
+            };
           } else {
             return null;
           }

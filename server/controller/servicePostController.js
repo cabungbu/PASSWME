@@ -61,9 +61,17 @@ const getAllServicePosts = async (req, res) => {
           console.error("postRef is undefined for document:", doc.id);
         }
         const postDoc = await getDoc(postData.postRef);
+
+        const productsCollection = collection(postDoc.ref, "products");
+        const productsSnapshot = await getDocs(productsCollection);
+        const products = productsSnapshot.docs.map((productDoc) => ({
+          id: productDoc.id,
+          ...productDoc.data(),
+        }));
+
         return {
           id: doc.id,
-          post: { id: postDoc.id, ...postDoc.data() },
+          post: { id: postDoc.id, ...postDoc.data(), products: products },
         };
       })
     );

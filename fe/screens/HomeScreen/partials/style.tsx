@@ -97,6 +97,33 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingLeft: 15,
   },
+  textSection: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    marginVertical: 10,
+  },
+  viewAll: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  maybeYouLike: {
+    color: "#F24E1E",
+    fontSize: 13,
+    fontFamily: "bold",
+  },
+  viewAllText: {
+    color: "#F24E1E",
+    fontSize: 12,
+    fontFamily: "semibold",
+    marginRight: 5,
+  },
+  scrollContainer: {
+    paddingLeft: 15,
+  },
 });
 
 export default styles;
