@@ -36,13 +36,6 @@ export default function ServicePostSection() {
         </View>
       </View>
 
-      {/* <FlatList
-        data={servicePost}
-        renderItem={({ item }) => <PostCard post={item.post} />}
-        keyExtractor={(item) => item.id}
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-      /> */}
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -54,6 +47,8 @@ export default function ServicePostSection() {
           </View>
         ))}
       </ScrollView>
+
+      <View style={styles.redBanner} />
     </View>
   );
 }

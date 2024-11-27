@@ -39,7 +39,7 @@ const register = async (req, res) => {
       password: hashedPassword,
       phone: data.phone || "",
       avatar:
-        "https://cdn.kona-blue.com/upload/kona-blue_com/post/images/2024/09/18/457/avatar-mac-dinh-12.jpg",
+        "https://firebasestorage.googleapis.com/v0/b/passwme-ec9f7.appspot.com/o/5ee082781b8c41406a2a50a0f32d6aa6.jpg?alt=media&token=6f5c44d6-60eb-487a-b3dd-4dce39316dbc",
       gender: data.gender || "",
       refreshToken: "", // Set refreshToken to an empty string initially
     };

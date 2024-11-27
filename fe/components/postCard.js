@@ -13,9 +13,12 @@ import {
 } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { scaleHeight, scaleWidth } from "../assets/constant/responsive";
+import { useNavigation } from "@react-navigation/native";
 
 export default function postCard({ post }) {
   const [products, setProduct] = useState(post.products);
+  const navigation = useNavigation();
+
   const { minPrice, maxPrice } = useMemo(() => {
     if (!products || products.length === 0) {
       return { minPrice: 0, maxPrice: 0 };
@@ -27,9 +30,11 @@ export default function postCard({ post }) {
       maxPrice: Math.max(...prices),
     };
   }, [products]);
+
   const formatPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
+
   const renderPrice = () => {
     if (!products || products.length === 0) {
       return <Text>Liên hệ</Text>;
@@ -52,8 +57,17 @@ export default function postCard({ post }) {
     );
   };
 
+  const moveToPostDetails = () => {
+    navigation.navigate("PostDetail", { postId: post.id });
+  };
+
   return (
-    <TouchableOpacity style={styles.container_card}>
+    <TouchableOpacity
+      style={styles.container_card}
+      onPress={() => {
+        moveToPostDetails();
+      }}
+    >
       {post.images ? (
         <Image source={{ uri: post.images[0] }} style={styles.image} />
       ) : (
@@ -88,7 +102,7 @@ export default function postCard({ post }) {
 
 const styles = StyleSheet.create({
   container_card: {
-    width: scaleWidth(150),
+    width: scaleWidth(180),
     backgroundColor: "#fff",
     marginRight: 5,
     shadowColor: "#000",
@@ -103,18 +117,18 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   image: {
-    width: "100%",
-    height: scaleHeight(150),
-    resizeMode: "contain",
+    width: scaleWidth(180),
+    height: scaleWidth(150),
+    resizeMode: "center",
   },
   title: {
-    fontSize: scaleWidth(13),
+    fontSize: scaleWidth(12),
     marginVertical: 5,
     fontFamily: "regular",
     height: scaleHeight(40),
   },
   start: {
-    fontSize: scaleWidth(13),
+    fontSize: scaleWidth(11),
     marginVertical: 5,
     color: "#737373",
     fontFamily: "regular",

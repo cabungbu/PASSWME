@@ -185,9 +185,12 @@ const getPostById = async (req, res) => {
     // Fetch seller data
     const ownerDoc = await getDoc(postDoc.data().owner);
     const ownerData = ownerDoc.data();
-
     const feedbacksData = [];
-    if (postDoc.feedbacks.length > 0) {
+    if (
+      postDoc &&
+      Array.isArray(postDoc.feedbacks) &&
+      postDoc.feedbacks.length > 0
+    ) {
       feedbacksData = await Promise.all(
         postDoc.feedbacks.map(async (feedbackId) => {
           const feedbackDoc = await getDoc(feedbackId);

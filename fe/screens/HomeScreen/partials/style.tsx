@@ -111,18 +111,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   maybeYouLike: {
-    color: "#F24E1E",
+    color: "#E30414",
     fontSize: 13,
     fontFamily: "bold",
   },
   viewAllText: {
-    color: "#F24E1E",
+    color: "#E30414",
     fontSize: 12,
     fontFamily: "semibold",
     marginRight: 5,
   },
   scrollContainer: {
     paddingLeft: 15,
+  },
+  redBanner: {
+    width: "100%",
+    height: 25,
+    marginTop: 10,
+    backgroundColor: "#E30414",
   },
 });
 
