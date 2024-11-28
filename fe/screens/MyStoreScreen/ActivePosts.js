@@ -1,5 +1,5 @@
 // ActiveListings.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Animated,
@@ -14,6 +14,7 @@ import ActiveListingCard from '../../components/ActivePostCard';
 import { BE_ENDPOINT } from '../../settings/localVars';
 import { useSelector } from 'react-redux';
 
+
 export default function ActiveListings() {
   const user = useSelector((state) => state.auth.user);
   const [posts, setPosts] = useState([]);
@@ -21,6 +22,9 @@ export default function ActiveListings() {
   useEffect(() => {
     const fetchAllUserPosts = async () => {
       try {
+//         const res = await axios.get(BE_ENDPOINT + "/post/getAllPost");
+//         const postsData = res.data;
+
         const res = await axios.get(BE_ENDPOINT + `/user/getUserById/${user.id}`);
         const postsData = res.data.posts;
         setPosts(postsData);
@@ -37,6 +41,7 @@ export default function ActiveListings() {
       <FlatList
         data={posts}
         renderItem={({ item }) => (
+
           <ActiveListingCard 
             key={item.id?.toString()} 
             post={item} 
@@ -57,9 +62,9 @@ export default function ActiveListings() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EFEFEF',
+    backgroundColor: "#EFEFEF",
   },
   flatListContent: {
-    paddingBottom: 90
+    paddingBottom: 90,
   },
 });

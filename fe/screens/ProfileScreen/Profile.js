@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Animated,
@@ -15,20 +15,20 @@ import { useNavigation } from "@react-navigation/native";
 import { logoutUser as logoutUserService } from "../../redux/authService"; 
 
 //icons
-import Ionicons from '@expo/vector-icons/Ionicons';
-import Feather from '@expo/vector-icons/Feather';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import Feather from "@expo/vector-icons/Feather";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 //custom
-import { scaleHeight, scaleWidth } from '../../assets/constant/responsive';
-import { COLOR } from '../../assets/constant/color';
+import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
+import { COLOR } from "../../assets/constant/color";
 import CustomButton from "../../components/customButton";
 
 //style
-import styles from './style';
-import DeliveryTruckClockIcon from '../../assets/icons/DeliveryTruckClockIcon';
-import ListStarLightIcon from '../../assets/icons/ListStarLightIcon';
+import styles from "./style";
+import DeliveryTruckClockIcon from "../../assets/icons/DeliveryTruckClockIcon";
+import ListStarLightIcon from "../../assets/icons/ListStarLightIcon";
 
 export default function Profile() {
   const user = useSelector((state) => state.auth.user);
@@ -45,51 +45,92 @@ export default function Profile() {
     <View style={styles.container}>
       <StatusBar
         translucent={true}
-        backgroundColor= "transparent"
+        backgroundColor="transparent"
         barStyle="light-content"
       />
+      <LinearGradient
+        colors={COLOR.gradientColor}
+        start={[0, 0]}
+        end={[1, 1]}
+        location={[0.96, 0.99, 1]}
+        style={{
+          borderBottomEndRadius: 10,
+          borderBottomStartRadius: 10,
+          overflow: "hidden",
+        }}
+      >
 
-      <LinearGradient 
-      colors={COLOR.gradientColor} 
-      start={[0, 0]}
-      end={[1, 1]}
-      location={[0.96, 0.99, 1]} style={{ borderBottomEndRadius: 10, borderBottomStartRadius: 10, overflow: 'hidden' }}>
         <View style={styles.header}>
           <View style={styles.buttonContainer}>
-            <Ionicons name="settings-outline" size={24} color="white" style={{marginRight: scaleWidth(15)}}/>
-            <View style={{flexDirection:"row", }}>
+            <Ionicons
+              name="settings-outline"
+              size={24}
+              color="white"
+              style={{ marginRight: scaleWidth(15) }}
+            />
+            <View style={{ flexDirection: "row" }}>
               <Feather name="shopping-cart" size={24} color="white" />
               <View style={styles.numberOfNoti}>
-                <Text style={{fontFamily: "medium"}}>5</Text>
+                <Text style={{ fontFamily: "medium" }}>5</Text>
               </View>
             </View>
           </View>
-          <View style={{flexDirection:"row", alignContent:"flex-end"}}>
-            <View style={{flexDirection:"row", position:"relative", }}>
-              {user? (
-              <Image source={{uri: user.avatar}}
-                style={{ width: scaleHeight(70), height: scaleHeight(70), borderRadius:100, resizeMode: "contain", }}/>)
-              : (<ActivityIndicator/>)
-            }
-              <MaterialIcons name="edit" size={18} color="black" style={{ position:"absolute", backgroundColor:  COLOR.disableWhiteColor, borderRadius: 100, padding: 2, bottom:-5, right:-5}}/>
+          <View style={{ flexDirection: "row", alignContent: "flex-end" }}>
+            <View style={{ flexDirection: "row", position: "relative" }}>
+              {user ? (
+                <Image
+                  source={{ uri: user.avatar }}
+                  style={{
+                    width: scaleHeight(70),
+                    height: scaleHeight(70),
+                    borderRadius: 100,
+                    resizeMode: "contain",
+                  }}
+                />
+              ) : (
+                <ActivityIndicator />
+              )}
+              <MaterialIcons
+                name="edit"
+                size={18}
+                color="black"
+                style={{
+                  position: "absolute",
+                  backgroundColor: COLOR.disableWhiteColor,
+                  borderRadius: 100,
+                  padding: 2,
+                  bottom: -5,
+                  right: -5,
+                }}
+              />
             </View>
-            <View style={{ marginLeft: scaleWidth(20)}}>
-              {user? (<Text style={styles.headerText}>{user.username}</Text>):(<Text></Text>)}
+            <View style={{ marginLeft: scaleWidth(20) }}>
+              {user ? (
+                <Text style={styles.headerText}>{user.username}</Text>
+              ) : (
+                <Text></Text>
+              )}
               <Text>Information</Text>
             </View>
           </View>
         </View>
       </LinearGradient>
-    {/* order */}
+      {/* order */}
       <View style={styles.order}>
-        <View style={{flexDirection:"row", justifyContent:"space-between"}}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={styles.subtitleText}>Đơn mua</Text>
-          <View style={{flexDirection:"row", alignItems:"center"}}>
-            <Text color="#a0a0a0" fontFamily="regular">Xem lịch sử mua hàng</Text>
-            <Ionicons name="chevron-forward-outline"  size={18} color="#a0a0a0"/>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text color="#a0a0a0" fontFamily="regular">
+              Xem lịch sử mua hàng
+            </Text>
+            <Ionicons
+              name="chevron-forward-outline"
+              size={18}
+              color="#a0a0a0"
+            />
           </View>
         </View>
-        <View style={{flexDirection:"row", justifyContent:"space-between"}}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View style={styles.iconTextPair}>
             <MaterialCommunityIcons name="cart-check" size={30} color="black" />
             <Text style={styles.orderText}>Chờ xác nhận</Text>
@@ -128,5 +169,5 @@ export default function Profile() {
         />
       </View>
     </View>
-  )
+  );
 }

@@ -5,8 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-  Text
-} from 'react-native';
+  Text,
+} from "react-native";
 
 export default function Post() {
   const bottomSheetRef = useRef(null)

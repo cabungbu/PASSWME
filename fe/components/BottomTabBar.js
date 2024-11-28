@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   Text,
+  ActivityIndicator,
 } from "react-native";
 
 import { CurvedBottomBarExpo } from "react-native-curved-bottom-bar";
@@ -24,6 +25,7 @@ import Chat from "../screens/ChatScreen/Chat";
 import Profile from "../screens/ProfileScreen/Profile";
 import WelcomePage from "../screens/WelcomeScreen/welcome";
 import LoginPage from "../screens/Login/Login";
+import PostDetailScreen from "../screens/PostDetailScreen/PostDetailScreen";
 import { useNavigation } from "@react-navigation/native";
 import { COLOR } from "../assets/constant/color";
 import RegisterPage from "../screens/Register/register";
@@ -144,7 +146,7 @@ const getTabLabel = (routeName) => {
 };
 
 function BottomBar() {
-  const navigation = useNavigation(); 
+  const navigation = useNavigation();
 
   const handleTabPress = useCallback(
     (routeName) => {
@@ -168,7 +170,7 @@ function BottomBar() {
                 marginTop: 2,
                 fontFamily: "medium",
                 fontSize: 12,
-                fontFamily:"regular"
+                fontFamily: "regular",
               }}
             >
               {getTabLabel(routeName)}
@@ -247,6 +249,7 @@ function BottomBar() {
 export default function MainContainer() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth?.user);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -257,11 +260,21 @@ export default function MainContainer() {
         }
       } catch (error) {
         console.error("Error loading user data:", error);
+      } finally {
+        setIsLoading(false); // Đánh dấu đã load xong
       }
     };
 
     checkLoginStatus();
   }, [dispatch]);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {!user ? (
@@ -277,6 +290,7 @@ export default function MainContainer() {
           <Stack.Screen name="Login" component={LoginPage} />
           <Stack.Screen name="Register" component={RegisterPage} />
           <Stack.Screen name="Welcome" component={WelcomePage} />
+          <Stack.Screen name="PostDetail" component={PostDetailScreen} />
         </>
       )}
     </Stack.Navigator>
