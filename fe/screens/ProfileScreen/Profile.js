@@ -8,16 +8,11 @@ import {
   StatusBar,
   View,
   Text,
-  //   Button,
-  //   SafeAreaView,
-  //   StatusBar,
-  //   Platform,
-  //   TextInput,
-  ActivityIndicator,
-} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+  ActivityIndicator
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native";
-import { logoutUser as logoutUserService } from "../../redux/authService"; // Đổi tên khi import
+import { logoutUser as logoutUserService } from "../../redux/authService"; 
 
 //icons
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -53,7 +48,6 @@ export default function Profile() {
         backgroundColor="transparent"
         barStyle="light-content"
       />
-
       <LinearGradient
         colors={COLOR.gradientColor}
         start={[0, 0]}
@@ -65,6 +59,7 @@ export default function Profile() {
           overflow: "hidden",
         }}
       >
+
         <View style={styles.header}>
           <View style={styles.buttonContainer}>
             <Ionicons
@@ -137,19 +132,19 @@ export default function Profile() {
         </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View style={styles.iconTextPair}>
-            <MaterialCommunityIcons name="cart-check" size={24} color="black" />
+            <MaterialCommunityIcons name="cart-check" size={30} color="black" />
             <Text style={styles.orderText}>Chờ xác nhận</Text>
           </View>
           <View style={styles.iconTextPair}>
-            <DeliveryTruckClockIcon size={24} color="black" />
+            <DeliveryTruckClockIcon size={30} color="black"/>
             <Text style={styles.orderText}>Chờ giao hàng</Text>
           </View>
           <View style={styles.iconTextPair}>
-            <MaterialCommunityIcons name="cube-send" size={24} color="black" />
+            <MaterialCommunityIcons name="cube-send" size={30} color="black" />
             <Text style={styles.orderText}>Chờ lấy hàng</Text>
           </View>
           <View style={styles.iconTextPair}>
-            <ListStarLightIcon size={24} color="black" />
+          <ListStarLightIcon size={30} color="black" />
             <Text style={styles.orderText}>Đánh giá</Text>
           </View>
         </View>
@@ -160,12 +155,15 @@ export default function Profile() {
       <View style={styles.otherUtilities}>
         <Text style={styles.subtitleText}>Hỗ trợ</Text>
       </View>
-      <View style={{ marginTop: scaleHeight(5) }}>
+      <View style={{marginTop: scaleHeight(5), alignItems:"center"}}>
         <CustomButton
-          width={"100%"}
+          width={"80%"}
           height={50}
-          borderRadius={8}
-          backgroundColor="#dc3545"
+          borderRadius={20}
+          backgroundColor="white"
+          color="#E30414"
+          borderColor="#E30414"
+          borderWidth={1.8}
           title="Đăng xuất"
           onPress={handleLogout}
         />

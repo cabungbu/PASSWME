@@ -13,26 +13,28 @@ import {
 //import 
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 
-//import các tab trong screen
-import ActiveListings from './ActivePosts';
-import HiddenListings from './ClosedPosts';
+//tabs
+import ActivePosts from "./ActivePosts";
+import ClosedPosts from './ClosedPosts';
 import SoldItems from './SoldItems';
+import PendingOrders from "./PendingOrders";
+import DeliveredOrders from "./DeliveredOrders";
 
-//hehe
+//custom
 import { COLOR } from "../../assets/constant/color";
 import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
 
 export default function MyStore() {
   const layout = useWindowDimensions();
-  const ActiveListingsTab = () => (
+  const ActivePostsTab = () => (
     <View style={{ flex: 1 }}>
-      <ActiveListings />
+      <ActivePosts/>
     </View>
   );
 
-  const HiddenListingsTab = () => (
+  const ClosedPostsTab = () => (
     <View style={{ flex: 1 }}>
-      <HiddenListings />
+      <ClosedPosts />
     </View>
   );
 
@@ -42,18 +44,34 @@ export default function MyStore() {
     </View>
   );
 
+  const PendingOrdersTab = () => (
+    <View style={{ flex: 1 }}>
+      <PendingOrders />
+    </View>
+  );
+
+  const DeliveredOrdersTab = () => (
+    <View style={{ flex: 1 }}>
+      <DeliveredOrders />
+    </View>
+  );
+
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "active", title: "Đang hiển thị" },
-    { key: "hidden", title: "Đã ẩn" },
-    { key: "sold", title: "Đã bán" },
+    { key: "closed", title: "Ngừng kinh doanh" },
+    { key: "sold", title: "Đơn đã bán" },
+    { key: "pendingOrders", title: "Đơn chưa xử lý" },
+    { key: "deliveredOrders", title: "Đơn đã giao" },
   ]);
 
 
   const renderScene = SceneMap({
-    active: ActiveListingsTab,
-    hidden: HiddenListingsTab,
+    active: ActivePostsTab,
+    closed: ClosedPostsTab,
     sold: SoldItemsTab,
+    pendingOrders: PendingOrdersTab,
+    deliveredOrders: DeliveredOrdersTab
   });
 
   const renderTabBar = (props) => (
@@ -65,6 +83,7 @@ export default function MyStore() {
         bottom: 0,
         borderRadius: 100
       }}
+      scrollEnabled={true}
       style={{
         backgroundColor: "#FFFFFF",
         outline: "none",
@@ -72,7 +91,7 @@ export default function MyStore() {
         position: "relative"
       }}
       renderLabel={({ route, focused }) => (
-        <Pressable
+        <Pressable 
           style={{
             paddingHorizontal: 10,
           }}
@@ -104,6 +123,7 @@ export default function MyStore() {
         <Text style={styles.headerText}>Quản lý cửa hàng</Text>
       </View>
       <TabView
+        lazy 
         navigationState={{ index, routes }}
         renderScene={renderScene}
         renderTabBar={renderTabBar}
