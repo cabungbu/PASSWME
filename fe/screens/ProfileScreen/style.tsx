@@ -60,8 +60,9 @@ const styles = StyleSheet.create({
   },
   orderText: {
     fontFamily: "regular",
-    fontSize: 13,
+    fontSize: 12,
     color: "black",
+    marginTop:  scaleHeight(5)
   },
   //Other Utilities
   otherUtilities: {
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
 
   //Text
   subtitleText: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily:"medium",
     color: "black"
   }

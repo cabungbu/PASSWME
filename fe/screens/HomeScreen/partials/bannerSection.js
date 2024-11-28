@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { TouchableOpacity, View, Image, Text, TextInput } from "react-native";
+import React from "react";
+import { Image, TextInput, TouchableOpacity, View } from "react-native";
 import styles from "./style";
-import Feather from "@expo/vector-icons/Feather";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import ShoppingCartIcon from "../../../components/shoppingCartIcon";
 
 export default function BannerSection() {
   return (
@@ -29,10 +29,7 @@ export default function BannerSection() {
           />
         </View>
         <TouchableOpacity style={styles.containerBadge}>
-          <Feather name="shopping-cart" size={24} color="black" />
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>5</Text>
-          </View>
+          <ShoppingCartIcon cartColor="red" />
         </TouchableOpacity>
       </View>
     </View>

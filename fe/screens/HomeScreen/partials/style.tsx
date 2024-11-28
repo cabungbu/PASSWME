@@ -3,7 +3,7 @@ import BannerSection from "./bannerSection";
 
 const styles = StyleSheet.create({
   bannerSection: {
-    height: 220, // Adjust this value based on your needs
+    height: 200, // Adjust this value based on your needs
     width: "100%",
   },
   banner: {

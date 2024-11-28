@@ -13,7 +13,7 @@ const feedbackRoutes = require("./routes/feedback-route.js");
 const app = express();
 app.use(bodyParser.json());
 const corsOptions = {
-  origin: ["http://192.168.1.3:3000"], // Add your frontend URL
+  origin: ["http://192.168.1.6:3000"], // Add your frontend URL
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,

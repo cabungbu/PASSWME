@@ -82,34 +82,55 @@ const getUserById = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   try {
     const userId = req.params.id;
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required." });
+    }
+
     const userDoc = doc(firestoreDb, "users", userId);
     const userSnapshot = await getDoc(userDoc);
 
     if (!userSnapshot.exists()) {
       return res.status(404).json({ error: "User not found." });
     }
-    const userData = userSnapshot.docs.data();
+
+    const userData = userSnapshot.data();
+    
+    if (!userData.posts || !Array.isArray(userData.posts)) {
+      return res.status(200).json({
+        id: userSnapshot.id,
+        ...userData,
+        posts: [],
+      });
+    }
+
     const posts = await Promise.all(
       userData.posts.map(async (postRef) => {
-        const postDoc = await getDoc(postRef);
-        if (postDoc.exists()) {
-          return { id: postDoc.id, ...postDoc.data() };
-        } else {
+        try {
+          const postDoc = await getDoc(postRef);
+          if (postDoc.exists()) {
+            return { id: postDoc.id, ...postDoc.data() };
+          }
+          return null;
+        } catch (error) {
+          console.error(`Error fetching post: ${error}`);
           return null;
         }
       })
     );
+
     const validPosts = posts.filter((post) => post !== null);
+
     res.status(200).json({
       id: userSnapshot.id,
-      ...userSnapshot.data(),
+      ...userData,
       posts: validPosts,
     });
   } catch (error) {
     console.error("Error getting user:", error);
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 };
+
 const getUserShopCart = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   const userId = req.params.id;

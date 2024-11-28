@@ -11,29 +11,37 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import ActiveListingCard from '../../components/ActivePostCard';
+import { BE_ENDPOINT } from '../../settings/localVars';
+import { useSelector } from 'react-redux';
 
 export default function ActiveListings() {
+  const user = useSelector((state) => state.auth.user);
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    const fetchAllPosts = async () => {
+    const fetchAllUserPosts = async () => {
       try {
-        const res = await axios.get("http://192.168.1.3:3000/post/getAllPost");
-        const postsData = res.data;
+        const res = await axios.get(BE_ENDPOINT + `/user/getUserById/${user.id}`);
+        const postsData = res.data.posts;
         setPosts(postsData);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
     };
 
-    fetchAllPosts();
+    fetchAllUserPosts();
   }, []);
 
   return (
     <View style={styles.container}>
       <FlatList
         data={posts}
-        renderItem={({ item }) => <ActiveListingCard key={item.id} post={item} />}
+        renderItem={({ item }) => (
+          <ActiveListingCard 
+            key={item.id?.toString()} 
+            post={item} 
+          />
+        )}
         keyExtractor={item => item.id?.toString()}
         showsVerticalScrollIndicator={true}
         contentContainerStyle={styles.flatListContent}
