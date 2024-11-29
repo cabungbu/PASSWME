@@ -29,7 +29,7 @@ export default function ServicePostSection() {
   return (
     <View>
       <View style={styles.textSection}>
-        <Text style={styles.maybeYouLike}>CÓ THỂ BẠN SẼ THÍCH</Text>
+        <Text style={styles.maybeYouLike}>CÓ THỂ BẠN SẼ THÍCH </Text>
         <View style={styles.viewAll}>
           <Text style={styles.viewAllText}>Xem tất cả</Text>
           <EvilIcons name="arrow-right" size={24} color="#F24E1E" />
