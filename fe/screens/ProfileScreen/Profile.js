@@ -19,16 +19,24 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import DeliveryIcon from "../../assets/icons/DeliveryIcon";
+import ShoppingBagPlusIcon from "../../assets/icons/ShoppingBagPlusIcon";
+import ComplainIcon from "../../assets/icons/ComplainIcon";
+import ClockIcon from "../../assets/icons/ClockIcon";
+import PWMCoinIcon from "../../assets/icons/PWMCoinIcon"
+import SupportPersonIcon from "../../assets/icons/SupportPersonIcon"
 
 //custom
 import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
 import { COLOR } from "../../assets/constant/color";
 import CustomButton from "../../components/customButton";
+import UtilityIconTextPair from "../../components/utilityIconTextPair";
 
 //style
 import styles from "./style";
 import DeliveryTruckClockIcon from "../../assets/icons/DeliveryTruckClockIcon";
 import ListStarLightIcon from "../../assets/icons/ListStarLightIcon";
+import ShoppingCartIcon from "../../components/shoppingCartIcon";
 
 export default function Profile() {
   const user = useSelector((state) => state.auth.user);
@@ -61,19 +69,18 @@ export default function Profile() {
       >
 
         <View style={styles.header}>
-          <View style={styles.buttonContainer}>
-            <Ionicons
-              name="settings-outline"
-              size={24}
-              color="white"
-              style={{ marginRight: scaleWidth(15) }}
-            />
-            <View style={{ flexDirection: "row" }}>
-              <Feather name="shopping-cart" size={24} color="white" />
-              <View style={styles.numberOfNoti}>
-                <Text style={{ fontFamily: "medium" }}>5</Text>
-              </View>
-            </View>
+          <View style={styles.buttonContainer} >
+            <TouchableOpacity onPress={() => {navigation.navigate("SettingScreen")}}>
+              <Ionicons
+                name="settings-outline"
+                size={24}
+                color="white"
+                style={{ marginRight: scaleWidth(15) }}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {navigation.navigate("CartScreen")}}>
+              <ShoppingCartIcon cartColor="white" />
+            </TouchableOpacity>
           </View>
           <View style={{ flexDirection: "row", alignContent: "flex-end" }}>
             <View style={{ flexDirection: "row", position: "relative" }}>
@@ -115,11 +122,11 @@ export default function Profile() {
           </View>
         </View>
       </LinearGradient>
-      {/* order */}
+
       <View style={styles.order}>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={styles.subtitleText}>Đơn mua</Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity style={{ flexDirection: "row", alignItems: "center" }}>
             <Text color="#a0a0a0" fontFamily="regular">
               Xem lịch sử mua hàng
             </Text>
@@ -128,38 +135,89 @@ export default function Profile() {
               size={18}
               color="#a0a0a0"
             />
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <View style={styles.iconTextPair}>
+          <TouchableOpacity style={styles.iconTextPair}>
             <MaterialCommunityIcons name="cart-check" size={30} color="black" />
             <Text style={styles.orderText}>Chờ xác nhận</Text>
-          </View>
-          <View style={styles.iconTextPair}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconTextPair}>
             <DeliveryTruckClockIcon size={30} color="black"/>
             <Text style={styles.orderText}>Chờ giao hàng</Text>
-          </View>
-          <View style={styles.iconTextPair}>
-            <MaterialCommunityIcons name="cube-send" size={30} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconTextPair}>
+            <DeliveryIcon size={30} color="black" />
             <Text style={styles.orderText}>Chờ lấy hàng</Text>
-          </View>
-          <View style={styles.iconTextPair}>
-          <ListStarLightIcon size={30} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => {navigation.navigate("MyRatingsScreen")}}
+                            style={styles.iconTextPair}>
+            <ListStarLightIcon size={30} color="black" />
             <Text style={styles.orderText}>Đánh giá</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.otherUtilities}>
+      <View style={styles.otherUtilitiesContainer}>
         <Text style={styles.subtitleText}>Các tiện ích khác</Text>
+        <View style={styles.utilityItem}>
+          <UtilityIconTextPair 
+            width={'49%'}
+            height={scaleHeight(80)}
+            title="PWM Xu"
+            IconComponent={PWMCoinIcon}
+            iconSize={25}
+          />
+          <UtilityIconTextPair 
+            width={'49%'}
+            height={scaleHeight(80)}
+            title="Khiếu nại"
+            IconComponent={ComplainIcon}
+            iconSize={30}
+          />
+          <UtilityIconTextPair 
+            width={'49%'}
+            height={scaleHeight(80)}
+            title="Mua lại"
+            IconComponent={ShoppingBagPlusIcon}
+            iconSize={30}
+          />
+          <UtilityIconTextPair 
+            width={'49%'}
+            height={scaleHeight(80)}
+            title="Đã xem gần đây"
+            IconComponent={ClockIcon}
+            iconSize={25}
+          />
+        </View>
       </View>
-      <View style={styles.otherUtilities}>
+      <View style={styles.otherUtilitiesContainer}>
         <Text style={styles.subtitleText}>Hỗ trợ</Text>
+        <TouchableOpacity style={[styles.supportIconTextPair, {borderBottomWidth: 1,}]}>
+          <Feather name="help-circle" size={24} color="black" />
+          <Text style={styles.supportText}>Điều khoản, điều kiện</Text>
+          <Ionicons
+            name="chevron-forward-outline"
+            size={18}
+            color="#a0a0a0"
+            style={{}}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.supportIconTextPair} >
+          <SupportPersonIcon size={24} color="black" />
+          <Text style={styles.supportText}>Trung tâm trợ giúp</Text>
+          <Ionicons
+            name="chevron-forward-outline"
+            size={18}
+            color="#a0a0a0"
+            style={{}}
+          />
+        </TouchableOpacity>
       </View>
-      <View style={{marginTop: scaleHeight(5), alignItems:"center"}}>
+      <View style={{marginTop: scaleHeight(10), alignItems:"center", padding:scaleHeight(20), backgroundColor: "white"}}>
         <CustomButton
-          width={"80%"}
+          width={"100%"}
           height={50}
-          borderRadius={20}
+          borderRadius={10}
           backgroundColor="white"
           color="#E30414"
           borderColor="#E30414"
