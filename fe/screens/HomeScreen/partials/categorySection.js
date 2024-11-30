@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TouchableOpacity, View, Text, ScrollView } from "react-native";
+import { TouchableOpacity, View, Text, ScrollView , FlatList} from "react-native";
 import { SvgUri } from "react-native-svg";
 import styles from "./style";
 import { BE_ENDPOINT } from "../../../settings/localVars";
