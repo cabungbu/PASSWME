@@ -94,7 +94,7 @@ const getUserById = async (req, res) => {
     }
 
     const userData = userSnapshot.data();
-    
+
     if (!userData.posts || !Array.isArray(userData.posts)) {
       return res.status(200).json({
         id: userSnapshot.id,
@@ -498,8 +498,6 @@ const updateShopCart = async (req, res) => {
       afterIndex >= 0 &&
       maxQuantityData.quantity < listItem[afterIndex].quantity
     ) {
-      console.log(listItem[afterIndex].quantity);
-      console.log(maxQuantityData.quantity);
       listItem[afterIndex].quantity = maxQuantityData.quantity;
       await setDoc(shopcartRef, { listItem }, { merge: true });
       return res.status(401).json({ message: "Đã đạt số lượng tối đa" });

@@ -8,15 +8,21 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import Feather from "@expo/vector-icons/Feather";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { COLOR } from "../../../assets/constant/color";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import styles from "./style";
 
 export default function BottomTabSection() {
   return (
     <View style={{ width: "100%", position: "relative", bottom: 0 }}>
-      <Text>Mua ngay</Text>
+      <View style = {{flex: 1}}>
+      <Ionicons name="chatbubble-ellipses-outline" size={24} color="black" />
+      <Text>|</Text>
+      <MaterialIcons name="add-shopping-cart" size={24} color="black" />
+      </View>
+      <View style = {{flex: 1}}>
+          Mua ngay
+      </View>
     </View>
   );
 }
