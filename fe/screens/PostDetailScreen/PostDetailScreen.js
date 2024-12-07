@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import ImageSection from "./imageSection";
 import { BE_ENDPOINT } from "../../settings/localVars";
@@ -15,11 +16,13 @@ import DataSection from "./dataPostSection";
 import BottomTabSection from "./BottomTabSection/bottomTabSection";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
+import { useNavigation } from "@react-navigation/native";
+import ShoppingCartIcon from "../../components/shoppingCartIcon";
 export default function PostDetailScreen({ route }) {
   const { postId } = route.params;
   const [post, setPost] = useState();
   const [loading, setLoading] = useState(true);
-
+  const navigation = useNavigation();
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -72,25 +75,15 @@ export default function PostDetailScreen({ route }) {
         </>
       )}
       <View style={styles.topBar}>
-        <View style={styles.backIcon}>
+        <TouchableOpacity
+          style={styles.backIcon}
+          onPress={() => navigation.goBack()}
+        >
           <Ionicons name="chevron-back" size={20} color="black" />
-        </View>
+        </TouchableOpacity>
 
         <View style={styles.cartIconContainer}>
-          <View style={{ flexDirection: "row" }}>
-            <Feather name="shopping-cart" size={20} color="black" />
-            <View style={styles.numberOfNoti}>
-              <Text
-                style={{
-                  fontFamily: "regular",
-                  fontSize: "10",
-                  color: "white",
-                }}
-              >
-                5
-              </Text>
-            </View>
-          </View>
+          <ShoppingCartIcon cartColor={"black"} size={20} />
 
           <Feather name="more-vertical" size={20} color="black" />
         </View>

@@ -25,7 +25,7 @@ import Chat from "../screens/ChatScreen/Chat";
 import Profile from "../screens/ProfileScreen/Profile";
 import Setting from "../screens/ProfileScreen/Setting";
 import MyRatings from "../screens/ProfileScreen/MyRatingsScreen/MyRatings";
-
+import PostsDisplay from "../screens/postsDisplay/mainSection/PostsDisplay";
 import WelcomePage from "../screens/WelcomeScreen/welcome";
 import LoginPage from "../screens/Login/Login";
 import PostDetailScreen from "../screens/PostDetailScreen/PostDetailScreen";
@@ -298,6 +298,7 @@ export default function MainContainer() {
           <Stack.Screen name="CartScreen" component={CartScreen} />
           <Stack.Screen name="SettingScreen" component={Setting} />
           <Stack.Screen name="MyRatingsScreen" component={MyRatings} />
+          <Stack.Screen name="PostsDisplay" component={PostsDisplay} />
         </>
       )}
     </Stack.Navigator>

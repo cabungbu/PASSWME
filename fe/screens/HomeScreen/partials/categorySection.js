@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { TouchableOpacity, View, Text, ScrollView , FlatList} from "react-native";
+import {
+  TouchableOpacity,
+  View,
+  Text,
+  ScrollView,
+  FlatList,
+} from "react-native";
 import { SvgUri } from "react-native-svg";
 import styles from "./style";
 import { BE_ENDPOINT } from "../../../settings/localVars";
+import { useNavigation } from "@react-navigation/native";
 
 export default function CategorySection() {
+  const navigation = useNavigation();
   const [categories, setCategories] = useState([]);
   const numColumns = Math.ceil(categories.length / 2);
   useEffect(() => {
@@ -55,8 +63,14 @@ export default function CategorySection() {
               {categories
                 .slice(rowIndex * numColumns, (rowIndex + 1) * numColumns)
                 .map((item, index) => (
-                  <View
+                  <TouchableOpacity
                     key={index}
+                    onPress={() =>
+                      navigation.navigate("PostsDisplay", {
+                        categoryId: item.id,
+                        categoryName: item.nameOfCategory,
+                      })
+                    }
                     style={{
                       alignItems: "center",
                       width: 80,
@@ -64,7 +78,7 @@ export default function CategorySection() {
                       marginBottom: 10,
                     }}
                   >
-                    <TouchableOpacity
+                    <View
                       style={{
                         width: 40,
                         height: 40,
@@ -76,7 +90,7 @@ export default function CategorySection() {
                       }}
                     >
                       <SvgUri width={24} height={24} uri={item.icon} />
-                    </TouchableOpacity>
+                    </View>
                     <Text
                       numberOfLines={2}
                       ellipsizeMode="tail"
@@ -84,7 +98,7 @@ export default function CategorySection() {
                     >
                       {item.nameOfCategory}
                     </Text>
-                  </View>
+                  </TouchableOpacity>
                 ))}
             </View>
           ))}

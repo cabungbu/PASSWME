@@ -4,6 +4,9 @@ import { StyleSheet } from "react-native";
 import { Provider } from "react-redux";
 import MainContainer from "./components/BottomTabBar";
 import Store from "./redux/store";
+import { Dimensions } from "react-native";
+import CustomRightDrawer from "./components/CustomRightDrawer";
+import WelcomePage from "./screens/WelcomeScreen/welcome";
 
 export default function App() {
   const [fontsLoaded] = useFonts({

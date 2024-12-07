@@ -29,7 +29,7 @@ export default function BannerSection() {
           />
         </View>
         <TouchableOpacity style={styles.containerBadge}>
-          <ShoppingCartIcon cartColor="red" />
+          <ShoppingCartIcon cartColor="white" />
         </TouchableOpacity>
       </View>
     </View>

@@ -8,21 +8,37 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import styles from "./style";
+import { COLOR } from "../../../assets/constant/color";
 
 export default function BottomTabSection() {
   return (
-    <View style={{ width: "100%", position: "relative", bottom: 0 }}>
-      <View style = {{flex: 1}}>
-      <Ionicons name="chatbubble-ellipses-outline" size={24} color="black" />
-      <Text>|</Text>
-      <MaterialIcons name="add-shopping-cart" size={24} color="black" />
+    <View style={styles.container}>
+      <View style={styles.chatAndAddContainer}>
+        <TouchableOpacity style={styles.chatContainer}>
+          <MaterialCommunityIcons
+            name="chat-processing-outline"
+            size={26}
+            color={COLOR.mainColor}
+          />
+        </TouchableOpacity>
+
+        <View style={styles.line} />
+
+        <TouchableOpacity style={styles.chatContainer}>
+          <MaterialIcons
+            name="add-shopping-cart"
+            size={26}
+            color={COLOR.mainColor}
+          />
+        </TouchableOpacity>
       </View>
-      <View style = {{flex: 1}}>
-          Mua ngay
-      </View>
+
+      <TouchableOpacity style={styles.buyNowContainer}>
+        <Text style={styles.buyNowText}>Mua ngay</Text>
+      </TouchableOpacity>
     </View>
   );
 }
