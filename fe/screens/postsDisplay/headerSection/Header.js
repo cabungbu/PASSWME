@@ -15,7 +15,7 @@ import { COLOR } from "../../../assets/constant/color";
 import { scaleWidth } from "../../../assets/constant/responsive";
 import { useNavigation } from "@react-navigation/native";
 
-export default function Header() {
+const Header = React.memo(() => {
   const navigation = useNavigation();
   return (
     <View style={{ width: "100%", backgroundColor: COLOR.mainColor }}>
@@ -61,4 +61,6 @@ export default function Header() {
       </View>
     </View>
   );
-}
+});
+
+export default Header;
