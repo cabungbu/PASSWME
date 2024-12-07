@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.mainColor,
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: -10,
+    marginLeft: -7,
     marginTop: -7,
   },
   cartIconContainer: {

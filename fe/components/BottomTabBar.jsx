@@ -27,6 +27,7 @@ import Setting from "../screens/ProfileScreen/SettingScreen/Setting";
 import MyRatings from "../screens/ProfileScreen/MyRatingsScreen/MyRatings";
 import OrderStatus from "../screens/ProfileScreen/OrderStatusScreen/OrderStatus";
 
+import PostsDisplay from "../screens/postsDisplay/mainSection/PostsDisplay";
 import WelcomePage from "../screens/WelcomeScreen/welcome";
 import LoginPage from "../screens/Login/Login";
 import PostDetailScreen from "../screens/PostDetailScreen/PostDetailScreen";
@@ -300,6 +301,7 @@ export default function MainContainer() {
           <Stack.Screen name="SettingScreen" component={Setting} />
           <Stack.Screen name="MyRatingsScreen" component={MyRatings} />
           <Stack.Screen name="OrderStatusScreen" component={OrderStatus} />
+          <Stack.Screen name="PostsDisplay" component={PostsDisplay} />
         </>
       )}
     </Stack.Navigator>

@@ -16,7 +16,6 @@ import { COLOR } from "../../assets/constant/color";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 export default function DataSection({ post }) {
-  console.log(post.owner);
   return (
     <>
       <View style={{ paddingHorizontal: 15, backgroundColor: "white" }}>

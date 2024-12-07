@@ -22,7 +22,7 @@ const MyRatings = () => {
       <Text>Chưa đánh giá</Text>
     </View>
   );
-  
+
   const feedbackOrdersTab = () => (
     <View style={{ flex: 1 }}>
       <Text>Đã đánh giá</Text>
@@ -32,35 +32,42 @@ const MyRatings = () => {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "WithoutFeedback", title: "Chưa đánh giá" },
-    { key: "Feedbacks", title: "Đã đánh giá" }
+    { key: "Feedbacks", title: "Đã đánh giá" },
   ]);
 
   const renderTabBar = RenderTabBar({scroll: false});
 
   const renderScene = SceneMap({
     WithoutFeedback: OrdersWithoutFeedbackTab,
-    Feedbacks: feedbackOrdersTab
+    Feedbacks: feedbackOrdersTab,
   });
 
   return (
     <View style={styles.container}>
       <StatusBar
         translucent={true}
-        backgroundColor= "white"
+        backgroundColor="white"
         barStyle="dark-content"
       />
       <View style={mainStyles.headerContainer}>
-        <Ionicons onPress={()=> {navigation.goBack()}} name="chevron-back" size={scaleWidth(30)} color={COLOR.mainColor} />
+        <Ionicons
+          onPress={() => {
+            navigation.goBack();
+          }}
+          name="chevron-back"
+          size={scaleWidth(30)}
+          color={COLOR.mainColor}
+        />
         <Text style={mainStyles.headerText}>Đánh giá của tôi</Text>
       </View>
       <TabView
-        lazy 
+        lazy
         navigationState={{ index, routes }}
         renderScene={renderScene}
         renderTabBar={renderTabBar}
         onIndexChange={setIndex}
       />
     </View>
-  )
-}
-export default MyRatings
+  );
+};
+export default MyRatings;

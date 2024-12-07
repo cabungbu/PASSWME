@@ -8,15 +8,37 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import Feather from "@expo/vector-icons/Feather";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import styles from "./style";
 import { COLOR } from "../../../assets/constant/color";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 export default function BottomTabSection() {
   return (
-    <View style={{ width: "100%", position: "relative", bottom: 0 }}>
-      <Text>Mua ngay</Text>
+    <View style={styles.container}>
+      <View style={styles.chatAndAddContainer}>
+        <TouchableOpacity style={styles.chatContainer}>
+          <MaterialCommunityIcons
+            name="chat-processing-outline"
+            size={26}
+            color={COLOR.mainColor}
+          />
+        </TouchableOpacity>
+
+        <View style={styles.line} />
+
+        <TouchableOpacity style={styles.chatContainer}>
+          <MaterialIcons
+            name="add-shopping-cart"
+            size={26}
+            color={COLOR.mainColor}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity style={styles.buyNowContainer}>
+        <Text style={styles.buyNowText}>Mua ngay</Text>
+      </TouchableOpacity>
     </View>
   );
 }
