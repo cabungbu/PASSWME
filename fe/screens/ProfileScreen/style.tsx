@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 //custom
 import { scaleHeight, scaleWidth } from '../../assets/constant/responsive';
 import { COLOR } from '../../assets/constant/color';
@@ -8,34 +8,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#EFEFEF',
   },
-  flatListContent: {
-    paddingBottom: 90
-  },
-
-
   header: {
     height: scaleHeight(160),
     flexDirection:'column',
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
     paddingTop: scaleHeight(40),
     paddingBottom: scaleHeight(15),
     paddingHorizontal: scaleWidth(15),
   },
   buttonContainer: {
-    alignSelf:"flex-end",
-    flexDirection: "row",
+    alignSelf:'flex-end',
+    flexDirection: 'row',
   },
   headerText: {
-    color: "#FFFFFF",
+    color: '#FFFFFF',
     fontSize: 20,
-    fontFamily: "bold",
+    fontFamily: 'bold',
   },
   numberOfNoti: {
     width: 20,
     height: 20,
     borderRadius: 100, 
     backgroundColor: COLOR.disableWhiteColor,
-    justifyContent: 'center', // Căn giữa theo chiều dọc
+    justifyContent: 'center',
     alignItems: 'center',
     marginLeft: -10,
     marginTop: -7
@@ -44,43 +39,63 @@ const styles = StyleSheet.create({
   //Order
   order: {
     marginTop: scaleHeight(10),
-    height: "auto",
-    width: "100%",
-    backgroundColor: "white",
+    height: 'auto',
+    width: '100%',
+    backgroundColor: 'white',
     paddingHorizontal: scaleWidth(15),
     paddingTop: scaleHeight(10),
     paddingBottom: scaleHeight(15),
-    // display:"flex", 
-    // flexDirection:"column",
-    justifyContent:"space-between"
+    // display:'flex', 
+    // flexDirection:'column',
+    justifyContent:'space-between'
   },
   iconTextPair: {
-    alignItems:"center",
+    alignItems:'center',
     marginTop:  scaleHeight(25)
   },
   orderText: {
-    fontFamily: "regular",
+    fontFamily: 'regular',
     fontSize: 12,
-    color: "black",
+    color: 'black',
     marginTop:  scaleHeight(5)
   },
   //Other Utilities
-  otherUtilities: {
+  otherUtilitiesContainer: {
     marginTop: scaleHeight(10),
-    height: "auto",
-    width: "100%",
-    backgroundColor: "white",
+    height: 'auto',
+    width: '100%',
+    backgroundColor: 'white',
     paddingHorizontal: scaleWidth(15),
     paddingTop: scaleHeight(10),
     paddingBottom: scaleHeight(15),
   },
-  //Support
+  utilityItem: {
+    // flex: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between'
+  },
 
+  //Support
+  supportIconTextPair: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: "#a0a0a0",
+    borderRadius: 5,
+    padding: scaleWidth(15)
+  },
+  supportText: {
+    color: "black",
+    fontSize: 14,
+    fontFamily: "regular",
+    flex: 1,
+    marginLeft: scaleWidth(10)
+  },
   //Text
   subtitleText: {
     fontSize: 18,
-    fontFamily:"medium",
-    color: "black"
+    fontFamily:'medium',
+    color: 'black'
   }
 });
 

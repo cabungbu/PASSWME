@@ -23,9 +23,13 @@ import MyStore from "../screens/MyStoreScreen/MyStore";
 import Post from "../screens/PostScreen/Post";
 import Chat from "../screens/ChatScreen/Chat";
 import Profile from "../screens/ProfileScreen/Profile";
+import Setting from "../screens/ProfileScreen/Setting";
+import MyRatings from "../screens/ProfileScreen/MyRatingsScreen/MyRatings";
+
 import WelcomePage from "../screens/WelcomeScreen/welcome";
 import LoginPage from "../screens/Login/Login";
 import PostDetailScreen from "../screens/PostDetailScreen/PostDetailScreen";
+import CartScreen from "../screens/CartScreen/CartScreen";
 import { useNavigation } from "@react-navigation/native";
 import { COLOR } from "../assets/constant/color";
 import RegisterPage from "../screens/Register/register";
@@ -291,6 +295,9 @@ export default function MainContainer() {
           <Stack.Screen name="Register" component={RegisterPage} />
           <Stack.Screen name="Welcome" component={WelcomePage} />
           <Stack.Screen name="PostDetail" component={PostDetailScreen} />
+          <Stack.Screen name="CartScreen" component={CartScreen} />
+          <Stack.Screen name="SettingScreen" component={Setting} />
+          <Stack.Screen name="MyRatingsScreen" component={MyRatings} />
         </>
       )}
     </Stack.Navigator>

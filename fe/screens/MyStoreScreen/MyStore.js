@@ -119,8 +119,8 @@ export default function MyStore() {
         barStyle="light-content"
       />
 
-      <View style={styles.headerL}>
-        <Text style={styles.headerText}>Quản lý cửa hàng</Text>
+      <View style={styles.myStore_headerContainer}>
+        <Text style={styles.myStore_headerText}>Quản lý cửa hàng</Text>
       </View>
       <TabView
         lazy 
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  headerL: {
+  myStore_headerContainer: {
     height: scaleHeight(80),
     alignItems: "center",
     justifyContent: "center",
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: COLOR.mainColor
   },
-  headerText: {
+  myStore_headerText: {
     color: "#FFFFFF",
     marginTop: scaleHeight(30),
     fontSize: 20,
