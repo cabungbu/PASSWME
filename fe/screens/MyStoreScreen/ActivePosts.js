@@ -7,41 +7,52 @@ import {
   TouchableOpacity,
   View,
   Text,
-  FlatList
+  FlatList,
+  ActivityIndicator
 } from 'react-native';
 import axios from 'axios';
 import ActiveListingCard from '../../components/ActivePostCard';
 import { BE_ENDPOINT } from '../../settings/localVars';
 import { useSelector } from 'react-redux';
+import { scaleHeight } from "../../assets/constant/responsive";
 
 
 export default function ActiveListings() {
   const user = useSelector((state) => state.auth.user);
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAllUserPosts = async () => {
       try {
-//         const res = await axios.get(BE_ENDPOINT + "/post/getAllPost");
-//         const postsData = res.data;
-
+        setLoading(true);
         const res = await axios.get(BE_ENDPOINT + `/user/getUserById/${user.id}`);
-        const postsData = res.data.posts;
+        const postsData = res.data.posts || []; 
         setPosts(postsData);
       } catch (error) {
         console.error("Error fetching posts:", error);
+        Alert.alert("Lỗi", "Không thể tải bài đăng");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchAllUserPosts();
-  }, []);
+  }, [user?.id]);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#369C33" style={{margin: scaleHeight(20)}}/>;
+  }
+
+  if (posts.length === 0) {
+    return <Text>Không có bài đăng</Text>;
+  }
 
   return (
     <View style={styles.container}>
       <FlatList
         data={posts}
         renderItem={({ item }) => (
-
           <ActiveListingCard 
             key={item.id?.toString()} 
             post={item} 
@@ -52,7 +63,6 @@ export default function ActiveListings() {
         contentContainerStyle={styles.flatListContent}
         onEndReachedThreshold={0.5}
         bounces={true}
-        // Thêm khoảng cách giữa các items
         ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
       />
     </View>

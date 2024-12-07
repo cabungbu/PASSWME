@@ -4,6 +4,18 @@ import { SvgUri } from "react-native-svg";
 import styles from "./style";
 import { BE_ENDPOINT } from "../../../settings/localVars";
 
+import ComputorIcon from "../../../assets/icons/ComputorIcon";
+import PetIcon from "../../../assets/icons/PetIcon";
+import DrinkAndFoodIcon from "../../../assets/icons/DrinkAndFoodIcon";
+import FridgeIcon from "../../../assets/icons/FridgeIcon";
+import ChairIcon from "../../../assets/icons/ChairIcon";
+import BabyCarriageIcon from "../../../assets/icons/BabyCarriageIcon";
+import ShirtIcon from "../../../assets/icons/ShirtIcon";
+import GameIcon from "../../../assets/icons/GameIcon";
+import SewingMachineIcon from "../../../assets/icons/SewingMachineIcon";
+import MotobikeIcon from "../../../assets/icons/MotobikeIcon";
+import AllCategoryIcon from "../../../assets/icons/AllCategoryIcon";
+
 export default function CategorySection() {
   const [categories, setCategories] = useState([]);
   const numColumns = Math.ceil(categories.length / 2);
@@ -17,6 +29,20 @@ export default function CategorySection() {
         console.error("Error fetching categories:", error);
       });
   }, []);
+
+  const iconMap = {
+    "Tất cả": AllCategoryIcon,
+    "Xe cộ": MotobikeIcon,
+    "Thiết bị điện tử": ComputorIcon,
+    "Thú cưng": PetIcon,
+    "Thực phẩm, nước uống": DrinkAndFoodIcon,
+    "Đồ gia dụng": FridgeIcon,
+    "Đồ nội thất": ChairIcon,
+    "Mẹ và bé": BabyCarriageIcon,
+    "Thời trang, đồ dùng cá nhân": ShirtIcon,
+    "Giải trí, thể thao, sở thích": GameIcon,
+    "Văn phòng phẩm, công nông nghiệp": SewingMachineIcon,
+  };
 
   return (
     <View style={styles.categoryContainer}>
@@ -54,7 +80,9 @@ export default function CategorySection() {
             >
               {categories
                 .slice(rowIndex * numColumns, (rowIndex + 1) * numColumns)
-                .map((item, index) => (
+                .map((item, index) => {
+                  const IconComponent = iconMap[item.nameOfCategory];        
+                  return (
                   <View
                     key={index}
                     style={{
@@ -75,7 +103,9 @@ export default function CategorySection() {
                         marginBottom: 8,
                       }}
                     >
-                      <SvgUri width={24} height={24} uri={item.icon} />
+                      {IconComponent ? (
+                        <IconComponent size={25} /> 
+                      ) : null}
                     </TouchableOpacity>
                     <Text
                       numberOfLines={2}
@@ -85,7 +115,7 @@ export default function CategorySection() {
                       {item.nameOfCategory}
                     </Text>
                   </View>
-                ))}
+                )})}
             </View>
           ))}
         </View>

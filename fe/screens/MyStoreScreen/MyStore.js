@@ -23,6 +23,7 @@ import DeliveredOrders from "./DeliveredOrders";
 //custom
 import { COLOR } from "../../assets/constant/color";
 import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
+import RenderTabBar from "../../components/RenderTabBar";
 
 export default function MyStore() {
   const layout = useWindowDimensions();
@@ -59,7 +60,7 @@ export default function MyStore() {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: "active", title: "Đang hiển thị" },
-    { key: "closed", title: "Ngừng kinh doanh" },
+    { key: "closed", title: "Ngừng\nkinh doanh" },
     { key: "sold", title: "Đơn đã bán" },
     { key: "pendingOrders", title: "Đơn chưa xử lý" },
     { key: "deliveredOrders", title: "Đơn đã giao" },
@@ -74,41 +75,7 @@ export default function MyStore() {
     deliveredOrders: DeliveredOrdersTab
   });
 
-  const renderTabBar = (props) => (
-    <TabBar
-      {...props}
-      indicatorStyle={{
-        backgroundColor: COLOR.mainColor,
-        height: scaleHeight(2),
-        bottom: 0,
-        borderRadius: 100
-      }}
-      scrollEnabled={true}
-      style={{
-        backgroundColor: "#FFFFFF",
-        outline: "none",
-        padding: 0,
-        position: "relative"
-      }}
-      renderLabel={({ route, focused }) => (
-        <Pressable 
-          style={{
-            paddingHorizontal: 10,
-          }}
-        >
-          <Text
-            style={{
-              color: "black",
-              fontSize: 12,//scale(15),
-              fontFamily: "bold",
-            }}
-          >
-            {route.title}
-          </Text>
-        </Pressable>
-      )}
-    />
-  );
+  const renderTabBar = RenderTabBar();
 
 
   return (

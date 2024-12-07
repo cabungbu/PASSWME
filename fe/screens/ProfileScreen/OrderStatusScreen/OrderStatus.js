@@ -1,5 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   StatusBar,
   Text,
@@ -7,43 +6,53 @@ import {
 } from 'react-native';
 import { SceneMap, TabView } from 'react-native-tab-view';
 import mainStyles from '../../../styles/mainStyle';
-import styles from './MyRatingsStyle';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { COLOR } from '../../../assets/constant/color';
 import { scaleWidth } from '../../../assets/constant/responsive';
 import RenderTabBar from '../../../components/RenderTabBar';
+import { useNavigation } from '@react-navigation/native';
 
-const MyRatings = () => {
+const OrderStatus = ({route}) => {
+  const { tab = 0 } = route.params || {};
   const navigation = useNavigation();
 
-  const OrdersWithoutFeedbackTab = () => (
-    <View style={{ flex: 1 }}>
-      <Text>Chưa đánh giá</Text>
-    </View>
-  );
-  
-  const feedbackOrdersTab = () => (
-    <View style={{ flex: 1 }}>
-      <Text>Đã đánh giá</Text>
-    </View>
-  );
+  const pendingOrdersTab = () => (
+  <View style={{ flex: 1 }}>
+      <Text>Chờ xác nhận</Text>
+  </View>
+);
 
-  const [index, setIndex] = useState(0);
+const shippingOrdersTab = () => (
+  <View style={{ flex: 1 }}>
+      <Text>Chờ giao hàng</Text>
+  </View>
+);
+
+const deliveryOrdersTab = () => (
+    <View style={{ flex: 1 }}>
+        <Text>Chờ nhận hàng</Text>
+    </View>
+);
+
+  const [index, setIndex] = useState(tab);
   const [routes] = useState([
-    { key: "WithoutFeedback", title: "Chưa đánh giá" },
-    { key: "Feedbacks", title: "Đã đánh giá" }
+    { key: "pending", title: "Chờ xác nhận" },
+    { key: "shipping", title: "Chờ giao hàng" },
+    { key: "delivery", title: "Chờ nhận hàng" }
   ]);
 
-  const renderTabBar = RenderTabBar({scroll: false});
+  const renderTabBar = RenderTabBar();
 
   const renderScene = SceneMap({
-    WithoutFeedback: OrdersWithoutFeedbackTab,
-    Feedbacks: feedbackOrdersTab
+    pending: pendingOrdersTab,
+    shipping: shippingOrdersTab,
+    delivery: deliveryOrdersTab
   });
 
   return (
-    <View style={styles.container}>
+    <View style={{flex: 1,
+      backgroundColor: '#EFEFEF',}}>
       <StatusBar
         translucent={true}
         backgroundColor= "white"
@@ -51,7 +60,7 @@ const MyRatings = () => {
       />
       <View style={mainStyles.headerContainer}>
         <Ionicons onPress={()=> {navigation.goBack()}} name="chevron-back" size={scaleWidth(30)} color={COLOR.mainColor} />
-        <Text style={mainStyles.headerText}>Đánh giá của tôi</Text>
+        <Text style={mainStyles.headerText}>{routes[index].title}</Text>
       </View>
       <TabView
         lazy 
@@ -63,4 +72,5 @@ const MyRatings = () => {
     </View>
   )
 }
-export default MyRatings
+
+export default OrderStatus
