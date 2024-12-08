@@ -1,24 +1,31 @@
-import { StyleSheet } from "react-native";
+import { StatusBar, StyleSheet } from "react-native";
+import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
+import { COLOR } from "../../assets/constant/color";
+
+const statusBarHeight = StatusBar.currentHeight ||20
 
 const styles = StyleSheet.create({
   container: {
     position: "relative",
     flex: 1,
-
     backgroundColor: "#fff",
   },
   headerText: {
-    fontSize: 16,
     color: "#fff",
-    fontWeight: "medium",
+    fontSize: 20,
+    fontFamily: "semiBold",
+    flex: 1,
+    marginRight: scaleWidth(24),
+    textAlign: "center"
   },
   header: {
-    backgroundColor: "#E30414",
-    display: "flex",
-    paddingVertical: 20,
-    width: "100%",
-    justifyContent: "center",
+    backgroundColor: COLOR.mainColor,
+    height: scaleHeight(80),
+    marginTop: statusBarHeight,
+    paddingHorizontal: scaleWidth(20),
     alignItems: "center",
+    borderBottomEndRadius: 10,
+    borderBottomStartRadius: 10,
     flexDirection: "row",
   },
   headerIOS: {
@@ -36,10 +43,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 20,
     top: 50,
-  },
-  iconHeader: {
-    position: "absolute",
-    left: 20,
   },
   inputContainer: {
     backgroundColor: "#F2F2F2",
@@ -88,30 +91,25 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     color: "#777777",
     fontSize: 14,
-    fontWeight: "light",
+    fontFamily: "regular",
+    marginVertical: scaleHeight(20)
   },
   ggfbcontainer: {
     width: "80%",
-    marginTop: 20,
+    marginTop: scaleHeight(20),
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     borderColor: "#777777",
     borderWidth: 1,
-    padding: 10,
-    borderRadius: 20,
+    padding: scaleWidth(10),
+    borderRadius: 20, 
   },
   ggfbtext: {
+    marginLeft: scaleWidth(40),
     fontSize: 14,
-    fontWeight: "500",
-  },
-  image: {
-    width: 24,
-    height: 24,
-    marginLeft: 10,
-    resizeMode: "contain",
-    marginRight: 15,
-  },
+    fontFamily: "semiBold",
+  }
 });
 
 export default styles;

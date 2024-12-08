@@ -1,13 +1,18 @@
-import React, { useState } from "react";
-import { View, Text, StatusBar, Pressable } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { SceneMap, TabBar, TabView } from "react-native-tab-view";
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import {
+  StatusBar,
+  Text,
+  View
+} from 'react-native';
+import { SceneMap, TabView } from 'react-native-tab-view';
+import mainStyles from '../../../styles/mainStyle';
+import styles from './MyRatingsStyle';
 
-import mainStyles from "../../../styles/mainStyle";
-import styles from "./MyRatingsStyle";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { COLOR } from "../../../assets/constant/color";
-import { scaleHeight, scaleWidth } from "../../../assets/constant/responsive";
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { COLOR } from '../../../assets/constant/color';
+import { scaleWidth } from '../../../assets/constant/responsive';
+import RenderTabBar from '../../../components/RenderTabBar';
 
 const MyRatings = () => {
   const navigation = useNavigation();
@@ -30,45 +35,12 @@ const MyRatings = () => {
     { key: "Feedbacks", title: "Đã đánh giá" },
   ]);
 
+  const renderTabBar = RenderTabBar({scroll: false});
+
   const renderScene = SceneMap({
     WithoutFeedback: OrdersWithoutFeedbackTab,
     Feedbacks: feedbackOrdersTab,
   });
-
-  const renderTabBar = (props) => (
-    <TabBar
-      {...props}
-      indicatorStyle={{
-        backgroundColor: COLOR.mainColor,
-        height: scaleHeight(2),
-        bottom: 0,
-        borderRadius: 100,
-      }}
-      style={{
-        backgroundColor: "#FFFFFF",
-        outline: "none",
-        padding: 0,
-        position: "relative",
-      }}
-      renderLabel={({ route, focused }) => (
-        <Pressable
-          style={{
-            paddingHorizontal: 10,
-          }}
-        >
-          <Text
-            style={{
-              color: "black",
-              fontSize: 12, //scale(15),
-              fontFamily: "bold",
-            }}
-          >
-            {route.title}
-          </Text>
-        </Pressable>
-      )}
-    />
-  );
 
   return (
     <View style={styles.container}>

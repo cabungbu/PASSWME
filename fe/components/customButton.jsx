@@ -5,6 +5,7 @@ const CustomButton = ({
   width = '100%',
   height = 50,
   borderRadius = 5, 
+  marginTop = 0,
   backgroundColor = '#007BFF',
   borderColor = 'transparent',
   borderWidth = 0, 
@@ -20,6 +21,7 @@ const CustomButton = ({
         {
           width,
           height,
+          marginTop,
           borderRadius,
           backgroundColor,
           borderColor,

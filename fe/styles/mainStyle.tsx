@@ -1,7 +1,7 @@
 import { StatusBar, StyleSheet } from "react-native";
-
 import { COLOR } from "../assets/constant/color";
 import { scaleHeight, scaleWidth } from "../assets/constant/responsive";
+
 const statusBarHeight = StatusBar.currentHeight ||20
 
 const mainStyles = StyleSheet.create({

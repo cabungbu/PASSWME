@@ -13,9 +13,9 @@ export default function ActiveListingCard({ post }) {
   const formatDate = (timestamp) => {
     if (timestamp && typeof timestamp === "object") {
       const date = new Date(timestamp.seconds * 1000);
-      return date.toLocaleString(); // Hoặc định dạng khác tùy thuộc vào nhu cầu
+      return date.toLocaleString(); 
     }
-    return timestamp; // Trả về giá trị gốc nếu không phải đối tượng
+    return timestamp; 
   };
 
   return (

@@ -13,14 +13,21 @@ import {
   Platform,
   TextInput,
 } from "react-native";
-import styles from "./style";
 import { useNavigation } from "@react-navigation/native";
+import { loginUser } from "../../redux/authService";
+import { useSelector } from "react-redux";
+
+import styles from "./style";
+
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Icon } from "react-native-elements";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
-import { loginUser } from "../../redux/authService";
-import { useSelector } from "react-redux";
+import FacebookBrandIcon from "../../assets/icons/FacebookBrandIcon";
+import GoogleBrandIcon from "../../assets/icons/GoogleBrandIcon";
+import { scaleHeight } from "../../assets/constant/responsive";
+import Information_TextInput from "../../components/Information_TextInput";
+
 const LoginPage = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -43,28 +50,28 @@ const LoginPage = () => {
       {Platform.OS === "android" ? (
         <>
           <StatusBar
-            barStyle="dark-content"
+            barStyle="light-content"
             backgroundColor="#E30414"
             translucent={true}
           />
           <View style={styles.header}>
-            <Text style={styles.headerText}>Đăng nhập</Text>
             <Ionicons
-              name="chevron-back-circle-outline"
+              name="chevron-back"
               size={24}
               color="white"
-              onPress={() => navigation.goBack()}
+              onPress={() => {navigation.navigate("Welcome")}}
             />
+            <Text style={styles.headerText}>Đăng nhập</Text>
           </View>
         </>
       ) : (
         <View style={styles.headerIOS}>
           <Ionicons
             style={styles.iconHeaderIOS}
-            name="chevron-back-circle-outline"
+            name="chevron-back"
             size={24}
             color="white"
-            onPress={() => navigation.goBack()}
+            onPress={() => {navigation.navigate("Welcome")}}
           />
           <Text style={styles.headerText}>Đăng nhập</Text>
         </View>
@@ -79,7 +86,7 @@ const LoginPage = () => {
       >
         <Image
           source={require("../../assets/logoPasswme1.png")}
-          style={{ width: 150, height: 150, marginVertical: 50 }}
+          style={{ width: scaleHeight(150), height: scaleHeight(150), marginBottom: scaleHeight(30), marginTop: scaleHeight(50)}}
         />
         {error && (
           <Text
@@ -96,35 +103,26 @@ const LoginPage = () => {
             *{error}
           </Text>
         )}
-        <View style={[styles.inputContainer, error && { borderColor: "red" }]}>
-          <MaterialCommunityIcons
-            name="email-outline"
-            size={24}
-            color="#777777"
-            style={{ marginRight: 10 }}
-          />
-          <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Email"
-            placeholderTextColor="#CCCCCC"
-            onChangeText={(text) => setUsername(text)}
-          />
-        </View>
-        <View style={[styles.inputContainer, error && { borderColor: "red" }]}>
-          <Feather
-            name="lock"
-            size={24}
-            color="#777777"
-            style={{ marginRight: 10 }}
-          />
-          <TextInput
-            secureTextEntry={true}
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Mật khẩu"
-            placeholderTextColor="#CCCCCC"
-            onChangeText={(text) => setPassword(text)}
-          />
-        </View>
+
+        <Information_TextInput 
+          IconComponent={MaterialCommunityIcons}
+          iconName="email-outline"
+          iconSize={24}
+          error={error} 
+          borderColor={error ? "red" : "#ccc"}
+          placeholder="Email"
+          onChangeText={(text) => setUsername(text)}
+        />
+        <Information_TextInput 
+          IconComponent={Feather}
+          iconName="lock"
+          iconSize={24}
+          error={error} 
+          borderColor={error ? "red" : "#ccc"}
+          placeholder="Mật khẩu"
+          Password={true}
+          onChangeText={(text) => setPassword(text)}
+        />
 
         <View
           style={{
@@ -162,14 +160,11 @@ const LoginPage = () => {
           <View style={styles.greyline} />
         </View>
         <TouchableOpacity style={styles.ggfbcontainer}>
-          <Image style={styles.image} source={require("../../assets/gg.png")} />
+          <GoogleBrandIcon size={24}/>
           <Text style={styles.ggfbtext}>Tiếp tục với Google</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.ggfbcontainer}>
-          <Image
-            style={styles.image}
-            source={require("../../assets/facebook.png")}
-          />
+          <FacebookBrandIcon size={24}/>
           <Text style={styles.ggfbtext}>Tiếp tục với Facebook</Text>
         </TouchableOpacity>
       </View>
