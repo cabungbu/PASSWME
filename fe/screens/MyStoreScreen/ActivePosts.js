@@ -7,13 +7,12 @@ import {
   TouchableOpacity,
   View,
   Text,
-  FlatList
-} from 'react-native';
-import axios from 'axios';
-import ActiveListingCard from '../../components/ActivePostCard';
-import { BE_ENDPOINT } from '../../settings/localVars';
-import { useSelector } from 'react-redux';
-
+  FlatList,
+} from "react-native";
+import axios from "axios";
+import ActiveListingCard from "../../components/ActivePostCard";
+import { BE_ENDPOINT } from "../../settings/localVars";
+import { useSelector } from "react-redux";
 
 export default function ActiveListings() {
   const user = useSelector((state) => state.auth.user);
@@ -22,10 +21,12 @@ export default function ActiveListings() {
   useEffect(() => {
     const fetchAllUserPosts = async () => {
       try {
-//         const res = await axios.get(BE_ENDPOINT + "/post/getAllPost");
-//         const postsData = res.data;
+        //         const res = await axios.get(BE_ENDPOINT + "/post/getAllPost");
+        //         const postsData = res.data;
 
-        const res = await axios.get(BE_ENDPOINT + `/user/getUserById/${user.id}`);
+        const res = await axios.get(
+          BE_ENDPOINT + `/user/getUserById/${user.id}`
+        );
         const postsData = res.data.posts;
         setPosts(postsData);
       } catch (error) {
@@ -41,13 +42,9 @@ export default function ActiveListings() {
       <FlatList
         data={posts}
         renderItem={({ item }) => (
-
-          <ActiveListingCard 
-            key={item.id?.toString()} 
-            post={item} 
-          />
+          <ActiveListingCard key={item.id?.toString()} post={item} />
         )}
-        keyExtractor={item => item.id?.toString()}
+        keyExtractor={(item) => item.id?.toString()}
         showsVerticalScrollIndicator={true}
         contentContainerStyle={styles.flatListContent}
         onEndReachedThreshold={0.5}

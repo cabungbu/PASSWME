@@ -10,16 +10,28 @@ import {
 import React from "react";
 import styles from "./styles";
 import PostCard from "../../../components/postCard";
+import RelativePost from "./RelativePost";
 
-const RelativePost = React.memo(
+const LastestPost = React.memo(
   ({ posts }) => {
-    console.log("RelativePost");
+    console.log("render 1");
+
+    const createLastestPosts = (posts) => {
+      return posts
+        .slice() // Tạo một bản sao của mảng để không làm thay đổi mảng gốc
+        .sort((a, b) => {
+          const dateA = new Date(a.start);
+          const dateB = new Date(b.start);
+          return dateB - dateA; // Sắp xếp theo thứ tự giảm dần
+        });
+    };
+
     return (
       <View style={{ flex: 1 }}>
         {posts.length > 0 ? (
           <FlatList
             key="relative_post"
-            data={posts}
+            data={createLastestPosts(posts)}
             numColumns={2}
             showsVerticalScrollIndicator={false}
             style={styles.Wrapper}
@@ -37,9 +49,11 @@ const RelativePost = React.memo(
                 <PostCard post={item} />
               </View>
             )}
-          />
+          ></FlatList>
         ) : (
-          <Text style={styles.text}>Chưa có bài đăng nào được tạo</Text>
+          <>
+            <Text style={styles.text}>Chưa có bài đăng nào được tạo</Text>
+          </>
         )}
       </View>
     );
@@ -50,4 +64,4 @@ const RelativePost = React.memo(
   }
 );
 
-export default RelativePost;
+export default LastestPost;

@@ -12,6 +12,7 @@ import styles from "./style";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import { BE_ENDPOINT } from "../../../settings/localVars";
 import PostCard from "../../../components/postCard";
+import ServiceCard from "../../../components/serviceCard";
 
 export default function ServicePostSection() {
   const [servicePost, setServicePost] = useState([]);
@@ -43,7 +44,7 @@ export default function ServicePostSection() {
       >
         {servicePost.map((item) => (
           <View key={item.id}>
-            <PostCard post={item.post} />
+            <ServiceCard post={item.post} />
           </View>
         ))}
       </ScrollView>

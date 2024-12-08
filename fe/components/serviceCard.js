@@ -15,7 +15,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { scaleHeight, scaleWidth } from "../assets/constant/responsive";
 import { useNavigation } from "@react-navigation/native";
 
-const PostCard = React.memo(({ post }) => {
+export default function ServiceCard({ post }) {
   const [products, setProduct] = useState(post.products);
   const navigation = useNavigation();
 
@@ -98,12 +98,12 @@ const PostCard = React.memo(({ post }) => {
       </View>
     </TouchableOpacity>
   );
-});
-export default PostCard;
+}
 
 const styles = StyleSheet.create({
   container_card: {
-    width: scaleWidth(205),
+    width: scaleWidth(180),
+    marginRight: scaleWidth(5),
     backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOffset: {
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   image: {
-    width: scaleWidth(205),
+    width: scaleWidth(180),
     height: scaleWidth(150),
     resizeMode: "cover",
   },
