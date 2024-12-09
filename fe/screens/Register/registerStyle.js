@@ -2,7 +2,7 @@ import { StatusBar, StyleSheet } from "react-native";
 import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
 import { COLOR } from "../../assets/constant/color";
 
-const statusBarHeight = StatusBar.currentHeight ||20
+const statusBarHeight = StatusBar.currentHeight || 20;
 
 const styles = StyleSheet.create({
   container: {
@@ -12,11 +12,10 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: "#fff",
-    fontSize: 20,
+    fontSize: scaleWidth(18),
     fontFamily: "semiBold",
     flex: 1,
-    marginRight: scaleWidth(24),
-    textAlign: "center"
+    textAlign: "center",
   },
   header: {
     backgroundColor: COLOR.mainColor,
@@ -30,6 +29,7 @@ const styles = StyleSheet.create({
   },
   headerIOS: {
     backgroundColor: "#E30414",
+
     display: "flex",
     paddingBottom: 20,
     paddingTop: 50,
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     color: "#777777",
     fontSize: 14,
     fontFamily: "regular",
-    marginVertical: scaleHeight(20)
+    marginVertical: scaleHeight(20),
   },
   ggfbcontainer: {
     width: "80%",

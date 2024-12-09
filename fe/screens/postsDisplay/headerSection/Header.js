@@ -36,7 +36,12 @@ const Header = React.memo(() => {
         </>
       )}
       <View style={styles.headerContainer}>
-        <Ionicons name="chevron-back" size={24} color="white" />
+        <Ionicons
+          name="chevron-back"
+          size={24}
+          color="white"
+          onPress={() => navigation.goBack()}
+        />
         <View style={styles.inputContainer}>
           <Feather name="search" size={24} color="red" />
           <TextInput

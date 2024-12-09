@@ -147,10 +147,47 @@ const getUserShopCart = async (req, res) => {
     const shopCartQuery = query(shopCartRef, orderBy("updatedAt", "desc"));
     const shopCartSnapshot = await getDocs(shopCartQuery);
 
-    const shopCart = shopCartSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const shopCart = await Promise.all(
+      shopCartSnapshot.docs.map(async (shopCartItem) => {
+        const shopData = shopCartItem.data();
+
+        const userShopRef = doc(firestoreDb, "users", shopCartItem.id);
+        const userShopDoc = await getDoc(userShopRef);
+        let username = "Người dùng không xác định";
+        if (userShopDoc.exists()) {
+          username = userShopDoc.data().username;
+        }
+
+        const listItem = await Promise.all(
+          shopData.listItem.map(async (item) => {
+            const postRef = doc(firestoreDb, "posts", item.postId);
+            const postDoc = await getDoc(postRef);
+
+            if (!postDoc.exists()) {
+              return res.status(404).json({ error: "Post not found" });
+            }
+
+            const postData = postDoc.data();
+            const productsRef = collection(postRef, "products");
+            const productRef = doc(productsRef, item.productId); // Sửa ở đây
+            const productSnapshot = await getDoc(productRef); // Sử dụng getDoc thay vì getDocs
+            return {
+              postId: postDoc.id,
+              title: postData.title,
+              images: postData.images,
+              product: productSnapshot.data(),
+            };
+          })
+        );
+
+        return {
+          id: shopCartItem.id,
+          ...shopData,
+          listItem: listItem,
+          user: username,
+        };
+      })
+    );
 
     res.status(200).json(shopCart);
   } catch (error) {
@@ -160,7 +197,7 @@ const getUserShopCart = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const firestoreDb = require("firebase-admin");
+  const firestoreDb = getFirestoreDb();
   try {
     const userId = req.params.id;
     const updateData = req.body;

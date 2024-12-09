@@ -12,6 +12,7 @@ import {
 } from "./authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BE_ENDPOINT } from "../settings/localVars";
+import { getUserShopcart } from "./shopCartService";
 export const loginUser = async (user, dispatch, navigation) => {
   try {
     dispatch(loginStart());
@@ -27,6 +28,7 @@ export const loginUser = async (user, dispatch, navigation) => {
     dispatch(setRefreshToken(res.data.refreshToken));
     // Lưu chỉ thông tin người dùng vào AsyncStorage
     await AsyncStorage.setItem("user", JSON.stringify(userData));
+    await getUserShopcart(userData.id, dispatch);
     navigation.navigate("BottomBar");
   } catch (e) {
     console.error("Login error:", e);

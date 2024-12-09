@@ -1,34 +1,30 @@
-import React from 'react';
-import {
-  onPress,
-  StyleSheet,
-  Text,
-  TouchableOpacity
-} from 'react-native';
+import React from "react";
+import { onPress, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { scaleWidth } from '../assets/constant/responsive';
+import { scaleWidth } from "../assets/constant/responsive";
 
-const UtilityIconTextPair= ({ 
-  width = '100%',
+const UtilityIconTextPair = ({
+  width = "100%",
   height = 50,
   marginVertical = 5,
-  title = 'Button',
+  title = "Button",
   iconSize = 30,
   IconComponent,
 }) => {
   return (
     <TouchableOpacity
-      style={[styles.utilityIconTextPair,
+      style={[
+        styles.utilityIconTextPair,
         {
           width,
           height,
-          marginVertical
+          marginVertical,
         },
       ]}
       onPress={onPress}
     >
-      {IconComponent && <IconComponent size={iconSize}/>} 
+      {IconComponent && <IconComponent size={iconSize} />}
       <Text style={[styles.buttonText]}>{title}</Text>
       <Ionicons
         name="chevron-forward-outline"
@@ -37,24 +33,24 @@ const UtilityIconTextPair= ({
         style={{}}
       />
     </TouchableOpacity>
-  )
+  );
 };
 
 const styles = StyleSheet.create({
   utilityIconTextPair: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: "#a0a0a0",
     borderRadius: 5,
-    paddingHorizontal: scaleWidth(10)
+    paddingHorizontal: scaleWidth(10),
   },
   buttonText: {
     color: "black",
-    fontSize: 14,
+    fontSize: scaleWidth(13),
     fontFamily: "medium",
     flex: 1,
-    marginLeft: scaleWidth(10)
+    marginLeft: scaleWidth(10),
   },
 });
 

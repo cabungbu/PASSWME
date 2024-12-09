@@ -28,9 +28,8 @@ export default function BannerSection() {
             placeholderTextColor="#CCCCCC"
           />
         </View>
-        <TouchableOpacity style={styles.containerBadge}>
-          <ShoppingCartIcon cartColor="white" />
-        </TouchableOpacity>
+
+        <ShoppingCartIcon cartColor="white" />
       </View>
     </View>
   );

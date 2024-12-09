@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: "#FFFFFF",
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: "bold",
   },
   numberOfNoti: {
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
   orderText: {
     fontFamily: "regular",
-    fontSize: 12,
+    fontSize: scaleWidth(12),
     color: "black",
     marginTop: scaleHeight(5),
   },
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingHorizontal: scaleWidth(15),
     paddingTop: scaleHeight(10),
-    paddingBottom: scaleHeight(15),
+    paddingBottom: scaleHeight(10),
   },
   utilityItem: {
     // flex: 1,
@@ -82,19 +82,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderColor: "#a0a0a0",
     borderRadius: 5,
-    padding: scaleWidth(15),
+    paddingVertical: scaleWidth(15),
+    paddingHorizontal: scaleWidth(15),
   },
   supportText: {
     color: "black",
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "regular",
     flex: 1,
     marginLeft: scaleWidth(10),
   },
   //Text
   subtitleText: {
-    fontSize: 18,
-    fontFamily: "medium",
+    fontSize: scaleWidth(15),
+    fontFamily: "semiBold",
     color: "black",
   },
 });

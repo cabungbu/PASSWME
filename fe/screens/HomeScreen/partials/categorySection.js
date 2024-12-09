@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { TouchableOpacity, View, Text, ScrollView , FlatList} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import {
+  TouchableOpacity,
+  View,
+  Text,
+  ScrollView,
+  FlatList,
+} from "react-native";
 import { SvgUri } from "react-native-svg";
 import styles from "./style";
 import { BE_ENDPOINT } from "../../../settings/localVars";
@@ -19,6 +26,7 @@ import AllCategoryIcon from "../../../assets/icons/AllCategoryIcon";
 export default function CategorySection() {
   const [categories, setCategories] = useState([]);
   const numColumns = Math.ceil(categories.length / 2);
+  const navigation = useNavigation();
   useEffect(() => {
     fetch(BE_ENDPOINT + "/category/")
       .then((res) => res.json())
@@ -81,41 +89,46 @@ export default function CategorySection() {
               {categories
                 .slice(rowIndex * numColumns, (rowIndex + 1) * numColumns)
                 .map((item, index) => {
-                  const IconComponent = iconMap[item.nameOfCategory];        
+                  const IconComponent = iconMap[item.nameOfCategory];
                   return (
-                  <View
-                    key={index}
-                    style={{
-                      alignItems: "center",
-                      width: 80,
-                      marginRight: 10,
-                      marginBottom: 10,
-                    }}
-                  >
-                    <TouchableOpacity
+                    <View
+                      key={index}
                       style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 10,
-                        backgroundColor: "#fff",
                         alignItems: "center",
-                        justifyContent: "center",
-                        marginBottom: 8,
+                        width: 80,
+                        marginRight: 10,
+                        marginBottom: 10,
                       }}
                     >
-                      {IconComponent ? (
-                        <IconComponent size={25} /> 
-                      ) : null}
-                    </TouchableOpacity>
-                    <Text
-                      numberOfLines={2}
-                      ellipsizeMode="tail"
-                      style={styles.categoryText}
-                    >
-                      {item.nameOfCategory}
-                    </Text>
-                  </View>
-                )})}
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate("PostsDisplay", {
+                            categoryId: item.id,
+                            categoryName: item.nameOfCategory,
+                          })
+                        }
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: 10,
+                          backgroundColor: "#fff",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          marginBottom: 8,
+                        }}
+                      >
+                        {IconComponent ? <IconComponent size={25} /> : null}
+                      </TouchableOpacity>
+                      <Text
+                        numberOfLines={2}
+                        ellipsizeMode="tail"
+                        style={styles.categoryText}
+                      >
+                        {item.nameOfCategory}
+                      </Text>
+                    </View>
+                  );
+                })}
             </View>
           ))}
         </View>
