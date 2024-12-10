@@ -3,19 +3,18 @@ import {
   TouchableOpacity,
   View,
   Text,
-// import '../../styles/mainStyles'
-// import styles from '../../styles/mainStyles';
-// import './CartScreen'
-
-StatusBar,
-Platform,
+  // import '../../styles/mainStyles'
+  // import styles from '../../styles/mainStyles';
+  // import './CartScreen'
+  StatusBar,
+  Platform,
 } from "react-native";
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { COLOR } from '../../assets/constant/color';
-import { scaleWidth } from '../../assets/constant/responsive';
+
+import { COLOR } from "../../assets/constant/color";
+import { scaleWidth } from "../../assets/constant/responsive";
 import styles from "./style";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useNavigation } from "@react-navigation/native";
+
 import { useDispatch, useSelector } from "react-redux";
 import { getUserShopcart } from "../../redux/shopCartService";
 import { setShopCart } from "../../redux/shopCartSlice";
@@ -23,7 +22,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import RenderContent from "./renderContent/RenderContent";
 import FooterBuy from "./Footer/FooterBuy";
 import FooterDelete from "./Footer/FooterDelete";
-
 
 export default function CartScreen() {
   const navigation = useNavigation();

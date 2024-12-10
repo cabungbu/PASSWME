@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
 import {
   TouchableOpacity,
   View,
@@ -28,7 +27,6 @@ export default function CategorySection() {
   const navigation = useNavigation();
   const [categories, setCategories] = useState([]);
   const numColumns = Math.ceil(categories.length / 2);
-  const navigation = useNavigation();
   useEffect(() => {
     fetch(BE_ENDPOINT + "/category/")
       .then((res) => res.json())

@@ -11,7 +11,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    paddingBottom: scaleHeight(15),
+    paddingTop: scaleHeight(5),
+    paddingBottom: scaleHeight(5),
   },
   numberOfNoti: {
     width: scaleWidth(15),

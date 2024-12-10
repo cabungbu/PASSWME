@@ -14,7 +14,7 @@ import RelativePost from "../relativePost/RelativePost";
 import LastestPost from "../relativePost/LastestPost";
 import IncreasePost from "../relativePost/IncreasePost";
 import DecreasePost from "../relativePost/DecreasePost";
-
+import RenderTabBar from "../../../components/RenderTabBar";
 export default function PostsDisplay() {
   const route = useRoute();
   const { categoryId } = route.params;
@@ -58,44 +58,12 @@ export default function PostsDisplay() {
     [RelativeScene, LastestScene]
   );
 
-  const renderTabBar = (props) => {
-    const { key, ...restProps } = props;
-    return (
-      <TabBar
-        {...restProps}
-        indicatorStyle={{
-          backgroundColor: COLOR.mainColor,
-          height: scaleHeight(2),
-          bottom: 0,
-          borderRadius: 100,
-        }}
-        scrollEnabled={false}
-        style={{
-          backgroundColor: "#FFFFFF",
-          outline: "none",
-          padding: 0,
-          position: "relative",
-          flexDirection: "row",
-          justifyContent: "flex-start",
-        }}
-        renderLabel={({ route, focused }) => {
-          return (
-            <TouchableOpacity style={{ alignItems: "center", padding: 0 }}>
-              <Text
-                style={{
-                  color: COLOR.mainColor,
-                  fontSize: scaleWidth(12),
-                  fontFamily: "bold",
-                }}
-              >
-                {route.title}
-              </Text>
-            </TouchableOpacity>
-          );
-        }}
-      />
-    );
-  };
+  const renderTabBar = RenderTabBar({
+    scroll: false,
+    fontSize: 12,
+    padding: 5,
+    autoWidth: true,
+  });
 
   const fetchPosts = () => {
     setLoading(true);
@@ -137,7 +105,7 @@ export default function PostsDisplay() {
         renderTabBar={renderTabBar}
         onIndexChange={setIndex}
       />
-    </>
+    </View>
   );
 }
 

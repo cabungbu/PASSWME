@@ -22,7 +22,9 @@ import { scaleWidth } from "../../../assets/constant/responsive";
 const Header = React.memo(() => {
   const navigation = useNavigation();
   return (
-    <SafeAreaView style={{ width: "100%", backgroundColor: COLOR.mainColor }}>
+    <SafeAreaView
+      style={{ width: "100%", backgroundColor: COLOR.mainColor, padding: 0 }}
+    >
       {Platform.OS === "android" ? (
         <>
           <StatusBar
@@ -32,13 +34,9 @@ const Header = React.memo(() => {
           />
         </>
       ) : (
-        <>
-          <StatusBar barStyle="light-content" />
-          <View
-            style={{ height: 44, width: "100%", backgroundColor: "#E30414" }}
-          />
-        </>
+        <StatusBar barStyle="light-content" />
       )}
+
       <View style={styles.headerContainer}>
         <Ionicons
           name="chevron-back"
