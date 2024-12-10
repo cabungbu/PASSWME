@@ -210,7 +210,7 @@ const OrderController = {
         if (updateData.to) allowedUpdates.to = updateData.to;
         if (updateData.note) allowedUpdates.note = updateData.note;
 
-        // Nếu không có cập nhật nào cho to hoặc note, trả về lỗi
+        
         if (Object.keys(allowedUpdates).length === 0) {
           return res.status(400).json({
             error:

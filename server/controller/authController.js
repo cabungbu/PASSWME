@@ -40,7 +40,6 @@ const register = async (req, res) => {
       phone: data.phone || "",
       avatar:
         "https://firebasestorage.googleapis.com/v0/b/passwme-ec9f7.appspot.com/o/5ee082781b8c41406a2a50a0f32d6aa6.jpg?alt=media&token=6f5c44d6-60eb-487a-b3dd-4dce39316dbc",
-      gender: data.gender || "",
       refreshToken: "", // Set refreshToken to an empty string initially
     };
 
@@ -70,7 +69,6 @@ const register = async (req, res) => {
         email: newUser.email,
         phone: newUser.phone,
         avatar: newUser.avatar,
-        gender: newUser.gender,
       },
       accessToken,
       refreshToken,
@@ -211,29 +209,48 @@ const takeRefreshToken = async (req, res) => {
       .json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   });
 };
+
 const resetPassword = async (req, res) => {
   const firestoreDb = getFirestoreDb();
-  const userId = req.params.userId; // Lấy userId từ tham số đường dẫn
+  const userId = req.params.id; 
   const data = req.body;
 
-  if (!data.password || Object.keys(data).length === 0) {
-    return res.status(400).json({ error: "Password is required." });
+  if (!data.currentPassword || !data.newPassword) {
+    return res.status(400).json({ error: "Current and new passwords are required." });
   }
 
   try {
-    // Tạo salt và băm mật khẩu
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(data.password, salt);
-
     const userDoc = doc(firestoreDb, "users", userId);
-    await updateDoc(userDoc, { password: hashedPassword }); // Cập nhật mật khẩu
+    const userData = await getDoc(userDoc); // Lấy thông tin người dùng
+
+    if (!userData.exists()) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // So sánh mật khẩu hiện tại
+    const isMatch = await bcrypt.compare(data.currentPassword, userData.data().password);
+    if (!isMatch) {
+      return res.status(402).json({ message: "Sai mật khẩu hiện tại." });
+    }
+
+    // Tạo salt và băm mật khẩu mới
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(data.newPassword, salt);
+
+    // Cập nhật mật khẩu mới
+    await updateDoc(userDoc, { password: hashedNewPassword });
+
+    const updatedUserData = await getDoc(userDoc);
 
     res.status(200).json({
-      message: "Password reset successfully.",
-      user: userDoc,
+      message: "Password changed successfully.",
+      user: {
+        id: userId, 
+        ...updatedUserData.data() // Spread toàn bộ dữ liệu người dùng
+      }
     });
   } catch (error) {
-    console.error("Error resetting password:", error);
+    console.error("Error changing password:", error);
     res.status(500).json({ error: error.message });
   }
 };

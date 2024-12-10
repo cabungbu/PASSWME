@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-import { logoutUser as logoutUserService } from "../../redux/authService";
 
 //icons
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -42,9 +41,9 @@ export default function Profile() {
   const dispatch = useDispatch();
 
   const handleLogout = () => {
-    const id = { id: user.id };
+    // const id = { id: user.id };
     navigation.navigate("Welcome");
-    logoutUserService(id, dispatch, navigation);
+    // logoutUserService(id, dispatch, navigation);
   };
 
   return (

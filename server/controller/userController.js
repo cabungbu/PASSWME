@@ -23,13 +23,12 @@ const addUser = async (req, res) => {
   try {
     const data = req.body;
     const newUser = new user({
-      username: data.username, // Nếu không có username thì để rỗng
-      email: data.email, // Nếu không có email thì để rỗng
-      password: data.password, // Nếu không có password thì để rỗng
-      phone: data.phone, // Nếu không có phone thì để rỗng
-      avatar: data.avatar, // Nếu không có avatar thì để rỗng
-      gender: data.gender, // Nếu không có gender thì để rỗng
-      // sold: data.sold || [],
+      username: data.username,
+      email: data.email, 
+      password: data.password,
+      phone: data.phone, 
+      avatar: data.avatar,
+      address: data.address || "",
       posts: data.posts || [],
       order: data.order || [],
       customerOrder: data.order || [],
@@ -52,8 +51,8 @@ const addUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   try {
-    const userCollection = collection(firestoreDb, "users"); // Lấy collection "user"
-    const snapshot = await getDocs(userCollection); // Lấy tất cả document trong collection
+    const userCollection = collection(firestoreDb, "users");
+    const snapshot = await getDocs(userCollection); 
 
     const users = await Promise.all(
       snapshot.docs.map(async (doc) => {
@@ -71,7 +70,7 @@ const getAllUsers = async (req, res) => {
       })
     );
     const validPosts = posts.filter((post) => post !== null);
-    res.status(200).json({ users, posts: validPosts }); // Trả về danh sách người dùng
+    res.status(200).json({ users, posts: validPosts });
   } catch (error) {
     console.error("Error getting users:", error);
     res.status(400).json({ error: error.message });
@@ -160,7 +159,7 @@ const getUserShopCart = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const firestoreDb = require("firebase-admin");
+  const firestoreDb = getFirestoreDb();
   try {
     const userId = req.params.id;
     const updateData = req.body;
@@ -169,12 +168,17 @@ const updateUser = async (req, res) => {
       return res.status(400).json({ error: "Update data is required." });
     }
 
-    const userDoc = doc(firestoreDb, "users", userId);
-    await updateDoc(userDoc, updateData);
+    const userDocRef = doc(firestoreDb, "users", userId);
+    await updateDoc(userDocRef, updateData);
+
+    const updatedUserDoc = await getDoc(userDocRef);
+    if (!updatedUserDoc.exists()) {
+      return res.status(404).json({ error: "User not found after update." });
+    }
 
     res.status(200).json({
       message: "User updated successfully.",
-      userId: userId,
+      user: { id: updatedUserDoc.id, ...updatedUserDoc.data() }, 
     });
   } catch (error) {
     console.error("Error updating user:", error);
@@ -198,119 +202,6 @@ const deleteUser = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
-// const addToShopCart = async (req, res) => {
-//   const firestoreDb = getFirestoreDb();
-//   const userId = req.params.id;
-//   const { sellerId, postId, productId, quantity } = req.body;
-
-//   try {
-//     const sellerRef = doc(firestoreDb, "users", sellerId);
-//     const sellerDoc = await getDoc(sellerRef);
-//     if (!sellerDoc.exists()) {
-//       return res.status(404).json({ error: "Seller not found" });
-//     }
-
-//     // 1. Lấy thông tin về post
-//     const postRef = doc(firestoreDb, "posts", postId);
-//     const postDoc = await getDoc(postRef);
-
-//     if (!postDoc.exists()) {
-//       return res.status(404).json({ error: "Post not found" });
-//     }
-
-//     const postData = postDoc.data();
-
-//     // 2. Lấy thông tin về sản phẩm trong post
-//     const productsRef = collection(postRef, "products");
-//     const productsSnapshot = await getDocs(productsRef);
-
-//     const product = productsSnapshot.docs.map((doc) => ({
-//       id: doc.id,
-//       ...doc.data(),
-//     }));
-
-//     // 3. Tìm sản phẩm được chọn
-//     const selectedProduct = product.find((p) => p.id === productId);
-
-//     if (!selectedProduct) {
-//       return res.status(404).json({ error: "Product not found in this post" });
-//     }
-
-//     // 4. Kiểm tra số lượng có sẵn
-//     if (selectedProduct.quantity < quantity) {
-//       return res.status(400).json({
-//         error: "Not enough quantity available",
-//         available: selectedProduct.quantity,
-//       });
-//     }
-
-//     // 5. Lấy thông tin về người dùng
-//     const userRef = doc(firestoreDb, "users", userId);
-//     const userDoc = await getDoc(userRef);
-
-//     if (!userDoc.exists()) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
-
-//     const shopCartRef = doc(userRef, "shopcart", sellerId);
-//     const shopCartDoc = await getDoc(shopCartRef);
-
-//     const batch = writeBatch(firestoreDb);
-
-//     // 6. Kiểm tra và cập nhật giỏ hàng
-//     if (!shopCartDoc.exists()) {
-//       // Nếu shopId chưa có, thêm mới vào giỏ hàng
-//       batch.set(shopCartRef, {
-//         listItem: [
-//           {
-//             postId,
-//             productId,
-//             quantity,
-//             selectedAt: new Date().toISOString(),
-//           },
-//         ],
-//       });
-//     } else {
-//       // Nếu shopId đã có, cập nhật sản phẩm trong giỏ hàng
-
-//       const existingProduct = shopCartDoc
-//         .data()
-//         .listItem.find((p) => p.productId === productId);
-
-//       if (existingProduct) {
-//         const newQuantity = Number(existingProduct.quantity) + Number(quantity);
-//         batch.update(
-//           shopCartRef,
-//           {
-//             "listItem.$[elem].quantity": newQuantity,
-//           },
-//           {
-//             arrayFilters: [{ "elem.productId": productId }],
-//           }
-//         );
-//       } else {
-//         // Nếu sản phẩm chưa có, thêm mới vào giỏ hàng
-//         batch.update(shopCartRef, {
-//           listItem: arrayUnion({
-//             postId,
-//             productId,
-//             quantity,
-//             selectedAt: new Date().toISOString(),
-//           }),
-//         });
-//       }
-//     }
-//     await batch.commit();
-
-//     res.status(200).json({
-//       message: "Product added to cart successfully",
-//     });
-//   } catch (error) {
-//     console.error("Error adding to cart:", error);
-//     res.status(400).json({ error: error.message });
-//   }
-// };
 
 const addToShopCart = async (req, res) => {
   const firestoreDb = getFirestoreDb();

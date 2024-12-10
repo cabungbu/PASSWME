@@ -1,11 +1,11 @@
-
-import React from 'react';
-import { LinearGradient, Stop } from 'react-native-svg';
+import React from "react";
+import { LinearGradient, Stop } from "react-native-svg";
 
 export const COLOR = {
-    mainColor: "#E30414",
-    gradientColor: ["#E30414", "#B80310", "#84020C", "#7D020B"],
-    disableWhiteColor: "rgba(255, 255, 255, 0.5)"
+  mainColor: "#E30414",
+  gradientColor: ["#E30414", "#B80310", "#84020C", "#7D020B"],
+  disableWhiteColor: "rgba(255, 255, 255, 0.5)",
+  successColor: "#4FA84C",
 };
 
 export const ButtonGradient = () => (
@@ -22,4 +22,3 @@ export const ButtonGradient = () => (
     <Stop offset={1} stopColor="#7D020B" />
   </LinearGradient>
 );
-  

@@ -8,8 +8,8 @@ import {
   Text,
   StatusBar
 } from 'react-native';
-import '../../styles/mainStyle'
-import styles from '../../styles/mainStyle';
+import '../../styles/mainStyles'
+import styles from '../../styles/mainStyles';
 // import './CartScreen'
 
 import Ionicons from '@expo/vector-icons/Ionicons';

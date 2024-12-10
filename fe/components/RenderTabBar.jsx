@@ -8,8 +8,12 @@ import { scaleHeight } from '../assets/constant/responsive';
 const RenderTabBar = (props = {}) => {  
   const { 
     fontSize = 15,  
+    padding = 10,
+    autoWidth = false,
     scroll = true 
   } = props;  
+
+  const tabStyle = autoWidth ? { width: 'auto' } : {};
 
   return (tabBarProps) => (  
     <TabBar
@@ -27,10 +31,11 @@ const RenderTabBar = (props = {}) => {
         padding: 0,
         position: "relative"
       }}
+      tabStyle={tabStyle}
       renderLabel={({ route, focused }) => (
         <Pressable
           style={{
-            paddingHorizontal: 10,
+            paddingHorizontal: {padding}
           }}
         >
           <Text

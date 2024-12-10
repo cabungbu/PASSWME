@@ -15,8 +15,10 @@ import GameIcon from "../../../assets/icons/GameIcon";
 import SewingMachineIcon from "../../../assets/icons/SewingMachineIcon";
 import MotobikeIcon from "../../../assets/icons/MotobikeIcon";
 import AllCategoryIcon from "../../../assets/icons/AllCategoryIcon";
+import { useNavigation } from "@react-navigation/native";
 
 export default function CategorySection() {
+  const navigation = useNavigation();
   const [categories, setCategories] = useState([]);
   const numColumns = Math.ceil(categories.length / 2);
   useEffect(() => {
@@ -102,6 +104,12 @@ export default function CategorySection() {
                         justifyContent: "center",
                         marginBottom: 8,
                       }}
+                      onPress={() =>
+                        navigation.navigate("PostsDisplay", {
+                          categoryId: item.id,
+                          categoryName: item.nameOfCategory,
+                        })
+                      }
                     >
                       {IconComponent ? (
                         <IconComponent size={25} /> 

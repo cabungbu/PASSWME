@@ -15,7 +15,7 @@ import { registerFailure } from "../../redux/authSlice";
 import { useNavigation } from "@react-navigation/native";
 
 import styles from "./registerStyle";
-import { scaleHeight } from "../../assets/constant/responsive";
+import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
 import Information_TextInput from "../../components/Information_TextInput";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -56,11 +56,12 @@ const RegisterPage = () => {
         <>
           <StatusBar
             barStyle="dark-content"
-            backgroundColor="#E30414"
+            backgroundColor="transparent"
             translucent={true}
           />
           <View style={styles.header}>
             <Ionicons
+              style={styles.headerIcon}
               name="chevron-back"
               size={scaleWidth(28)}
               color="white"

@@ -6,6 +6,7 @@ import CustomRightDrawer from "../../../components/CustomRightDrawer";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import { COLOR } from "../../../assets/constant/color";
 import { scaleHeight, scaleWidth } from "../../../assets/constant/responsive";
+import RenderTabBar from "../../../components/RenderTabBar";
 
 export default function PostsDisplay({ route, navigation }) {
   const { categoryId, categoryName } = route.params;
@@ -47,42 +48,10 @@ export default function PostsDisplay({ route, navigation }) {
     decrease: decreasePostTab,
   });
 
-  const renderTabBar = (props) => (
-    <TabBar
-      {...props}
-      indicatorStyle={{
-        backgroundColor: COLOR.mainColor,
-        height: scaleHeight(2),
-        bottom: 0,
-        borderRadius: 100,
-      }}
-      scrollEnabled={false}
-      style={{
-        backgroundColor: "#FFFFFF",
-        outline: "none",
-        padding: 0,
-        position: "relative",
-        flexDirection: "row",
-        justifyContent: "flex-start",
-      }}
-      renderLabel={({ route, focused }) => (
-        <TouchableOpacity style={{ alignItems: "center", padding: 0 }}>
-          <Text
-            style={{
-              color: "black",
-              fontSize: scaleWidth(12), //scale(15),
-              fontFamily: "bold",
-            }}
-          >
-            {route.title}
-          </Text>
-        </TouchableOpacity>
-      )}
-    />
-  );
+  const renderTabBar = RenderTabBar({scroll: false, fontSize: 12, padding: 5, autoWidth: true});
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <Header />
       <TabView
         lazy
@@ -92,7 +61,7 @@ export default function PostsDisplay({ route, navigation }) {
         onIndexChange={setIndex}
       />
       <GridView />
-    </>
+    </View>
   );
 }
 

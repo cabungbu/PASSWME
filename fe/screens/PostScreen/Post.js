@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useNavigation } from "@react-navigation/native";
 
 import styles from "./PostStyle";
 import { BE_ENDPOINT } from "../../settings/localVars";
@@ -26,6 +27,7 @@ import SewingMachineIcon from "../../assets/icons/SewingMachineIcon";
 import ShirtIcon from "../../assets/icons/ShirtIcon";
 
 const Post = () => {
+  const navigation = useNavigation();
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -56,25 +58,38 @@ const Post = () => {
     <View>
       <StatusBar
         barStyle="light-content"
-        backgroundColor="#E30414"
+        backgroundColor="transparent"
         translucent={true}
       />
       <View style={styles.header}>
         <Text style={styles.headerText}>Quản lý tin đăng</Text>
       </View>
+      <Text style={styles.label}>Chọn danh mục: </Text>
       <ScrollView
         style={styles.container}
-        contentContainerStyle={{ paddingBottom: 180 }}
+        contentContainerStyle={{ paddingBottom: 200 }}
       >
         {categories.map((category) => {
           const IconComponent = iconMap[category.nameOfCategory];
-          return IconComponent ? (
-            <HorizontalCategory
+          return (
+            <TouchableOpacity
               key={category.id}
-              Category={category.nameOfCategory}
-              IconComponent={IconComponent}
-            />
-          ) : null;
+              onPress={() => {
+                navigation.navigate("PostingDetailScreen", {
+                  categoryId: category.id,
+                  categoryName: category.nameOfCategory,
+                });
+              }}
+            >
+              {IconComponent ? (
+                <HorizontalCategory
+                  key={category.id}
+                  Category={category.nameOfCategory}
+                  IconComponent={IconComponent}
+                />
+              ) : null}
+            </TouchableOpacity>
+          );
         })}
       </ScrollView>
     </View>
