@@ -8,6 +8,7 @@ const authSlide = createSlice({
     registerSuccess: false,
     accessToken: null,
     refreshToken: null,
+    updateUserSuccess: false,
   },
   reducers: {
     loginStart(state) {
@@ -52,6 +53,34 @@ const authSlide = createSlice({
     setUser(state, action) {
       state.user = action.payload;
     },
+
+    updateUserStart(state) {
+      state.isFetching = true;
+      state.error = false;
+    },
+    updateUserFailure(state, action) {
+      state.isFetching = false;
+      state.error = action.payload;
+    },
+    updateUserSuccess(state, action) {
+      state.isFetching = false;
+      state.user = action.payload;
+      state.error = false;
+    },
+
+    updatePasswordStart(state) {
+      state.isFetching = true;
+      state.error = false;
+    },
+    updatePasswordFailure(state, action) {
+      state.isFetching = false;
+      state.error = action.payload;
+    },
+    updatePasswordSuccess(state, action) {
+      state.isFetching = false;
+      state.user = action.payload;
+      state.error = false;
+    },
   },
 });
 
@@ -66,5 +95,11 @@ export const {
   setUser,
   setAccessToken,
   setRefreshToken,
+  updateUserStart,
+  updateUserFailure,
+  updateUserSuccess,
+  updatePasswordStart,
+  updatePasswordFailure,
+  updatePasswordSuccess
 } = authSlide.actions;
 export default authSlide.reducer;

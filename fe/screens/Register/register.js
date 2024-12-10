@@ -56,11 +56,12 @@ const RegisterPage = () => {
         <>
           <StatusBar
             barStyle="dark-content"
-            backgroundColor="#E30414"
+            backgroundColor="transparent"
             translucent={true}
           />
           <View style={styles.header}>
             <Ionicons
+              style={styles.headerIcon}
               name="chevron-back"
               size={scaleWidth(28)}
               color="white"

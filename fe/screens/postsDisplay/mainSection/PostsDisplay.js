@@ -128,7 +128,7 @@ export default function PostsDisplay() {
   }
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <Header />
       <TabView
         lazy

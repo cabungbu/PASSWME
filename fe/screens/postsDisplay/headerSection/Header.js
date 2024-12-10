@@ -7,23 +7,27 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import styles from "./styles";
+
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import ShoppingCartIcon from "../../../components/shoppingCartIcon";
+
 import { COLOR } from "../../../assets/constant/color";
 import { scaleWidth } from "../../../assets/constant/responsive";
-import { useNavigation } from "@react-navigation/native";
 
 const Header = React.memo(() => {
   const navigation = useNavigation();
   return (
-    <View style={{ width: "100%", backgroundColor: COLOR.mainColor }}>
+    <SafeAreaView style={{ width: "100%", backgroundColor: COLOR.mainColor }}>
       {Platform.OS === "android" ? (
         <>
           <StatusBar
             barStyle="light-content"
-            backgroundColor="#E30414"
+            backgroundColor="transparent"
             translucent={true}
           />
         </>
@@ -64,7 +68,7 @@ const Header = React.memo(() => {
           </View>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 });
 

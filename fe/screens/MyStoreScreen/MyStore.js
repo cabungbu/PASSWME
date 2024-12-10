@@ -25,6 +25,8 @@ import { COLOR } from "../../assets/constant/color";
 import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
 import RenderTabBar from "../../components/RenderTabBar";
 
+const statusBarHeight = (StatusBar.currentHeight || 30) - 15;
+
 export default function MyStore() {
   const layout = useWindowDimensions();
   const ActivePostsTab = () => (
@@ -109,7 +111,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   myStore_headerContainer: {
-    height: scaleHeight(90),
+    height: scaleHeight(80) + statusBarHeight,
+    paddingTop: statusBarHeight,
     alignItems: "center",
     justifyContent: "center",
     borderBottomEndRadius: 10,
@@ -119,7 +122,7 @@ const styles = StyleSheet.create({
   },
   myStore_headerText: {
     color: "#FFFFFF",
-    marginTop: scaleHeight(30),
+    marginTop: statusBarHeight,
     fontSize: 20,
     fontFamily: "bold",
   },

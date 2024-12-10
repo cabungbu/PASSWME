@@ -44,22 +44,25 @@ const LoginPage = () => {
   const moveToRegister = () => {
     navigation.navigate("Register");
   };
-  
+
   return (
     <View style={{ flex: 1 }}>
       {Platform.OS === "android" ? (
         <>
           <StatusBar
             barStyle="light-content"
-            backgroundColor="#E30414"
+            backgroundColor="transparent"
             translucent={true}
           />
           <View style={styles.header}>
             <Ionicons
+              style={styles.headerIcon}
               name="chevron-back"
               size={24}
               color="white"
-              onPress={() => {navigation.navigate("Welcome")}}
+              onPress={() => {
+                navigation.navigate("Welcome");
+              }}
             />
             <Text style={styles.headerText}>Đăng nhập</Text>
           </View>
@@ -71,7 +74,9 @@ const LoginPage = () => {
             name="chevron-back"
             size={24}
             color="white"
-            onPress={() => {navigation.navigate("Welcome")}}
+            onPress={() => {
+              navigation.navigate("Welcome");
+            }}
           />
           <Text style={styles.headerText}>Đăng nhập</Text>
         </View>
@@ -86,7 +91,12 @@ const LoginPage = () => {
       >
         <Image
           source={require("../../assets/logoPasswme1.png")}
-          style={{ width: scaleHeight(150), height: scaleHeight(150), marginBottom: scaleHeight(30), marginTop: scaleHeight(50)}}
+          style={{
+            width: scaleHeight(150),
+            height: scaleHeight(150),
+            marginBottom: scaleHeight(30),
+            marginTop: scaleHeight(50),
+          }}
         />
         {error && (
           <Text
@@ -97,27 +107,27 @@ const LoginPage = () => {
               textAlign: "left",
               marginBottom: 10,
               fontFamily: "lightItalic",
-              fontSize: "10",
+              fontSize: 10,
             }}
           >
             *{error}
           </Text>
         )}
 
-        <Information_TextInput 
+        <Information_TextInput
           IconComponent={MaterialCommunityIcons}
           iconName="email-outline"
           iconSize={24}
-          error={error} 
+          error={error}
           borderColor={error ? "red" : "#ccc"}
           placeholder="Email"
           onChangeText={(text) => setUsername(text)}
         />
-        <Information_TextInput 
+        <Information_TextInput
           IconComponent={Feather}
           iconName="lock"
           iconSize={24}
-          error={error} 
+          error={error}
           borderColor={error ? "red" : "#ccc"}
           placeholder="Mật khẩu"
           Password={true}
@@ -160,11 +170,11 @@ const LoginPage = () => {
           <View style={styles.greyline} />
         </View>
         <TouchableOpacity style={styles.ggfbcontainer}>
-          <GoogleBrandIcon size={24}/>
+          <GoogleBrandIcon size={24} />
           <Text style={styles.ggfbtext}>Tiếp tục với Google</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.ggfbcontainer}>
-          <FacebookBrandIcon size={24}/>
+          <FacebookBrandIcon size={24} />
           <Text style={styles.ggfbtext}>Tiếp tục với Facebook</Text>
         </TouchableOpacity>
       </View>

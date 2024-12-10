@@ -22,8 +22,10 @@ import GameIcon from "../../../assets/icons/GameIcon";
 import SewingMachineIcon from "../../../assets/icons/SewingMachineIcon";
 import MotobikeIcon from "../../../assets/icons/MotobikeIcon";
 import AllCategoryIcon from "../../../assets/icons/AllCategoryIcon";
+import { useNavigation } from "@react-navigation/native";
 
 export default function CategorySection() {
+  const navigation = useNavigation();
   const [categories, setCategories] = useState([]);
   const numColumns = Math.ceil(categories.length / 2);
   const navigation = useNavigation();
@@ -99,6 +101,12 @@ export default function CategorySection() {
                         marginRight: 10,
                         marginBottom: 10,
                       }}
+                      onPress={() =>
+                        navigation.navigate("PostsDisplay", {
+                          categoryId: item.id,
+                          categoryName: item.nameOfCategory,
+                        })
+                      }
                     >
                       <TouchableOpacity
                         onPress={() =>

@@ -38,6 +38,9 @@ import RegisterPage from "../screens/Register/register";
 import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setUser } from "../redux/authSlice";
+import UpdateInformation from "../screens/ProfileScreen/SettingScreen/UpdateInformationScreen";
+import PostingDetail from "../screens/PostScreen/PostingScreen/PostingDetail";
+import Posted from "../screens/PostScreen/PostedScreen/Posted";
 
 const Stack = createNativeStackNavigator();
 
@@ -302,6 +305,9 @@ export default function MainContainer() {
           <Stack.Screen name="MyRatingsScreen" component={MyRatings} />
           <Stack.Screen name="OrderStatusScreen" component={OrderStatus} />
           <Stack.Screen name="PostsDisplay" component={PostsDisplay} />
+          <Stack.Screen name="UpdateInformation" component={UpdateInformation} />
+          <Stack.Screen name="PostingDetailScreen" component={PostingDetail} />
+          <Stack.Screen name="PostedScreen" component={Posted} />
         </>
       )}
     </Stack.Navigator>

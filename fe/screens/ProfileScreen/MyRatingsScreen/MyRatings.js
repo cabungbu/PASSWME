@@ -6,7 +6,7 @@ import {
   View
 } from 'react-native';
 import { SceneMap, TabView } from 'react-native-tab-view';
-import mainStyles from '../../../styles/mainStyle';
+import mainStyles from '../../../styles/mainStyles';
 import styles from './MyRatingsStyle';
 
 import Ionicons from '@expo/vector-icons/Ionicons';

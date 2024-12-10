@@ -5,10 +5,18 @@ import { TabBar } from "react-native-tab-view";
 import { COLOR } from "../assets/constant/color";
 import { scaleHeight } from "../assets/constant/responsive";
 
-const RenderTabBar = (props = {}) => {
-  const { fontSize = scaleHeight(15), scroll = true } = props;
+const RenderTabBar = (props = {}) => {  
+  const { 
+    fontSize = 15,  
+    padding = 10,
+    autoWidth = false,
+    scroll = true 
+  } = props;  
 
-  return (tabBarProps) => (
+  const tabStyle = autoWidth ? { width: 'auto' } : {};
+
+  return (tabBarProps) => (  
+
     <TabBar
       {...tabBarProps}
       indicatorStyle={{
@@ -24,10 +32,11 @@ const RenderTabBar = (props = {}) => {
         padding: 0,
         position: "relative",
       }}
+      tabStyle={tabStyle}
       renderLabel={({ route, focused }) => (
         <Pressable
           style={{
-            paddingHorizontal: 10,
+            paddingHorizontal: {padding}
           }}
         >
           <Text

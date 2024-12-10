@@ -11,7 +11,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 const HorizontalCategory = ({
   Category = "Category",
-  iconSize = scaleWidth(40),
+  iconSize = scaleWidth(35),
   IconComponent,
 }) => {
   return (
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   },
   category: {
     fontFamily: "medium",
-    fontSize: 18,
+    fontSize: 16,
     color: "black",
     marginLeft: scaleWidth(25),
     flex: 1
