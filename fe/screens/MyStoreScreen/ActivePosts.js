@@ -8,14 +8,13 @@ import {
   View,
   Text,
   FlatList,
-  ActivityIndicator
-} from 'react-native';
-import axios from 'axios';
-import ActiveListingCard from '../../components/ActivePostCard';
-import { BE_ENDPOINT } from '../../settings/localVars';
-import { useSelector } from 'react-redux';
+  ActivityIndicator,
+} from "react-native";
+import axios from "axios";
+import ActiveListingCard from "../../components/ActivePostCard";
+import { BE_ENDPOINT } from "../../settings/localVars";
+import { useSelector } from "react-redux";
 import { scaleHeight } from "../../assets/constant/responsive";
-
 
 export default function ActiveListings() {
   const user = useSelector((state) => state.auth.user);
@@ -26,8 +25,10 @@ export default function ActiveListings() {
     const fetchAllUserPosts = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(BE_ENDPOINT + `/user/getUserById/${user.id}`);
-        const postsData = res.data.posts || []; 
+        const res = await axios.get(
+          BE_ENDPOINT + `/user/getUserById/${user.id}`
+        );
+        const postsData = res.data.posts || [];
         setPosts(postsData);
       } catch (error) {
         console.error("Error fetching posts:", error);
@@ -41,7 +42,13 @@ export default function ActiveListings() {
   }, [user?.id]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#369C33" style={{margin: scaleHeight(20)}}/>;
+    return (
+      <ActivityIndicator
+        size="large"
+        color="#369C33"
+        style={{ margin: scaleHeight(20) }}
+      />
+    );
   }
 
   if (posts.length === 0) {
@@ -53,12 +60,9 @@ export default function ActiveListings() {
       <FlatList
         data={posts}
         renderItem={({ item }) => (
-          <ActiveListingCard 
-            key={item.id?.toString()} 
-            post={item} 
-          />
+          <ActiveListingCard key={item.id?.toString()} post={item} />
         )}
-        keyExtractor={item => item.id?.toString()}
+        keyExtractor={(item) => item.id?.toString()}
         showsVerticalScrollIndicator={true}
         contentContainerStyle={styles.flatListContent}
         onEndReachedThreshold={0.5}

@@ -7,16 +7,16 @@ import {
   View,
   StatusBar,
   Text,
-  Pressable, 
-  useWindowDimensions 
-} from 'react-native';
-//import 
+  Pressable,
+  useWindowDimensions,
+} from "react-native";
+//import
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 
 //tabs
 import ActivePosts from "./ActivePosts";
-import ClosedPosts from './ClosedPosts';
-import SoldItems from './SoldItems';
+import ClosedPosts from "./ClosedPosts";
+import SoldItems from "./SoldItems";
 import PendingOrders from "./PendingOrders";
 import DeliveredOrders from "./DeliveredOrders";
 
@@ -31,7 +31,7 @@ export default function MyStore() {
   const layout = useWindowDimensions();
   const ActivePostsTab = () => (
     <View style={{ flex: 1 }}>
-      <ActivePosts/>
+      <ActivePosts />
     </View>
   );
 
@@ -68,23 +68,21 @@ export default function MyStore() {
     { key: "deliveredOrders", title: "Đơn đã giao" },
   ]);
 
-
   const renderScene = SceneMap({
     active: ActivePostsTab,
     closed: ClosedPostsTab,
     sold: SoldItemsTab,
     pendingOrders: PendingOrdersTab,
-    deliveredOrders: DeliveredOrdersTab
+    deliveredOrders: DeliveredOrdersTab,
   });
 
   const renderTabBar = RenderTabBar();
-
 
   return (
     <View style={styles.container}>
       <StatusBar
         translucent={true}
-        backgroundColor= "transparent"
+        backgroundColor="transparent"
         barStyle="light-content"
       />
 
@@ -92,14 +90,14 @@ export default function MyStore() {
         <Text style={styles.myStore_headerText}>Quản lý cửa hàng</Text>
       </View>
       <TabView
-        lazy 
+        lazy
         navigationState={{ index, routes }}
         renderScene={renderScene}
         renderTabBar={renderTabBar}
         onIndexChange={setIndex}
       />
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -120,7 +118,7 @@ const styles = StyleSheet.create({
     borderBottomEndRadius: 10,
     borderBottomStartRadius: 10,
     flexDirection: "row",
-    backgroundColor: COLOR.mainColor
+    backgroundColor: COLOR.mainColor,
   },
   myStore_headerText: {
     color: "#FFFFFF",

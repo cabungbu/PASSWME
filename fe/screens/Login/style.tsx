@@ -13,11 +13,10 @@ const styles = StyleSheet.create({
   headerText: {
     color: "#fff",
     marginTop: statusBarHeight,
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: "semiBold",
     flex: 1,
-    marginRight: scaleWidth(24),
-    textAlign: "center"
+    textAlign: "center",
   },
   headerIcon: {
     marginTop: statusBarHeight,
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
     color: "#777777",
     fontSize: 14,
     fontFamily: "regular",
-    marginVertical: scaleHeight(20)
+    marginVertical: scaleHeight(20),
   },
   ggfbcontainer: {
     width: "80%",
@@ -107,13 +106,13 @@ const styles = StyleSheet.create({
     borderColor: "#777777",
     borderWidth: 1,
     padding: scaleWidth(10),
-    borderRadius: 20, 
+    borderRadius: 20,
   },
   ggfbtext: {
     marginLeft: scaleWidth(40),
     fontSize: 14,
     fontFamily: "semiBold",
-  }
+  },
 });
 
 export default styles;

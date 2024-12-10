@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
   },
   headerIOS: {
     backgroundColor: "#E30414",
+
     display: "flex",
     paddingBottom: 20,
     paddingTop: 50,
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
     color: "#777777",
     fontSize: 14,
     fontFamily: "regular",
-    marginVertical: scaleHeight(20)
+    marginVertical: scaleHeight(20),
   },
   ggfbcontainer: {
     width: "80%",

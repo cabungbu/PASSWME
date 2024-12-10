@@ -52,7 +52,9 @@ export default function PostDetailScreen({ route }) {
   if (!post) {
     return (
       <SafeAreaView style={styles.container}>
-        <Text>No post found.</Text>
+        <Text style={{ textAlign: "center", textAlignVertical: "center" }}>
+          Không tìm thấy bài đăng
+        </Text>
       </SafeAreaView>
     );
   }

@@ -10,6 +10,24 @@ const {
   writeBatch,
 } = require("firebase/firestore");
 
+const fetchBatchReferences = async (refs) => {
+  // Loại bỏ references trùng lặp để tối ưu
+  const uniqueRefs = [...new Set(refs)];
+
+  const docMap = new Map();
+  await Promise.all(
+    uniqueRefs.map(async (ref) => {
+      const doc = await getDoc(ref);
+      if (doc.exists()) {
+        docMap.set(ref.path, doc);
+      }
+    })
+  );
+
+  // Ánh xạ lại các documents ban đầu
+  return refs.map((ref) => docMap.get(ref.path) || null);
+};
+
 const CategoryController = {
   // Thêm một danh mục mới
   addCategory: async (req, res) => {
@@ -72,38 +90,68 @@ const CategoryController = {
       if (!categoryDoc.exists()) {
         return res.status(404).json({ error: "Category not found" });
       }
-      const postData = await Promise.all(
-        categoryDoc.data().posts.map(async (postRef) => {
-          const postDoc = await getDoc(postRef);
-          if (postDoc.exists()) {
-            const productsCollection = collection(postRef, "products");
-            const productsSnapshot = await getDocs(productsCollection);
 
-            // Convert products snapshot thành array data
-            const products = productsSnapshot.docs.map((productDoc) => ({
-              id: productDoc.id,
-              ...productDoc.data(),
-            }));
+      let validPosts = [];
+      const postRefs = categoryDoc.data().posts;
 
-            return {
-              id: postDoc.id,
-              ...postDoc.data(),
-              products: products, // Thêm products vào post data
-            };
-          } else {
-            return null;
-          }
-        })
-      );
+      if (postRefs.length > 0) {
+        // Batch read posts
+        const postDocs = await fetchBatchReferences(postRefs);
 
-      const validPosts = postData.filter((post) => post !== null);
+        // Batch read owners
+        const ownerRefs = postDocs
+          .filter((postDoc) => postDoc?.exists())
+          .map((postDoc) => postDoc.data().owner);
+        const ownerDocs = await fetchBatchReferences(ownerRefs);
+
+        // Batch read categories
+        const categoryRefs = postDocs
+          .filter((postDoc) => postDoc?.exists())
+          .map((postDoc) => postDoc.data().category);
+        const categoryDocs = await fetchBatchReferences(categoryRefs);
+
+        // Batch read products for each post
+        const postsWithDetails = await Promise.all(
+          postDocs
+            .filter((postDoc) => postDoc?.exists())
+            .map(async (postDoc, index) => {
+              // Batch read products for this post
+              const productsSnapshot = await getDocs(
+                collection(postDoc.ref, "products")
+              );
+
+              const products = productsSnapshot.docs.map((productDoc) => ({
+                id: productDoc.id,
+                ...productDoc.data(),
+              }));
+
+              const { owner, category, feedbacks, ...rest } = postDoc.data();
+
+              return {
+                id: postDoc.id,
+                ...rest,
+                products: products,
+                owner: ownerDocs[index]?.exists()
+                  ? {
+                      id: ownerDocs[index].id,
+                      address: ownerDocs[index].data().address,
+                    }
+                  : null,
+                category: categoryDocs[index]?.exists()
+                  ? { id: categoryDocs[index].id }
+                  : null,
+              };
+            })
+        );
+
+        validPosts = postsWithDetails;
+      }
 
       res.status(200).json({
         id: categoryId,
         nameOfCategory: categoryDoc.data().nameOfCategory,
         quantityOfPost: categoryDoc.data().quantityOfPost,
         posts: validPosts,
-        // ...các field khác của category nếu có
       });
     } catch (error) {
       console.error("Error fetching category:", error);

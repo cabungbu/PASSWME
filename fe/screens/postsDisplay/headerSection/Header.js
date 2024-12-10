@@ -19,7 +19,7 @@ import ShoppingCartIcon from "../../../components/shoppingCartIcon";
 import { COLOR } from "../../../assets/constant/color";
 import { scaleWidth } from "../../../assets/constant/responsive";
 
-export default function Header() {
+const Header = React.memo(() => {
   const navigation = useNavigation();
   return (
     <SafeAreaView style={{ width: "100%", backgroundColor: COLOR.mainColor }}>
@@ -40,7 +40,12 @@ export default function Header() {
         </>
       )}
       <View style={styles.headerContainer}>
-        <Ionicons name="chevron-back" size={24} color="white" />
+        <Ionicons
+          name="chevron-back"
+          size={24}
+          color="white"
+          onPress={() => navigation.goBack()}
+        />
         <View style={styles.inputContainer}>
           <Feather name="search" size={24} color="red" />
           <TextInput
@@ -65,4 +70,6 @@ export default function Header() {
       </View>
     </SafeAreaView>
   );
-}
+});
+
+export default Header;

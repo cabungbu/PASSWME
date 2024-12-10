@@ -6,7 +6,7 @@ import {
   StatusBar,
   Platform,
   KeyboardAvoidingView,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { CheckBox } from "@rneui/themed";
@@ -34,7 +34,7 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [sdt, setSDT] = useState("");
-  
+
   const handleRegister = () => {
     if (!checked) {
       dispatch(registerFailure("Vui lòng đồng ý với điều khoản sử dụng"));
@@ -65,7 +65,9 @@ const RegisterPage = () => {
               name="chevron-back"
               size={scaleWidth(28)}
               color="white"
-              onPress={() => {navigation.navigate("Welcome")}}
+              onPress={() => {
+                navigation.navigate("Welcome");
+              }}
             />
             <Text style={styles.headerText}>Đăng nhập</Text>
           </View>
@@ -79,20 +81,23 @@ const RegisterPage = () => {
               name="chevron-back"
               size={scaleWidth(28)}
               color="white"
-              onPress={() => {navigation.navigate("Welcome")}}
+              onPress={() => {
+                navigation.navigate("Welcome");
+              }}
             />
             <Text style={styles.headerText}>Đăng ký</Text>
           </View>
         </>
       )}
 
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
           alignItems: "center",
           justifyContent: "center",
           marginTop: scaleHeight(50),
-      }}>
+        }}
+      >
         {error && (
           <Text
             style={{
@@ -108,48 +113,48 @@ const RegisterPage = () => {
             *{error}
           </Text>
         )}
-        
-        <Information_TextInput 
+
+        <Information_TextInput
           IconComponent={Feather}
           iconName="user"
           iconSize={scaleWidth(28)}
-          error={error} 
+          error={error}
           borderColor={error ? "red" : "#ccc"}
           placeholder="Username"
           onChangeText={(text) => setUsername(text)}
         />
 
-        <Information_TextInput 
+        <Information_TextInput
           IconComponent={MaterialCommunityIcons}
           iconName="phone"
           iconSize={scaleWidth(28)}
-          error={error} 
+          error={error}
           borderColor={error ? "red" : "#ccc"}
           placeholder="Số điện thoại"
           onChangeText={(text) => setSDT(text)}
         />
 
-        <Information_TextInput 
+        <Information_TextInput
           IconComponent={MaterialCommunityIcons}
           iconName="email-outline"
           iconSize={scaleWidth(28)}
-          error={error} 
+          error={error}
           borderColor={error ? "red" : "#ccc"}
           placeholder="Email"
           onChangeText={(text) => setEmail(text)}
         />
 
-        <Information_TextInput 
+        <Information_TextInput
           IconComponent={Feather}
           iconName="lock"
           iconSize={scaleWidth(28)}
-          error={error} 
+          error={error}
           borderColor={error ? "red" : "#ccc"}
           placeholder="Mật khẩu"
           Password={true}
           onChangeText={(text) => setPassword(text)}
         />
-        
+
         <View
           style={{
             display: "flex",
@@ -188,7 +193,11 @@ const RegisterPage = () => {
           }}
         >
           <Text style={styles.DacoTK}>Đã có tài khoản? </Text>
-          <TouchableOpacity onPress={() => {navigation.navigate("Login")}}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Login");
+            }}
+          >
             <Text style={styles.loginSmallText}>Đăng nhập</Text>
           </TouchableOpacity>
         </View>
@@ -199,7 +208,7 @@ const RegisterPage = () => {
             alignItems: "center",
             width: "80%",
             flexDirection: "row",
-            marginVertical: scaleHeight(25)
+            marginVertical: scaleHeight(25),
           }}
         >
           <View style={styles.greyline} />
@@ -207,11 +216,11 @@ const RegisterPage = () => {
           <View style={styles.greyline} />
         </View>
         <TouchableOpacity style={styles.ggfbcontainer}>
-          <GoogleBrandIcon size={scaleWidth(28)}/>
+          <GoogleBrandIcon size={scaleWidth(28)} />
           <Text style={styles.ggfbtext}>Tiếp tục với Google</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.ggfbcontainer}>
-          <FacebookBrandIcon size={scaleWidth(28)}/>
+          <FacebookBrandIcon size={scaleWidth(28)} />
           <Text style={styles.ggfbtext}>Tiếp tục với Facebook</Text>
         </TouchableOpacity>
       </ScrollView>

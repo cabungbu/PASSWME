@@ -187,28 +187,28 @@ export default function Profile() {
         <View style={styles.utilityItem}>
           <UtilityIconTextPair
             width={"49%"}
-            height={scaleHeight(80)}
+            height={scaleHeight(70)}
             title="PWM Xu"
             IconComponent={PWMCoinIcon}
             iconSize={25}
           />
           <UtilityIconTextPair
             width={"49%"}
-            height={scaleHeight(80)}
+            height={scaleHeight(70)}
             title="Khiếu nại"
             IconComponent={ComplainIcon}
             iconSize={30}
           />
           <UtilityIconTextPair
             width={"49%"}
-            height={scaleHeight(80)}
+            height={scaleHeight(70)}
             title="Mua lại"
             IconComponent={ShoppingBagPlusIcon}
             iconSize={30}
           />
           <UtilityIconTextPair
             width={"49%"}
-            height={scaleHeight(80)}
+            height={scaleHeight(70)}
             title="Đã xem gần đây"
             IconComponent={ClockIcon}
             iconSize={25}

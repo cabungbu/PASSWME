@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import Feather from "@expo/vector-icons/Feather";
 import { COLOR } from "../assets/constant/color";
 
@@ -10,15 +11,19 @@ const ShoppingCartIcon = ({ cartColor, size }) => {
   if (size === undefined) {
     size = 24;
   }
+  const navigation = useNavigation();
   return (
-    <View style={{ flexDirection: "row" }}>
+    <TouchableOpacity
+      style={{ flexDirection: "row" }}
+      onPress={() => navigation.navigate("CartScreen")}
+    >
       <Feather name="shopping-cart" size={size} color={cartColor} />
       <View style={styles.numberOfNoti}>
         <Text style={{ fontFamily: "medium", fontSize: 10, color: "white" }}>
           5
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

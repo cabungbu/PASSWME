@@ -2,7 +2,7 @@ import { StatusBar, StyleSheet } from "react-native";
 import { COLOR } from "../assets/constant/color";
 import { scaleHeight, scaleWidth } from "../assets/constant/responsive";
 
-const statusBarHeight = StatusBar.currentHeight ||20
+const statusBarHeight = StatusBar.currentHeight || 20;
 
 const mainStyles = StyleSheet.create({
   headerContainer: {
@@ -16,8 +16,8 @@ const mainStyles = StyleSheet.create({
     backgroundColor: "white",
     shadowColor: "#a0a0a0",
     shadowOffset: {
-        width: 0,
-        height: 2,
+      width: 0,
+      height: 2,
     },
     shadowOpacity: 1,
     shadowRadius: 5,
@@ -25,9 +25,9 @@ const mainStyles = StyleSheet.create({
   },
   headerText: {
     color: "black",
-    fontSize: 20,
+    fontSize: scaleWidth(18),
     fontFamily: "semiBold",
-    marginLeft: scaleWidth(10)
+    marginLeft: scaleWidth(10),
   },
 });
 

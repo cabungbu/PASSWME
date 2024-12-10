@@ -19,7 +19,10 @@ import {
   updatePasswordSuccess,
   updatePasswordFailure,
 } from "./authSlice";
-// Separate the authentication services from React hooks
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BE_ENDPOINT } from "../settings/localVars";
+import { getUserShopcart } from "./shopCartService";
+
 export const loginUser = async (user, dispatch, navigation) => {
   try {
     dispatch(loginStart());
@@ -34,6 +37,7 @@ export const loginUser = async (user, dispatch, navigation) => {
     dispatch(setAccessToken(res.data.accessToken));
     dispatch(setRefreshToken(res.data.refreshToken));
     await AsyncStorage.setItem("user", JSON.stringify(userData));
+    await getUserShopcart(userData.id, dispatch);
     navigation.navigate("BottomBar");
   } catch (e) {
     console.error("Login error:", e);

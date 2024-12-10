@@ -33,7 +33,8 @@ const addPost = async (req, res) => {
       status: data.status,
       description: data.description,
       service: data.service,
-      start: data.start,
+      start: data.start || new Date.now(),
+      time: new Date().toLocaleTimeString(),
       owner: doc(firestoreDb, "users", data.owner), // Lưu reference tới owner
       condition: data.condition,
       soldQuantity: data.soldQuantity || 0,
