@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useCallback } from "react";
 import {
   View,
   Image,
@@ -12,8 +12,9 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import styles from "./style";
 import { COLOR } from "../../../assets/constant/color";
+import BottomSheet from "@gorhom/bottom-sheet";
 
-export default function BottomTabSection() {
+export default function BottomTabSection({ onAddPress }) {
   return (
     <View style={styles.container}>
       <View style={styles.chatAndAddContainer}>
@@ -27,7 +28,7 @@ export default function BottomTabSection() {
 
         <View style={styles.line} />
 
-        <TouchableOpacity style={styles.chatContainer}>
+        <TouchableOpacity style={styles.chatContainer} onPress={onAddPress}>
           <MaterialIcons
             name="add-shopping-cart"
             size={26}

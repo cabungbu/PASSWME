@@ -1,4 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import {
   View,
   Text,
@@ -7,6 +13,7 @@ import {
   StatusBar,
   ScrollView,
   TouchableOpacity,
+  StyleSheet,
 } from "react-native";
 import ImageSection from "./imageSection";
 import { BE_ENDPOINT } from "../../settings/localVars";
@@ -18,11 +25,46 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
 import ShoppingCartIcon from "../../components/shoppingCartIcon";
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
+import ProductBottom from "./productBottomSheet/ProductBottom";
 export default function PostDetailScreen({ route }) {
   const { postId } = route.params;
   const [post, setPost] = useState();
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+  const bottomSheetRef = useRef(null);
+  const [contentHeight, setContentHeight] = useState(0);
+  // variables
+  const snapPoints = useMemo(() => ["50%", "75%"], []);
+
+  // callbacks
+  const handlePresentModalPress = useCallback(() => {
+    if (bottomSheetRef.current && contentHeight > 0) {
+      bottomSheetRef.current.snapToIndex(0);
+    }
+  }, [contentHeight]);
+
+  const handleClosePress = useCallback(() => {
+    bottomSheetRef.current?.close();
+    setIsSheetVisible(false); // Ẩn màu nền mờ
+  }, []);
+
+  const handleSheetChanges = useCallback((index) => {}, []);
+
+  const renderBackdrop = useCallback(
+    (props) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+      />
+    ),
+    []
+  );
+
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -95,7 +137,35 @@ export default function PostDetailScreen({ route }) {
         <ImageSection images={post.images} post={post} />
         <DataSection post={post} />
       </ScrollView>
-      <BottomTabSection />
+
+      <BottomTabSection onAddPress={handlePresentModalPress} />
+
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        // snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        onChange={handleSheetChanges}
+        backdropComponent={renderBackdrop}
+        style={{ zIndex: 5, elevation: 5 }}
+      >
+        <BottomSheetView
+          style={{
+            flex: 1,
+            backgroundColor: "white",
+            zIndex: 10,
+          }}
+          onLayout={(event) => {
+            const { height } = event.nativeEvent.layout;
+            setContentHeight(height);
+          }}
+        >
+          <ProductBottom
+            products={post.products}
+            onClosePress={handleClosePress}
+          />
+        </BottomSheetView>
+      </BottomSheet>
     </View>
   );
 }

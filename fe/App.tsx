@@ -4,9 +4,7 @@ import { StyleSheet } from "react-native";
 import { Provider } from "react-redux";
 import MainContainer from "./components/BottomTabBar";
 import Store from "./redux/store";
-import { Dimensions } from "react-native";
-import CustomRightDrawer from "./components/CustomRightDrawer";
-import WelcomePage from "./screens/WelcomeScreen/welcome";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -35,7 +33,9 @@ export default function App() {
   return (
     <Provider store={Store}>
       <NavigationContainer>
-        <MainContainer />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <MainContainer />
+        </GestureHandlerRootView>
       </NavigationContainer>
     </Provider>
   );
