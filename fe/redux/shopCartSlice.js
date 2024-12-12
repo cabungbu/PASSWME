@@ -55,6 +55,27 @@ const shopCartSlice = createSlice({
           }))
         : [action.payload];
     },
+    updateShopCart(state, action) {
+      // Create a new copy of the shopCart array
+      const updatedShopCart = [...state.shopCart];
+      updatedShopCart[action.payload.index] = {
+        id: action.payload.item.id,
+        user: action.payload.item.user,
+        items: action.payload.item.listItem.map((listItem) => ({
+          postId: listItem.postId,
+          title: listItem.title,
+          images: listItem.images,
+          product: {
+            ...listItem.product,
+          },
+        })),
+        updatedAt: action.payload.item.updatedAt,
+      };
+      state.isFetching = false;
+      // Update the state with the new array
+      state.shopCart = updatedShopCart;
+      state.error = null;
+    },
   },
 });
 
@@ -63,6 +84,7 @@ export const {
   getShopCartFailure,
   getShopCartSuccess,
   setShopCart,
+  updateShopCart,
 } = shopCartSlice.actions;
 
 export default shopCartSlice.reducer;

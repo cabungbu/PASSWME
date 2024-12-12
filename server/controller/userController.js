@@ -24,9 +24,9 @@ const addUser = async (req, res) => {
     const data = req.body;
     const newUser = new user({
       username: data.username,
-      email: data.email, 
+      email: data.email,
       password: data.password,
-      phone: data.phone, 
+      phone: data.phone,
       avatar: data.avatar,
       address: data.address || "",
       posts: data.posts || [],
@@ -52,7 +52,7 @@ const getAllUsers = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   try {
     const userCollection = collection(firestoreDb, "users");
-    const snapshot = await getDocs(userCollection); 
+    const snapshot = await getDocs(userCollection);
 
     const users = await Promise.all(
       snapshot.docs.map(async (doc) => {
@@ -174,7 +174,10 @@ const getUserShopCart = async (req, res) => {
               postId: postDoc.id,
               title: postData.title,
               images: postData.images,
-              product: productSnapshot.data(),
+              product: {
+                quantityInShopcart: item.quantity,
+                ...productSnapshot.data(),
+              },
             };
           })
         );
@@ -215,7 +218,7 @@ const updateUser = async (req, res) => {
 
     res.status(200).json({
       message: "User updated successfully.",
-      user: { id: updatedUserDoc.id, ...updatedUserDoc.data() }, 
+      user: { id: updatedUserDoc.id, ...updatedUserDoc.data() },
     });
   } catch (error) {
     console.error("Error updating user:", error);
@@ -251,7 +254,9 @@ const addToShopCart = async (req, res) => {
     const sellerDoc = await getDoc(sellerRef);
 
     if (!sellerDoc.exists()) {
-      return res.status(404).json({ error: "Seller not found" });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy thông tin người bán" });
     }
 
     // 2. Lấy thông tin về post
@@ -259,7 +264,9 @@ const addToShopCart = async (req, res) => {
     const postDoc = await getDoc(postRef);
 
     if (!postDoc.exists()) {
-      return res.status(404).json({ error: "Post not found" });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy thông tin bài đăng" });
     }
 
     const postData = postDoc.data();
@@ -276,7 +283,9 @@ const addToShopCart = async (req, res) => {
     const selectedProduct = product.find((p) => p.id === productId);
 
     if (!selectedProduct) {
-      return res.status(404).json({ error: "Product not found in this post" });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy thông tin sản phẩm này" });
     }
 
     if (selectedProduct.quantity < quantity) {
@@ -291,7 +300,7 @@ const addToShopCart = async (req, res) => {
     const userDoc = await getDoc(userRef);
 
     if (!userDoc.exists()) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // 5. Cập nhật giỏ hàng của user
@@ -320,16 +329,26 @@ const addToShopCart = async (req, res) => {
 
       if (existingProduct) {
         const newQuantity = Number(existingProduct.quantity) + Number(quantity);
-        const updatedItems = existingItems.map((item) =>
-          item.productId === productId
-            ? { ...item, quantity: newQuantity }
-            : item
-        );
+        if (newQuantity > selectedProduct.quantity) {
+          return res.status(400).json({
+            message:
+              "Sản phẩm này đã tồn tại trong giỏ hàng với số lượng: " +
+              existingProduct.quantity +
+              ", bạn chỉ có thể thêm số lượng tối đa là: " +
+              (selectedProduct.quantity - existingProduct.quantity),
+          });
+        } else {
+          const updatedItems = existingItems.map((item) =>
+            item.productId === productId
+              ? { ...item, quantity: newQuantity }
+              : item
+          );
 
-        batch.update(shopCartRef, {
-          listItem: updatedItems,
-          updatedAt: Timestamp.now(),
-        });
+          batch.update(shopCartRef, {
+            listItem: updatedItems,
+            updatedAt: Timestamp.now(),
+          });
+        }
       } else {
         const newItem = {
           postId,

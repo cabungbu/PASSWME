@@ -305,7 +305,10 @@ export default function MainContainer() {
           <Stack.Screen name="MyRatingsScreen" component={MyRatings} />
           <Stack.Screen name="OrderStatusScreen" component={OrderStatus} />
           <Stack.Screen name="PostsDisplay" component={PostsDisplay} />
-          <Stack.Screen name="UpdateInformation" component={UpdateInformation} />
+          <Stack.Screen
+            name="UpdateInformation"
+            component={UpdateInformation}
+          />
           <Stack.Screen name="PostingDetailScreen" component={PostingDetail} />
           <Stack.Screen name="PostedScreen" component={Posted} />
         </>

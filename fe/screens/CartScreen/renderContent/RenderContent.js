@@ -8,7 +8,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import SelectDropdown from "react-native-select-dropdown";
 import Entypo from "@expo/vector-icons/Entypo";
 
-const RenderContent = ({ shopCart, navigation }) => {
+const RenderContent = ({ shopCart }) => {
   const [isChecked, setIsChecked] = useState(false);
   const formatPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -70,8 +70,7 @@ const RenderContent = ({ shopCart, navigation }) => {
                             return (
                               <View style={styles.dropdownButtonStyle}>
                                 <Text numberOfLines={1} style={styles.name}>
-                                  {(selectedItem && selectedItem.title) ||
-                                    "Select your mood"}
+                                  {post.product.name}
                                 </Text>
                                 <Entypo
                                   name="chevron-small-down"
@@ -109,7 +108,7 @@ const RenderContent = ({ shopCart, navigation }) => {
                             <Text style={styles.text}>+</Text>
                           </TouchableOpacity>
                           <Text style={styles.quantity}>
-                            {post.product.quantity}
+                            {post.product.quantityInShopcart}
                           </Text>
                           <TouchableOpacity style={styles.plus}>
                             <Text style={styles.text}>-</Text>
@@ -126,7 +125,11 @@ const RenderContent = ({ shopCart, navigation }) => {
             </View>
           ))
         ) : (
-          <Text>Giỏ hàng trống</Text>
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text style={styles.shopNameText}>Giỏ hàng trống</Text>
+          </View>
         )}
       </View>
     );
