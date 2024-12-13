@@ -123,6 +123,8 @@ const styles = StyleSheet.create({
     paddingVertical: scaleHeight(10),
     marginHorizontal: scaleHeight(15),
     marginBottom: scaleHeight(20),
+    borderColor: COLOR.mainColor,
+    borderWidth: 1,
   },
   addCartText: {
     fontFamily: "semiBold",

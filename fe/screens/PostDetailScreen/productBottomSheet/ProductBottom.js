@@ -4,34 +4,44 @@ import { scaleHeight, scaleWidth } from "../../../assets/constant/responsive";
 import Feather from "@expo/vector-icons/Feather";
 import styles from "./style";
 import { COLOR } from "../../../assets/constant/color";
-import { addProductToCart } from "../../../redux/shopCartService";
+import {
+  addProductToCart,
+  updateUserShopCart,
+} from "../../../redux/shopCartService";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { useToast } from "react-native-toast-notifications";
-export default function ProductBottom({ products, post, onClosePress }) {
+export default function ProductBottom({
+  products,
+  post,
+  isUpdate,
+  productIdBefore,
+}) {
   const [selectedProduct, setSelectedProduct] = useState(products[0]);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [disabledPlus, setDisabledPlus] = useState(false);
   const [disabledSub, setDisabledSub] = useState(true);
   const [isAdd, setIsAdd] = useState("Thêm vào giỏ hàng");
+  const [isUpdateButton, setIsUpdateButton] = useState("Cập nhật");
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth?.user);
   const error = useSelector((state) => state.shopCartContainer?.error);
+  const shopCart = useSelector((state) => state.shopCartContainer?.shopCart);
   const formatPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
   const toast = useToast();
-  // useEffect(() => {
-  //   toast.show("nga", {
-  //     type: "success",
-  //     placement: "top",
-  //     duration: 3000,
-  //     offset: 30,
-  //     animationType: "slide-in ",
-  //   });
-  // }, []);
+  useEffect(() => {
+    if (products.length > 0) {
+      setSelectedProduct(products[0]); // Reset selected product to the first one
+      setSelectedQuantity(1); // Reset quantity if needed
+    }
+  }, [products]);
   const handleChooseProduct = (index) => {
     setSelectedProduct(products[index]);
+    if (selectedQuantity < selectedProduct.quantity) {
+      setDisabledPlus(false);
+    }
     // onClosePress();
   };
 
@@ -53,6 +63,46 @@ export default function ProductBottom({ products, post, onClosePress }) {
       }
       setDisabledPlus(false); // Enable add button
     }
+  };
+
+  const updateToShopCart = async () => {
+    setIsUpdateButton("Đang cập nhật...");
+    console.log(selectedProduct);
+    const updatedProduct = {
+      sellerId: post.owner.id,
+      postId: post.id,
+      title: post.title,
+      images: post.images,
+      name: selectedProduct.name,
+      image: selectedProduct.image,
+      productIdBefore: productIdBefore,
+      productIdAfter: selectedProduct.id,
+      quantity: selectedQuantity,
+    };
+    const res = await updateUserShopCart(
+      shopCart,
+      dispatch,
+      updatedProduct,
+      user.id
+    );
+    if (res) {
+      toast.show(res, {
+        type: "success",
+        placement: "top",
+        duration: 3000,
+        offset: 30,
+        animationType: "slide-in ",
+      });
+    } else {
+      toast.show(error, {
+        type: "danger",
+        placement: "top",
+        duration: 4000,
+        offset: 30,
+        animationType: "slide-in ",
+      });
+    }
+    setIsUpdateButton("Cập nhật");
   };
 
   const addToShopCart = async () => {
@@ -106,6 +156,7 @@ export default function ProductBottom({ products, post, onClosePress }) {
     <View>
       <View style={styles.firstSection}>
         <Image
+          key={selectedProduct?.image}
           source={{ uri: selectedProduct?.image }}
           style={{
             width: scaleWidth(150),
@@ -115,13 +166,13 @@ export default function ProductBottom({ products, post, onClosePress }) {
         />
         <View style={styles.priceContainer}>
           <Text style={styles.priceText}>
-            đ {formatPrice(selectedProduct?.price)}
+            đ {selectedProduct ? formatPrice(selectedProduct.price) : 0}
           </Text>
           <Text style={styles.quantityText}>
             Kho: {selectedProduct.quantity}
           </Text>
         </View>
-        <TouchableOpacity onPress={onClosePress}>
+        <TouchableOpacity>
           <Feather name="x-circle" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
@@ -165,6 +216,16 @@ export default function ProductBottom({ products, post, onClosePress }) {
       </View>
       <View style={styles.grayline3} />
 
+      {isUpdate ? (
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: "white" }]}
+          onPress={() => updateToShopCart()}
+        >
+          <Text style={[styles.addCartText, { color: COLOR.mainColor }]}>
+            {isUpdateButton}
+          </Text>
+        </TouchableOpacity>
+      ) : null}
       <TouchableOpacity style={styles.button} onPress={() => addToShopCart()}>
         <Text style={styles.addCartText}>{isAdd}</Text>
       </TouchableOpacity>

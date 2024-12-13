@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import {
   TouchableOpacity,
   View,
@@ -20,51 +26,131 @@ import FooterDelete from "./Footer/FooterDelete";
 import { useNavigation } from "@react-navigation/native";
 import { isEqual } from "lodash";
 import styles from "./style";
-
-const CartScreen = React.memo(() => {
+import { shallowEqual } from "react-redux";
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
+import ProductBottom from "../PostDetailScreen/productBottomSheet/ProductBottom";
+import { BE_ENDPOINT } from "../../settings/localVars";
+const CartScreen = () => {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
   const [isSua, setIsSua] = useState(false);
-  const user = useSelector((state) => state.auth?.user);
+  const [productIdBefore, setProductIdBefore] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  // Memoize selector để tránh re-render không cần thiết
 
-  const shopCart = useSelector(
-    (state) => state.shopCartContainer?.shopCart,
-    (prevShopCart, nextShopCart) => isEqual(prevShopCart, nextShopCart)
+  // Sử dụng useCallback cho các hàm callback
+  const handleGoBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
+  const toggleSua = useCallback(() => {
+    setIsSua((prev) => !prev);
+  }, []);
+
+  // Memoize các component con
+  const MemoizedRenderContent = useMemo(() => <RenderContent />, []);
+
+  const Footer = useMemo(
+    () => (isSua ? <FooterDelete /> : <FooterBuy />),
+    [isSua]
   );
 
-  useEffect(() => {
-    const checkShopCartStatus = async () => {
-      setIsLoading(true);
-      console.log("Starting to check shop cart status...");
+  const bottomSheetRef = useRef(null);
 
+  const ContentRef = React.forwardRef((props, ref) => {
+    return <Text innerRef={ref}>Đang tải...</Text>;
+  });
+
+  const [contentHeight, setContentHeight] = useState(0);
+  const [post, setPost] = useState(null);
+  const handlePresentModalPress = (post) => {
+    setPost(null);
+    const fetchPost = async () => {
       try {
-        await getUserShopcart(user.id, dispatch);
-        // await checkIfShopcartUpdate(shopCart, user?.id, dispatch);
-        console.log("Shop cart updated successfully.");
+        requestAnimationFrame(() => {
+          // Mở bottom sheet
+
+          if (bottomSheetRef.current) {
+            bottomSheetRef.current.snapToIndex(0);
+          }
+        });
+        const response = await fetch(
+          `${BE_ENDPOINT}/post/getPostById/${post.postId}/`
+        );
+        const data = await response.json();
+        setPost(data);
+        setProductIdBefore(post.product.productId);
       } catch (error) {
-        console.error("Error loading shop cart data:", error);
-      } finally {
-        console.log("Check complete.");
-        setIsLoading(false);
+        console.error("Error fetching post:", error);
       }
     };
 
-    if (user?.id) {
-      checkShopCartStatus();
-    }
-  }, [user?.id, shopCart]); // Only run again if these change
+    fetchPost();
+    console.log("Đã mở");
+  };
+  const handleSheetChanges = useCallback((index) => {}, []);
 
-  console.log("hehe");
-  const Render = useCallback(() => {
-    return isLoading ? (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    ) : (
-      <RenderContent shopCart={shopCart} />
+  const renderBackdrop = useCallback(
+    (props) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+      />
+    ),
+    []
+  );
+  useEffect(() => {
+    const measureHeight = () => {
+      if (ContentRef.current) {
+        ContentRef.current.measure((x, y, width, height) => {
+          setContentHeight(height);
+        });
+      }
+    };
+
+    // Nếu post đã được load, measure height
+    if (post) {
+      // Sử dụng requestAnimationFrame để đảm bảo layout đã được render
+      requestAnimationFrame(measureHeight);
+    }
+  }, [post]);
+
+  const renderPostContent = () => {
+    if (post === null)
+      return (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingTop: 50,
+          }}
+        >
+          <ActivityIndicator size="large" color="#A0A0A0" />
+        </View>
+      );
+
+    return (
+      <BottomSheetView
+        ref={ContentRef}
+        onLayout={(event) => {
+          const { height } = event.nativeEvent.layout;
+          setContentHeight(height);
+        }}
+      >
+        <ProductBottom
+          products={post.products}
+          post={post}
+          isUpdate={true}
+          productIdBefore={productIdBefore}
+        />
+      </BottomSheetView>
     );
-  }, [isLoading, shopCart]);
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <StatusBar
@@ -81,7 +167,7 @@ const CartScreen = React.memo(() => {
           name="chevron-back"
           size={24}
           color={Platform.OS === "android" ? "white" : "#E30414"}
-          onPress={() => navigation.goBack()}
+          onPress={handleGoBack}
         />
         <Text
           style={
@@ -90,15 +176,26 @@ const CartScreen = React.memo(() => {
         >
           Giỏ hàng
         </Text>
-        <TouchableOpacity onPress={() => setIsSua(!isSua)}>
+        <TouchableOpacity onPress={toggleSua}>
           <Text style={styles.sua}>{isSua ? "Xong" : "Sửa"}</Text>
         </TouchableOpacity>
       </View>
 
-      <Render />
-      {isSua ? <FooterDelete /> : <FooterBuy />}
+      <RenderContent onAddPress={(post) => handlePresentModalPress(post)} />
+      {Footer}
+
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        // snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        onChange={handleSheetChanges}
+        backdropComponent={renderBackdrop}
+        style={{ zIndex: 5, elevation: 5 }}
+      >
+        <View style={{ padding: 1 }}>{renderPostContent()}</View>
+      </BottomSheet>
     </View>
   );
-});
-
+};
 export default CartScreen;

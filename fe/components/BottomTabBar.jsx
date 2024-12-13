@@ -41,7 +41,7 @@ import { setUser } from "../redux/authSlice";
 import UpdateInformation from "../screens/ProfileScreen/SettingScreen/UpdateInformationScreen";
 import PostingDetail from "../screens/PostScreen/PostingScreen/PostingDetail";
 import Posted from "../screens/PostScreen/PostedScreen/Posted";
-
+import { getUserShopcart } from "../redux/shopCartService";
 const Stack = createNativeStackNavigator();
 
 function HomeStack() {
@@ -265,7 +265,13 @@ export default function MainContainer() {
       try {
         const storedUser = await AsyncStorage.getItem("user");
         if (storedUser) {
-          dispatch(setUser(JSON.parse(storedUser)));
+          const parsedUser = JSON.parse(storedUser);
+          dispatch(setUser(parsedUser));
+
+          // Check if user is defined before calling getUserShopcart
+          if (parsedUser && parsedUser.id) {
+            await getUserShopcart(parsedUser.id, dispatch);
+          }
         }
       } catch (error) {
         console.error("Error loading user data:", error);

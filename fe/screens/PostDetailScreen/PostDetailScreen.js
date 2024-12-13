@@ -163,7 +163,7 @@ export default function PostDetailScreen({ route }) {
           <ProductBottom
             products={post.products}
             post={post}
-            onClosePress={handleClosePress}
+            isUpdate={false}
           />
         </BottomSheetView>
       </BottomSheet>

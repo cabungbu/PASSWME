@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Feather from "@expo/vector-icons/Feather";
@@ -7,6 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserShopcart } from "../redux/shopCartService";
 import { useDispatch, useSelector } from "react-redux";
 import { setShopCart } from "../redux/shopCartSlice";
+import { checkIfShopcartUpdate } from "../redux/shopCartService";
 const ShoppingCartIcon = ({ cartColor, size }) => {
   if (cartColor === undefined) {
     cartColor = "white";
@@ -17,21 +18,10 @@ const ShoppingCartIcon = ({ cartColor, size }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth?.user);
+  const shopCart = useSelector((state) => state.shopCartContainer?.shopCart);
   const handleCartScreen = async () => {
-    try {
-      const storedShopcart = await AsyncStorage.getItem("shopCart");
-      if (storedShopcart) {
-        // Parse the stored data if it exists
-        setShopCart(JSON.parse(storedShopcart));
-      } else {
-        // Set an empty cart if no data is found
-        setShopCart([]);
-      }
-    } catch (error) {
-      console.error("Error in ShoppingCartIcon:", error);
-    }
-
     navigation.navigate("CartScreen");
+    await checkIfShopcartUpdate(shopCart, user.id, dispatch);
   };
   return (
     <TouchableOpacity

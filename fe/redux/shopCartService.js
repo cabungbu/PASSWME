@@ -8,20 +8,19 @@ import {
   setShopCart,
   updateShopCart,
 } from "./shopCartSlice";
+
 export const getUserShopcart = async (userId, dispatch) => {
   try {
-    console.log(userId);
     dispatch(getShopCartStart());
     const res = await axios.get(
       BE_ENDPOINT + `/user/getUserShopCart/${userId}`
     );
     const shopCartData = res.data;
-    console.log(shopCartData);
     dispatch(getShopCartSuccess(shopCartData));
     await AsyncStorage.setItem("shopCart", JSON.stringify(shopCartData));
   } catch (error) {
     console.error(error);
-    dispatch(getShopCartFailure(error));
+    dispatch(getShopCartFailure(JSON.stringify(error.response?.data.message)));
   }
 };
 export function deepEqual(obj1, obj2) {
@@ -52,15 +51,15 @@ export function deepEqual(obj1, obj2) {
   // So sánh từng thuộc tính
   for (let key of keys1) {
     if (!keys2.includes(key)) {
-      console.log(`Khóa "${key}" không tồn tại trong obj2`);
+      // console.log(`Khóa "${key}" không tồn tại trong obj2`);
       return false; // Hoặc return 3 nếu bạn muốn giữ lại giá trị đó
     }
     if (!deepEqual(obj1[key], obj2[key])) {
-      console.log(
-        `Giá trị của khóa "${key}" không giống nhau:`,
-        obj1[key],
-        obj2[key]
-      );
+      // console.log(
+      //   `Giá trị của khóa "${key}" không giống nhau:`,
+      //   obj1[key],
+      //   obj2[key]
+      // );
       return false; // Hoặc return 3 nếu bạn muốn giữ lại giá trị đó
     }
   }
@@ -100,7 +99,7 @@ export const checkIfShopcartUpdate = async (
     await AsyncStorage.setItem("shopCart", JSON.stringify(shopCartData));
   } catch (error) {
     console.error("Lỗi ở checkIfShopcartUpdate: " + error);
-    dispatch(getShopCartFailure(error.message));
+    dispatch(getShopCartFailure(JSON.stringify(error.response?.data.message)));
   }
 };
 
@@ -120,7 +119,7 @@ export const addProductToCart = async (dispatch, product, userId) => {
       }
     );
     if (res.status === 200) {
-      // getUserShopcart(userId, dispatch);
+      getUserShopcart(userId, dispatch);
       return "Thêm vào giỏ hàng thành công";
     } else {
       // console.error(res.message);
@@ -130,5 +129,48 @@ export const addProductToCart = async (dispatch, product, userId) => {
   } catch (err) {
     dispatch(getShopCartFailure(JSON.stringify(err.response?.data.message)));
     return;
+  }
+};
+
+export const updateUserShopCart = async (
+  currentShopcart,
+  dispatch,
+  product,
+  userId
+) => {
+  try {
+    if (product.sellerId === userId) {
+      dispatch(getShopCartFailure("Bạn không thể thêm sản phẩm của mình"));
+    }
+    dispatch(getShopCartStart());
+    // console.log(userId);
+    const res = await axios.patch(
+      `${BE_ENDPOINT}/user/updateShopCart/${userId}`,
+      {
+        sellerId: product.sellerId,
+        postId: product.postId,
+        productIdBefore: product.productIdBefore,
+        productIdAfter: product.productIdAfter,
+        quantity: product.quantity,
+      }
+    );
+    if (res.status === 200) {
+      getUserShopcart(userId, dispatch);
+      return "Cập nhật giỏ hàng thành công";
+    } else {
+      console.log(res.status);
+      return null;
+    }
+  } catch (err) {
+    if (err.response) {
+      // The request was made and the server responded with a status code
+      dispatch(
+        getShopCartFailure(err.response.data.message || "Unknown error")
+      );
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      dispatch(getShopCartFailure("Network error or request setup error"));
+    }
+    dispatch(getShopCartFailure(JSON.stringify(err.response?.data.message)));
   }
 };
