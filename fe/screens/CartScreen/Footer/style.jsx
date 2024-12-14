@@ -5,6 +5,8 @@ const styles = StyleSheet.create({
   footerContainer: {
     display: "flex",
     flexDirection: "row",
+    position: "absolute",
+    bottom: 0,
   },
   buyNowText: {
     color: "white",

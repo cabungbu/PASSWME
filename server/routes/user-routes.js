@@ -12,6 +12,10 @@ const {
   checkboxProduct,
   setProductNotCheck,
 } = require("../controller/userController");
+const {
+  checkAllBoxTrue,
+  checkAllBoxFalse,
+} = require("../controller/shopCartController");
 const { verifyToken } = require("../controller/middlewareController");
 const router = express.Router();
 
@@ -26,4 +30,7 @@ router.patch("/updateShopCart/:id", updateShopCart);
 router.put("/checkboxProduct/:id", checkboxProduct);
 router.put("/setProductNotCheck/:id", setProductNotCheck);
 router.delete("/removeProductFromCart/:id", removeProductFromCart);
+
+router.patch("/checkAllBoxTrue/:id", checkAllBoxTrue);
+router.patch("/checkAllBoxFalse/:id", checkAllBoxFalse);
 module.exports = { routes: router };

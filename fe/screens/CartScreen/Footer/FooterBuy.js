@@ -16,12 +16,36 @@ import { useNavigation } from "@react-navigation/native";
 import styles from "./style";
 import { CheckBox } from "react-native-elements";
 import { scaleHeight, scaleWidth } from "../../../assets/constant/responsive";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  checkAllBoxTrue,
+  checkAllBoxFalse,
+} from "../../../redux/checkShopCart";
 const FooterBuy = React.memo(({ isCheck }) => {
+  const isCheckingAll = useSelector(
+    (state) => state.shopCartContainer?.isCheckingAll
+  );
+  const user = useSelector((state) => state.auth?.user);
+  const shopCart = useSelector((state) => state.shopCartContainer?.shopCart);
+  const dispatch = useDispatch();
+  const handelPress = () => {
+    if (isCheckingAll) {
+      checkAllBoxFalse(shopCart, user.id, dispatch);
+    } else {
+      console.log(isCheckingAll);
+      checkAllBoxTrue(shopCart, user.id, dispatch);
+    }
+  };
+
   return (
     <View style={styles.footerContainer}>
       <View style={styles.allContainer}>
         <Text style={styles.allText}>Chọn tất cả</Text>
-        <CheckBox containerStyle={{ marginRight: 10, padding: 0 }} />
+        <CheckBox
+          checked={isCheckingAll}
+          onPress={() => handelPress()}
+          containerStyle={{ marginRight: 10, padding: 0 }}
+        />
       </View>
       <View
         style={{

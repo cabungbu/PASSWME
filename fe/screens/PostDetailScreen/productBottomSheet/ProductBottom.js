@@ -113,6 +113,7 @@ export default function ProductBottom({
       productId: selectedProduct.id,
       quantity: selectedQuantity,
     };
+    console.log(newProduct);
     const res = await addProductToCart(dispatch, newProduct, user.id);
     if (res) {
       toast.show(res, {

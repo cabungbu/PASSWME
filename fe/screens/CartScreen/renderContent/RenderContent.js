@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useCallback } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 import styles from "./style";
 import { scaleHeight, scaleWidth } from "../../../assets/constant/responsive";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -11,6 +11,13 @@ import { shallowEqual } from "react-redux";
 import ShopName from "./ShopName";
 import { COLOR } from "../../../assets/constant/color";
 import QuantitySlider from "./QuantitySlider";
+import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
+import {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+} from "react-native-reanimated";
+
 const RenderContent = React.memo(
   ({ onAddPress }) => {
     const user = useSelector((state) => state.auth?.user, shallowEqual);
@@ -18,7 +25,7 @@ const RenderContent = React.memo(
       (state) => state.shopCartContainer?.shopCart,
       shallowEqual
     );
-    console.log("rendering content nè");
+    // console.log("rendering content nè: " + JSON.stringify(shopCart));
 
     const formatPrice = useMemo(() => {
       return (price) => {
@@ -29,8 +36,29 @@ const RenderContent = React.memo(
       };
     }, []);
 
+    const leftSwipe = () => {
+      return (
+        <View style={{ justifyContent: "center" }}>
+          <TouchableOpacity>
+            <Text style={{ color: "red", paddingHorizontal: 20 }}>Xóa</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    };
+    const translateX = useSharedValue(0);
+    const animatedStyle = useAnimatedStyle(() => {
+      return {
+        transform: [{ translateX: withTiming(translateX.value) }],
+      };
+    });
+    const swipeableRef = useRef(null);
+    const handleSwipe = (gestureState) => {
+      // Update shared value based on gesture
+      translateX.value = gestureState.translationX;
+    };
+
     return (
-      <View style={{ flex: 1, paddingTop: scaleHeight(10) }}>
+      <ScrollView style={{ flex: 1, paddingTop: scaleHeight(10) }}>
         {/* Render shop cart items here */}
         {shopCart && shopCart.length > 0 ? (
           shopCart.map((item) => (
@@ -38,56 +66,81 @@ const RenderContent = React.memo(
               <ShopName item={item} />
               {item.items &&
                 item.items.map((post, index) => (
-                  <View key={index} style={styles.shopNameContainer}>
-                    <CheckBox post={post} sellerId={item.id} />
-                    <Image
-                      source={{ uri: post.product.image }}
-                      style={{
-                        width: scaleHeight(70),
-                        marginRight: scaleWidth(10),
-                        height: scaleHeight(70),
-                        borderRadius: 20,
-                        resizeMode: "cover",
-                      }}
-                    />
-                    <View
-                      style={{
-                        flex: 1,
-                        marginRight: scaleWidth(10),
-                      }}
-                    >
-                      <TouchableOpacity>
-                        <Text style={styles.title}>{post.title}</Text>
-                      </TouchableOpacity>
-                      <View style={styles.productContainer}>
-                        <TouchableOpacity
-                          style={styles.dropdownButtonStyle}
-                          onPress={() => onAddPress(post)}
-                        >
-                          {post.product.quantity == 0 ? (
-                            <Text numberOfLines={1} style={styles.name}>
-                              Hết số lượng sản phẩm
-                            </Text>
-                          ) : (
-                            <Text numberOfLines={1} style={styles.name}>
-                              {post.product.name}
-                            </Text>
-                          )}
-
-                          <Entypo
-                            name="chevron-down"
-                            size={20}
-                            color="#A0A0A0"
-                          />
-                        </TouchableOpacity>
-                        <QuantitySlider post={post} />
+                  <Swipeable
+                    ref={swipeableRef}
+                    renderLeftActions={leftSwipe}
+                    onSwipeableWillOpen={handleSwipe}
+                  >
+                    <View style={styles.shopNameContainer}>
+                      <CheckBox post={post} sellerId={item.id} />
+                      <View
+                        style={{
+                          backgroundColor: "blue",
+                          marginRight: scaleWidth(10),
+                          backgroundColor: "red",
+                          borderRadius: 20,
+                          overflow: "hidden", // Thêm này để ảnh nằm trong View
+                        }}
+                      >
+                        <Image
+                          source={{
+                            uri:
+                              post.product.image ||
+                              "https://t4.ftcdn.net/jpg/03/57/52/77/360_F_357527700_FVCDzgXx8qhKoouAUXL3NWjvQboG7huD.jpg",
+                          }}
+                          style={{
+                            width: scaleHeight(70),
+                            height: scaleHeight(70),
+                            resizeMode: "cover",
+                          }}
+                        />
                       </View>
 
-                      <Text style={styles.price}>
-                        {formatPrice(post.product.price)} đ
-                      </Text>
+                      <View
+                        style={{
+                          flex: 1,
+                          paddingRight: scaleWidth(10),
+                        }}
+                      >
+                        <TouchableOpacity>
+                          <Text style={styles.title}>
+                            {post.title
+                              ? post.title
+                              : "Bài đăng không khả dụng"}
+                          </Text>
+                        </TouchableOpacity>
+                        <View style={styles.productContainer}>
+                          <TouchableOpacity
+                            style={styles.dropdownButtonStyle}
+                            onPress={() => {
+                              if (post.postId != null) onAddPress(post);
+                            }}
+                          >
+                            {post.product.quantity == 0 ? (
+                              <Text numberOfLines={1} style={styles.name}>
+                                Hết số lượng sản phẩm
+                              </Text>
+                            ) : (
+                              <Text numberOfLines={1} style={styles.name}>
+                                {post.product.name}
+                              </Text>
+                            )}
+
+                            <Entypo
+                              name="chevron-down"
+                              size={20}
+                              color="#A0A0A0"
+                            />
+                          </TouchableOpacity>
+                          <QuantitySlider post={post} />
+                        </View>
+
+                        <Text style={styles.price}>
+                          {formatPrice(post.product.price)} đ
+                        </Text>
+                      </View>
                     </View>
-                  </View>
+                  </Swipeable>
                 ))}
             </View>
           ))
@@ -98,7 +151,7 @@ const RenderContent = React.memo(
             <Text style={styles.shopNameText}>Giỏ hàng trống</Text>
           </View>
         )}
-      </View>
+      </ScrollView>
     );
   },
   (prevProps, nextProps) => {

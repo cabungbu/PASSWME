@@ -165,7 +165,9 @@ const getUserShopCart = async (req, res) => {
             const postDoc = await getDoc(postRef);
 
             if (!postDoc.exists()) {
-              return res.status(404).json({ message: "Post not found" });
+              return {
+                postId: null,
+              };
             }
 
             const postData = postDoc.data();
@@ -174,7 +176,12 @@ const getUserShopCart = async (req, res) => {
 
             const productSnapshot = await getDoc(productRef);
             if (!productSnapshot.exists()) {
-              return res.status(404).json({ message: "Product not found" });
+              return {
+                postId: postDoc.id,
+                title: postData.title,
+                images: postData.images,
+                product: null,
+              };
             }
             return {
               postId: postDoc.id,
@@ -333,7 +340,7 @@ const addToShopCart = async (req, res) => {
     } else {
       const existingItems = shopCartDoc.data().listItem;
       const existingProduct = existingItems.find(
-        (p) => p.productId === productId
+        (p) => p.productId === productId && p.postId === postId
       );
 
       if (existingProduct) {
@@ -389,7 +396,7 @@ const addToShopCart = async (req, res) => {
 
 const setProductNotCheck = async (req, res) => {
   const db = getFirestoreDb();
-  const { sellerId, postId, productId, quantity, currentPrice } = req.body;
+  const { sellerId, productId } = req.body;
   const userId = req.params.id;
 
   try {

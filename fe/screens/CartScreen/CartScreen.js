@@ -60,13 +60,14 @@ const CartScreen = () => {
   const bottomSheetRef = useRef(null);
 
   const ContentRef = React.forwardRef((props, ref) => {
-    return <Text innerRef={ref}>Đang tải...</Text>;
+    return <Text>Đang tải...</Text>;
   });
 
   const [contentHeight, setContentHeight] = useState(0);
   const [post, setPost] = useState(null);
   const handlePresentModalPress = (post) => {
     setPost(null);
+    console.log("mở");
     const fetchPost = async () => {
       try {
         requestAnimationFrame(() => {

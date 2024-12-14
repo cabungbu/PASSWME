@@ -3,17 +3,27 @@ import { scaleHeight, scaleWidth } from "../../../assets/constant/responsive";
 import { COLOR } from "../../../assets/constant/color";
 const styles = StyleSheet.create({
   itemContainer: {
-    backgroundColor: "white",
     marginHorizontal: scaleWidth(10),
-    marginBottom: scaleHeight(10),
+    paddingBottom: scaleHeight(10),
     paddingVertical: scaleWidth(10),
     borderRadius: scaleWidth(10),
+    backgroundColor: "white",
+    marginTop: scaleHeight(10),
   },
   shopNameContainer: {
     display: "flex",
+    flex: 1,
+    backgroundColor: "white",
     flexDirection: "row",
     alignItems: "center",
     marginBottom: scaleHeight(5),
+  },
+  username: {
+    display: "flex",
+    flex: 1,
+    backgroundColor: "white",
+    flexDirection: "row",
+    marginLeft: scaleWidth(15),
   },
   shopNameText: {
     fontFamily: "regular",
@@ -98,6 +108,11 @@ const styles = StyleSheet.create({
   dropdownMenuStyle: {
     marginTop: scaleWidth(5),
     borderRadius: 10,
+  },
+  grayline: {
+    height: 1,
+    backgroundColor: "#E5E5E5",
+    marginVertical: scaleHeight(10),
   },
 });
 

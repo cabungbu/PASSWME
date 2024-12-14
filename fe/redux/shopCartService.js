@@ -127,6 +127,7 @@ export const addProductToCart = async (dispatch, product, userId) => {
       return null;
     }
   } catch (err) {
+    console.log(getShopCartFailure(JSON.stringify(err.response?.data.message)));
     dispatch(getShopCartFailure(JSON.stringify(err.response?.data.message)));
     return;
   }

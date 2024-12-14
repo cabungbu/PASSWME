@@ -7,6 +7,8 @@ import {
   getShopCartSuccess,
   setShopCart,
   updateShopCart,
+  setShopCartAllTrue,
+  setShopCartAllFalse,
 } from "./shopCartSlice";
 import { getUserShopcart, checkIfShopcartUpdate } from "./shopCartService";
 
@@ -36,4 +38,54 @@ export const clickCheckProduct = async (
     console.error("Loi ở clickCheckProduct: " + error);
     dispatch(getShopCartFailure(error.message));
   }
+};
+
+export const UnClickCheckProduct = async (
+  shopcart,
+  userId,
+  product,
+  dispatch
+) => {
+  try {
+    dispatch(getShopCartStart());
+    const res = await axios.put(
+      `${BE_ENDPOINT}/user/setProductNotCheck/${userId}`,
+      {
+        sellerId: product.sellerId,
+        productId: product.productId,
+      }
+    );
+    if (res.status === 200) {
+      checkIfShopcartUpdate(shopcart, userId, dispatch);
+    }
+  } catch (error) {
+    console.error("Loi ở UnClickCheckProduct: " + error);
+    dispatch(getShopCartFailure(error.message));
+  }
+};
+
+export const checkAllBoxTrue = async (shopcart, userId, dispatch) => {
+  try {
+    dispatch(setShopCartAllTrue());
+    console.log("CheckAllBoxTrue");
+    const res = await axios.patch(
+      `${BE_ENDPOINT}/user/checkAllBoxTrue/${userId}`
+    );
+    if (res.status === 200) {
+      checkIfShopcartUpdate(shopcart, userId, dispatch);
+    }
+  } catch (error) {}
+};
+
+export const checkAllBoxFalse = async (shopcart, userId, dispatch) => {
+  try {
+    dispatch(setShopCartAllFalse());
+    console.log("CheckAllBoxFalse");
+    const res = await axios.patch(
+      `${BE_ENDPOINT}/user/checkAllBoxFalse/${userId}`
+    );
+    if (res.status === 200) {
+      checkIfShopcartUpdate(shopcart, userId, dispatch);
+    }
+  } catch (error) {}
 };

@@ -8,6 +8,7 @@ const shopCartSlice = createSlice({
     shopCart: [],
     isFetching: false,
     error: null,
+    isCheckingAll: false,
   },
   reducers: {
     getShopCartStart(state) {
@@ -76,6 +77,22 @@ const shopCartSlice = createSlice({
       state.shopCart = updatedShopCart;
       state.error = null;
     },
+    setShopCartAllTrue(state, action) {
+      state.isCheckingAll = true;
+      state.shopCart.forEach((item) => {
+        item.items.forEach((listItem) => {
+          listItem.isCheck = true;
+        });
+      });
+    },
+    setShopCartAllFalse(state, action) {
+      state.isCheckingAll = false;
+      state.shopCart.forEach((item) => {
+        item.items.forEach((listItem) => {
+          listItem.product.isCheck = false;
+        });
+      });
+    },
   },
 });
 
@@ -85,6 +102,8 @@ export const {
   getShopCartSuccess,
   setShopCart,
   updateShopCart,
+  setShopCartAllTrue,
+  setShopCartAllFalse,
 } = shopCartSlice.actions;
 
 export default shopCartSlice.reducer;
