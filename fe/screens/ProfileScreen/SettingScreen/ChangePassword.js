@@ -11,6 +11,7 @@ import { scaleWidth, scaleHeight } from "../../../assets/constant/responsive";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import { changePassword } from "../../../redux/authService";
+import { updatePasswordFailure } from "../../../redux/authSlice";
 
 const ChangePassword = ({ isModalVisible = false, closeModal }) => {
   const dispatch = useDispatch();
@@ -19,25 +20,31 @@ const ChangePassword = ({ isModalVisible = false, closeModal }) => {
   const refreshTokenRedux = useSelector((state) => state.auth.refreshToken);
   const accessToken = useSelector((state) => state.auth.accessToken);
   const [password, setPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("")
-  const [confirmNewPassword, setConfirmNewPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmNewPassword) {
       dispatch(updatePasswordFailure("Mật khẩu mới không khớp"));
       return;
     }
-  
+
     const passwords = {
       currentPassword: password,
       newPassword: confirmNewPassword,
     };
-    
+
     try {
-      await changePassword(passwords, dispatch, user, refreshTokenRedux, accessToken);
+      await changePassword(
+        passwords,
+        dispatch,
+        user,
+        refreshTokenRedux,
+        accessToken
+      );
       closeModal();
     } catch (error) {
-      console.log("Lỗi r bà cố ơi")
+      console.log("Lỗi r bà cố ơi");
     }
   };
 

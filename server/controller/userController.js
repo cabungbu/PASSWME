@@ -717,55 +717,47 @@ const updateShopCart = async (req, res) => {
 };
 
 const removeProductFromCart = async (req, res) => {
-  const firestoreDb = getFirestoreDb();
-  const userId = req.params.id;
-  const { postId, productId } = req.body; // Lấy postId và productId từ body
-
   try {
-    const userRef = doc(firestoreDb, "users", userId);
-    const userDoc = await getDoc(userRef);
+    const db = getFirestoreDb();
+    const userId = req.params.id;
+    const { sellerId, postId, productId } = req.body;
 
-    if (!userDoc.exists()) {
-      return res.status(404).json({ error: "User not found" });
+    // Reference to user's shopcart collection
+    const userDocRef = doc(db, "users", userId);
+    const shopcartRef = doc(collection(userDocRef, "shopcart"), sellerId);
+
+    // Lấy dữ liệu giỏ hàng
+    const shopcartDoc = await getDoc(shopcartRef);
+
+    const shopcartData = shopcartDoc.exists() ? shopcartDoc.data() : {};
+    const listItem = shopcartData.listItem || [];
+
+    if (listItem.length == 0) {
+      await deleteDoc(shopcartRef);
+      return res
+        .status(200)
+        .json({ message: "Xóa sản phẩm khỏi giỏ hàng thành công" });
     }
 
-    const userData = userDoc.data();
-    const userCart = userData.shopcart || [];
+    const index = listItem.findIndex((item) => item.productId === productId);
+    if (index === -1) {
+      return res
+        .status(404)
+        .json({ error: "Không tìm thấy sản phẩm trong giỏ hàng" });
+    }
+    listItem.splice(index, 1);
 
-    // Tìm chỉ số của post trong shopcart
-    const postIndex = userCart.findIndex((item) => item.postId === postId);
-    if (postIndex === -1) {
-      return res.status(404).json({ error: "Post not found in cart" });
+    if (listItem.length === 0) {
+      await deleteDoc(shopcartRef);
+      return res
+        .status(200)
+        .json({ message: "Xóa sản phẩm khỏi giỏ hàng thành công" });
     }
 
-    const existingPost = userCart[postIndex];
-
-    // Kiểm tra xem mảng product có tồn tại không
-    if (!existingPost.product || !Array.isArray(existingPost.product)) {
-      return res.status(404).json({ error: "No products found for this post" });
-    }
-
-    const existingProductIndex = existingPost.product.findIndex(
-      (p) => p.productId === productId
-    );
-    if (existingProductIndex === -1) {
-      return res.status(404).json({ error: "Product not found in cart" });
-    }
-
-    // Xóa sản phẩm khỏi mảng product
-    existingPost.product.splice(existingProductIndex, 1);
-
-    // Nếu mảng product rỗng, xóa post khỏi shopcart
-    if (existingPost.product.length === 0) {
-      userCart.splice(postIndex, 1);
-    }
-
-    // Cập nhật shopcart trong Firestore
-    await setDoc(userRef, { shopcart: userCart });
-
-    res
+    await setDoc(shopcartRef, { listItem }, { merge: true });
+    return res
       .status(200)
-      .json({ message: "Product removed successfully", cart: userCart });
+      .json({ message: "Xóa sản phẩm khỏi giỏ hàng thành công" });
   } catch (error) {
     console.error("Error removing product from cart:", error);
     res.status(400).json({ error: error.message });

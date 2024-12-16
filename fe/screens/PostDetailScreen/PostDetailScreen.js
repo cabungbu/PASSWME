@@ -95,7 +95,7 @@ export default function PostDetailScreen({ route }) {
     return (
       <SafeAreaView style={styles.container}>
         <Text style={{ textAlign: "center", textAlignVertical: "center" }}>
-          Không tìm thấy bài đăng
+          Không tìm thấy thông tin bài đăng
         </Text>
       </SafeAreaView>
     );
