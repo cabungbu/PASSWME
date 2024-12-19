@@ -93,6 +93,55 @@ const shopCartSlice = createSlice({
         });
       });
     },
+    deleteProductShopCart(state, action) {
+      const updatedShopCart = action.payload.shopcart;
+
+      // Find the index of the shopcart entry
+      const indexOfShopcart = updatedShopCart.findIndex(
+        (item) => item.id === action.payload.product.sellerId
+      );
+
+      if (indexOfShopcart === -1) {
+        console.error("Shopcart not found for the given sellerId");
+        return; // Exit the function if the cart is not found
+      }
+
+      // Filter out the item to remove
+      const itemsAfter = updatedShopCart[indexOfShopcart].items.filter(
+        (item) => item.product.productId !== action.payload.product.productId
+      );
+
+      // Debug logs to check the values
+
+      if (itemsAfter.length > 0) {
+        const updatedCartItem = {
+          ...updatedShopCart[indexOfShopcart],
+          items: itemsAfter,
+        };
+        const newUpdatedShopCart = [
+          ...updatedShopCart.slice(0, indexOfShopcart),
+          updatedCartItem,
+          ...updatedShopCart.slice(indexOfShopcart + 1),
+        ];
+        return {
+          ...state,
+          shopCart: newUpdatedShopCart,
+          isFetching: false,
+          error: null,
+        };
+      } else {
+        const newUpdatedShopCart = [
+          ...updatedShopCart.slice(0, indexOfShopcart),
+          ...updatedShopCart.slice(indexOfShopcart + 1),
+        ];
+        return {
+          ...state,
+          shopCart: newUpdatedShopCart,
+          isFetching: false,
+          error: null,
+        };
+      }
+    },
   },
 });
 
@@ -104,6 +153,7 @@ export const {
   updateShopCart,
   setShopCartAllTrue,
   setShopCartAllFalse,
+  deleteProductShopCart,
 } = shopCartSlice.actions;
 
 export default shopCartSlice.reducer;

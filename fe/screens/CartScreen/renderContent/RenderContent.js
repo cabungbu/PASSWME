@@ -6,25 +6,37 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import CheckBox from "./CheckBox";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Entypo from "@expo/vector-icons/Entypo";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { shallowEqual } from "react-redux";
 import ShopName from "./ShopName";
 import { COLOR } from "../../../assets/constant/color";
 import QuantitySlider from "./QuantitySlider";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from "react-native-reanimated";
+import {
   useSharedValue,
   withTiming,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import { deleteProduct } from "../../../redux/checkShopCart";
+import { deleteProductShopCart } from "../../../redux/shopCartSlice";
+import ModalConfirmDelete from "../../../components/ModalComfirmDelete";
 
 const RenderContent = React.memo(
   ({ onAddPress }) => {
+    configureReanimatedLogger({
+      level: ReanimatedLogLevel.warn,
+      strict: false, // Reanimated runs in strict mode by default
+    });
     const user = useSelector((state) => state.auth?.user, shallowEqual);
     const shopCart = useSelector(
       (state) => state.shopCartContainer?.shopCart,
       shallowEqual
     );
+    const dispatch = useDispatch();
     // console.log("rendering content nè: " + JSON.stringify(shopCart));
 
     const formatPrice = useMemo(() => {
@@ -36,10 +48,14 @@ const RenderContent = React.memo(
       };
     }, []);
 
-    const leftSwipe = () => {
+    const leftSwipe = (item, post) => {
       return (
         <View style={{ justifyContent: "center" }}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              handleDelete(item.id, post.postId, post.product.productId)
+            }
+          >
             <Text style={{ color: "red", paddingHorizontal: 20 }}>Xóa</Text>
           </TouchableOpacity>
         </View>
@@ -56,6 +72,17 @@ const RenderContent = React.memo(
       // Update shared value based on gesture
       translateX.value = gestureState.translationX;
     };
+    const handleDelete = async (sellerId, postId, productId) => {
+      const product = {
+        sellerId: sellerId,
+        postId: postId,
+        productId: productId,
+      };
+      const shopcart = shopCart;
+      console.log(sellerId);
+      dispatch(deleteProductShopCart({ shopcart, product }));
+      await deleteProduct(shopCart, user.id, product, dispatch);
+    };
 
     return (
       <ScrollView style={{ flex: 1, paddingTop: scaleHeight(10) }}>
@@ -68,33 +95,28 @@ const RenderContent = React.memo(
                 item.items.map((post, index) => (
                   <Swipeable
                     ref={swipeableRef}
-                    renderLeftActions={leftSwipe}
+                    renderLeftActions={() => leftSwipe(item, post)}
                     onSwipeableWillOpen={handleSwipe}
+                    key={post.product.productId}
                   >
                     <View style={styles.shopNameContainer}>
                       <CheckBox post={post} sellerId={item.id} />
-                      <View
-                        style={{
-                          backgroundColor: "blue",
-                          marginRight: scaleWidth(10),
-                          backgroundColor: "red",
-                          borderRadius: 20,
-                          overflow: "hidden", // Thêm này để ảnh nằm trong View
+
+                      <Image
+                        source={{
+                          uri:
+                            post.product.image ||
+                            "https://t4.ftcdn.net/jpg/03/57/52/77/360_F_357527700_FVCDzgXx8qhKoouAUXL3NWjvQboG7huD.jpg",
                         }}
-                      >
-                        <Image
-                          source={{
-                            uri:
-                              post.product.image ||
-                              "https://t4.ftcdn.net/jpg/03/57/52/77/360_F_357527700_FVCDzgXx8qhKoouAUXL3NWjvQboG7huD.jpg",
-                          }}
-                          style={{
-                            width: scaleHeight(70),
-                            height: scaleHeight(70),
-                            resizeMode: "cover",
-                          }}
-                        />
-                      </View>
+                        style={{
+                          width: scaleHeight(70),
+                          height: scaleHeight(70),
+                          resizeMode: "cover",
+                          marginRight: scaleWidth(10),
+                          borderRadius: 20,
+                          overflow: "hidden",
+                        }}
+                      />
 
                       <View
                         style={{

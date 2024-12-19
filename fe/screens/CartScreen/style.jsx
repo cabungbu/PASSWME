@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
     display: "flex",
     paddingBottom: 20,
     paddingTop: 50,
+    paddingLeft: scaleWidth(10),
     width: "100%",
     justifyContent: "center",
     alignItems: "center",

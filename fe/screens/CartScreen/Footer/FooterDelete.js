@@ -1,16 +1,5 @@
 import React, { useState, useMemo } from "react";
-import {
-  Alert,
-  Animated,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  StatusBar,
-  Text,
-  Pressable,
-  Image,
-  useWindowDimensions,
-} from "react-native";
+import { TouchableOpacity, View, Text } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import styles from "./style";
 import { useNavigation } from "@react-navigation/native";
@@ -20,6 +9,7 @@ import {
   checkAllBoxTrue,
   checkAllBoxFalse,
 } from "../../../redux/checkShopCart";
+import ModalConfirmDelete from "../../../components/ModalComfirmDelete";
 
 const FooterDelete = React.memo(({ isCheck }) => {
   const isCheckingAll = useSelector(
@@ -37,9 +27,19 @@ const FooterDelete = React.memo(({ isCheck }) => {
     }
   };
 
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openModal = () => {
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+  };
+
   return (
     <View style={styles.footerDeleteContainer}>
-      <View style={[styles.footerContainer, { alignItems: "center" }]}>
+      <View style={styles.chooseAll}>
         <CheckBox
           checked={isCheckingAll}
           onPress={() => handelPress()}
@@ -47,9 +47,10 @@ const FooterDelete = React.memo(({ isCheck }) => {
         />
         <Text style={styles.allText}>Chọn tất cả</Text>
       </View>
-      <TouchableOpacity style={styles.buttonDelete}>
+      <TouchableOpacity style={styles.buttonDelete} onPress={() => openModal()}>
         <Text style={styles.deleteText}>Xóa</Text>
       </TouchableOpacity>
+      <ModalConfirmDelete visible={modalVisible} onClose={closeModal} />
     </View>
   );
 });

@@ -85,8 +85,8 @@ export default function ProductBottom({
       updatedProduct,
       user.id
     );
-    if (res) {
-      toast.show(res, {
+    if (res === null) {
+      toast.show("Cập nhật giỏ hàng thành công", {
         type: "success",
         placement: "top",
         duration: 3000,
@@ -94,7 +94,7 @@ export default function ProductBottom({
         animationType: "slide-in ",
       });
     } else {
-      toast.show(error, {
+      toast.show(res, {
         type: "danger",
         placement: "top",
         duration: 4000,
@@ -113,10 +113,10 @@ export default function ProductBottom({
       productId: selectedProduct.id,
       quantity: selectedQuantity,
     };
-    console.log(newProduct);
     const res = await addProductToCart(dispatch, newProduct, user.id);
-    if (res) {
-      toast.show(res, {
+
+    if (res === null) {
+      toast.show("Thêm vào giỏ hàng thành công", {
         type: "success",
         placement: "top",
         duration: 3000,
@@ -124,7 +124,7 @@ export default function ProductBottom({
         animationType: "slide-in ",
       });
     } else {
-      toast.show(error, {
+      toast.show(res, {
         type: "danger",
         placement: "top",
         duration: 4000,

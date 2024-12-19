@@ -9,6 +9,7 @@ import {
   updateShopCart,
   setShopCartAllTrue,
   setShopCartAllFalse,
+  deleteProductShopCart,
 } from "./shopCartSlice";
 import { getUserShopcart, checkIfShopcartUpdate } from "./shopCartService";
 
@@ -88,4 +89,35 @@ export const checkAllBoxFalse = async (shopcart, userId, dispatch) => {
       checkIfShopcartUpdate(shopcart, userId, dispatch);
     }
   } catch (error) {}
+};
+
+export const deleteProduct = async (shopcart, userId, product, dispatch) => {
+  try {
+    console.log("deleteProduct");
+    const requestData = {
+      sellerId: product.sellerId,
+      postId: product.postId,
+      productId: product.productId,
+    };
+
+    // Send DELETE request using fetch
+    const res = await fetch(
+      `${BE_ENDPOINT}/user/removeProductFromCart/${userId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      }
+    );
+
+    // Check if the response is successful
+    if (res.ok) {
+      console.log("xoa thanh cong");
+    }
+  } catch (error) {
+    console.error("Loi ở delete: " + err.response?.data);
+    dispatch(getShopCartFailure(err.response?.data.message));
+  }
 };

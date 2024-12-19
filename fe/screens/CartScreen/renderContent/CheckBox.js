@@ -20,7 +20,6 @@ const CheckBoxComponent = ({ post, sellerId }) => {
     if (post.id === null) return;
 
     if (!isCheck) {
-      console.log("click");
       setIsCheck(true);
       const product = {
         sellerId: sellerId,

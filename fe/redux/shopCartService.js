@@ -79,7 +79,7 @@ export const checkIfShopcartUpdate = async (
     const shopCartData = res.data;
 
     if (currentShopcart.length < shopCartData.length) {
-      console.log("hahaa");
+      console.log(currentShopcart.length);
       getUserShopcart(userId, dispatch);
       return;
     } else {
@@ -88,7 +88,7 @@ export const checkIfShopcartUpdate = async (
         if (
           currentShopcart[index].user !== item.user ||
           currentShopcart[index].id !== item.id ||
-          !deepEqual(currentShopcart[index].items, item.listItem)
+          deepEqual(currentShopcart[index].items, item.listItem) === false
         ) {
           console.log("Cập nhật giỏ hàng");
           dispatch(updateShopCart({ index, item }));
@@ -119,17 +119,15 @@ export const addProductToCart = async (dispatch, product, userId) => {
       }
     );
     if (res.status === 200) {
+      console.log("200 ok");
       getUserShopcart(userId, dispatch);
-      return "Thêm vào giỏ hàng thành công";
-    } else {
-      // console.error(res.message);
-      // dispatch(getShopCartFailure(JSON.stringify(err.response?.data.message)));
       return null;
     }
   } catch (err) {
-    console.log(getShopCartFailure(JSON.stringify(err.response?.data.message)));
-    dispatch(getShopCartFailure(JSON.stringify(err.response?.data.message)));
-    return;
+    const errorMessage =
+      err.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại.";
+    dispatch(getShopCartFailure(errorMessage));
+    return errorMessage;
   }
 };
 
@@ -157,21 +155,12 @@ export const updateUserShopCart = async (
     );
     if (res.status === 200) {
       getUserShopcart(userId, dispatch);
-      return "Cập nhật giỏ hàng thành công";
-    } else {
-      console.log(res.status);
       return null;
     }
   } catch (err) {
-    if (err.response) {
-      // The request was made and the server responded with a status code
-      dispatch(
-        getShopCartFailure(err.response.data.message || "Unknown error")
-      );
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      dispatch(getShopCartFailure("Network error or request setup error"));
-    }
-    dispatch(getShopCartFailure(JSON.stringify(err.response?.data.message)));
+    const errorMessage =
+      err.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại.";
+    dispatch(getShopCartFailure(errorMessage));
+    return errorMessage;
   }
 };

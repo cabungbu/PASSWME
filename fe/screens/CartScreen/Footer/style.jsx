@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: scaleHeight(30),
   },
-
   footerDeleteContainer: {
     display: "flex",
     flexDirection: "row",
@@ -62,6 +61,11 @@ const styles = StyleSheet.create({
     paddingVertical: scaleHeight(20),
     borderTopWidth: 1,
     borderColor: "#E5E5E5",
+  },
+  chooseAll: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
   buttonDelete: {
     borderWidth: 1,
