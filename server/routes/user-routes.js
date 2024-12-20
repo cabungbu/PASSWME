@@ -15,6 +15,8 @@ const {
 const {
   checkAllBoxTrue,
   checkAllBoxFalse,
+  updateQuantity,
+  deleteCheckedItems,
 } = require("../controller/shopCartController");
 const { verifyToken } = require("../controller/middlewareController");
 const router = express.Router();
@@ -30,7 +32,10 @@ router.patch("/updateShopCart/:id", updateShopCart);
 router.put("/checkboxProduct/:id", checkboxProduct);
 router.put("/setProductNotCheck/:id", setProductNotCheck);
 router.delete("/removeProductFromCart/:id", removeProductFromCart);
-
+router.delete("/deleteCheckedItems/:id", deleteCheckedItems);
 router.patch("/checkAllBoxTrue/:id", checkAllBoxTrue);
 router.patch("/checkAllBoxFalse/:id", checkAllBoxFalse);
+
+router.patch("/updateQuantity/:id", updateQuantity);
+
 module.exports = { routes: router };

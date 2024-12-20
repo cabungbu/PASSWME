@@ -7,6 +7,7 @@ import {
   getShopCartSuccess,
   setShopCart,
   updateShopCart,
+  getSum,
 } from "./shopCartSlice";
 
 export const getUserShopcart = async (userId, dispatch) => {
@@ -17,6 +18,7 @@ export const getUserShopcart = async (userId, dispatch) => {
     );
     const shopCartData = res.data;
     dispatch(getShopCartSuccess(shopCartData));
+    dispatch(getSum());
     await AsyncStorage.setItem("shopCart", JSON.stringify(shopCartData));
   } catch (error) {
     console.error(error);
@@ -95,7 +97,7 @@ export const checkIfShopcartUpdate = async (
         }
       }
     }
-
+    dispatch(getSum());
     await AsyncStorage.setItem("shopCart", JSON.stringify(shopCartData));
   } catch (error) {
     console.error("Lỗi ở checkIfShopcartUpdate: " + error);

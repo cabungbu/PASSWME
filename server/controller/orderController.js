@@ -8,75 +8,102 @@ const {
   deleteDoc,
   doc,
   writeBatch,
+  arrayUnion,
 } = require("firebase/firestore");
 
 const OrderController = {
   // Thêm một đơn hàng mới
   addOrder: async (req, res) => {
-    const firestoreDb = getFirestoreDb();
+    const db = getFirestoreDb();
     const data = req.body;
 
     const newOrderData = {
-      buyerId: doc(firestoreDb, "users", data.buyerId),
-      sellerId: doc(firestoreDb, "users", data.sellerId),
-      postIds: data.postIds
-        ? data.postIds.map((postId) => doc(firestoreDb, "posts", postId))
-        : [],
+      buyer: doc(db, "users", data.buyerId),
+      buyerId: data.buyerId,
+      buyerName: data.buyerName,
+      buyerPhone: data.buyerPhone,
+      buyerAddress: data.buyerAddress,
+      seller: doc(db, "users", data.sellerId),
+      sellerId: data.sellerId,
+      sellerName: data.sellerName,
+      sellerPhone: data.sellerPhone,
+      sellerAddress: data.sellerAddress,
+      items: data.items || [],
       note: data.note,
-      from: data.from,
-      to: data.to,
+      orderPrice: data.orderPrice,
+      coin: data.coin,
+      totalPrice: data.totalPrice,
       status: data.status,
-      orderDate: new Date(),
+      orderDate: new Date().toISOString(),
       feedbacks: [],
     };
-
     try {
-      // Kiểm tra xem có trường nào bị thiếu không
-      if (
-        !data.buyerId ||
-        !data.sellerId ||
-        !data.postIds ||
-        !data.from ||
-        !data.to ||
-        !data.status ||
-        !data.products ||
-        data.products.length === 0
-      ) {
-        return res.status(400).json({
-          error: "Thiếu thông tin bắt buộc, bao gồm ít nhất một sản phẩm.",
-        });
+      for (const item of data.items) {
+        const postRef = db.collection("posts").doc(item.postId);
+        const productRef = postRef.collection("products").doc(item.productId);
+        const postData = await postRef.get();
+        const productDoc = await productRef.get();
+
+        if (productDoc.exists) {
+          const productData = productDoc.data();
+          const updatedStock = productData.quantity - item.quantity;
+          if (updatedStock < 0)
+            return res.status(500).json({
+              message:
+                "Đã vượt quá số lượng kho của sản phẩm " +
+                item.title +
+                " (" +
+                item.name +
+                ") : " +
+                productData.quantity,
+            });
+          const updatedSold = postData.sold + item.quantity;
+
+          // Update product stock and sold count
+          await postRef.update({ sold: updatedSold });
+          await productRef.update({
+            stock: updatedStock,
+          });
+        } else {
+          // Handle case where the product doesn't exist (optional, depending on your use case)
+          console.log(`Product not found: ${item.productId}`);
+        }
       }
 
-      // Tạo đơn hàng mới
-      const newOrderRef = await addDoc(
-        collection(firestoreDb, "orders"),
-        newOrderData
-      );
+      const orderRef = await db.collection("orders").add(newOrderData);
 
-      // Tạo subcollection 'products' cho đơn hàng mới
-      const productsCollectionRef = collection(newOrderRef, "products");
-
-      // Thêm từng sản phẩm vào subcollection 'products' với ID tùy chỉnh
-      const batch = writeBatch(firestoreDb);
-      data.products.forEach((product) => {
-        const productRef = doc(productsCollectionRef, product.id); // Sử dụng ID tùy chỉnh từ body
-        batch.set(productRef, {
-          name: product.name,
-          price: product.price,
-          quantity: product.quantity,
-          image: product.image,
-        }); // Set dữ liệu sản phẩm
+      // 2. Add the reference of the order to the seller's 'ordersReceived' field
+      const sellerRef = db.collection("users").doc(data.sellerId);
+      await sellerRef.update({
+        ordersReceived: arrayUnion(orderRef),
       });
 
-      await batch.commit(); // Cam kết tất cả các thay đổi
-
-      res.status(201).json({
-        message: "Order added successfully.",
-        orderId: newOrderRef.id,
+      const buyerRef = db.collection("users").doc(data.buyerId);
+      await buyerRef.update({
+        myOrders: arrayUnion(orderRef),
       });
-    } catch (error) {
-      console.error("Error adding order:", error);
-      res.status(400).json({ error: error.message });
+
+      if (data.coin > 0) {
+        // Update the seller's coin balance
+        const sellerDoc = await sellerRef.get();
+        const sellerCoin =
+          sellerDoc.exists && sellerDoc.data().coin ? sellerDoc.data().coin : 0;
+        await sellerRef.update({ coin: sellerCoin + data.coin });
+
+        // Update the buyer's coin balance
+        const buyerRef = db.collection("users").doc(data.buyerId);
+        const buyerDoc = await buyerRef.get();
+        const buyerCoin =
+          buyerDoc.exists && buyerDoc.data().coin ? buyerDoc.data().coin : 0;
+        await buyerRef.update({ coin: buyerCoin - data.coin });
+      }
+
+      res
+        .status(200)
+        .json({ message: "Order created successfully", orderId: orderRef.id });
+    } catch (err) {
+      console.error("Error creating order:", err);
+      res.status(500).json({ message: err.message });
     }
   },
 
@@ -210,7 +237,6 @@ const OrderController = {
         if (updateData.to) allowedUpdates.to = updateData.to;
         if (updateData.note) allowedUpdates.note = updateData.note;
 
-        
         if (Object.keys(allowedUpdates).length === 0) {
           return res.status(400).json({
             error:

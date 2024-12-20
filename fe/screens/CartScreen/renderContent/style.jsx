@@ -114,6 +114,36 @@ const styles = StyleSheet.create({
     backgroundColor: "#E5E5E5",
     marginVertical: scaleHeight(10),
   },
+  overlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark overlay
+  },
+  modalView: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 10,
+  },
+  line: {
+    borderBottomColor: COLOR.mainColor,
+    borderBottomWidth: 1,
+    paddingHorizontal: scaleWidth(20),
+    paddingVertical: scaleHeight(15),
+    marginBottom: scaleHeight(15),
+    fontFamily: "regular",
+    fontSize: scaleWidth(13),
+  },
+  buttonDong: {
+    marginBottom: scaleHeight(15),
+  },
+  textButton: {
+    color: COLOR.mainColor,
+    fontFamily: "medium",
+    fontSize: scaleWidth(15),
+  },
 });
 
 export default styles;

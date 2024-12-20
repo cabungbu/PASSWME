@@ -92,15 +92,18 @@ const RenderContent = React.memo(
             <View key={item.id} style={styles.itemContainer}>
               <ShopName item={item} />
               {item.items &&
-                item.items.map((post, index) => (
+                item.items.map((post) => (
                   <Swipeable
                     ref={swipeableRef}
                     renderLeftActions={() => leftSwipe(item, post)}
                     onSwipeableWillOpen={handleSwipe}
-                    key={post.product.productId}
                   >
                     <View style={styles.shopNameContainer}>
-                      <CheckBox post={post} sellerId={item.id} />
+                      <CheckBox
+                        post={post}
+                        isCheck={post.product.isCheck}
+                        sellerId={item.id}
+                      />
 
                       <Image
                         source={{
@@ -154,7 +157,7 @@ const RenderContent = React.memo(
                               color="#A0A0A0"
                             />
                           </TouchableOpacity>
-                          <QuantitySlider post={post} />
+                          <QuantitySlider post={post} item={item} />
                         </View>
 
                         <Text style={styles.price}>

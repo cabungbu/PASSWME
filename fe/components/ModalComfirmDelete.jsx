@@ -9,8 +9,14 @@ import {
 } from "react-native";
 import { scaleWidth } from "../assets/constant/responsive";
 import { COLOR } from "../assets/constant/color";
-
-const ModalConfirmDelete = ({ visible, onClose, delete: deleteAction }) => {
+import { deleteCheckedItemFunction } from "../redux/checkShopCart";
+import { useDispatch, useSelector } from "react-redux";
+const ModalConfirmDelete = ({ visible, onClose, delete: deleteProp }) => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth?.user);
+  const handleDelete = async () => {
+    await deleteCheckedItemFunction(user.id, dispatch);
+  };
   return (
     <Modal
       animationType="fade"
@@ -36,7 +42,7 @@ const ModalConfirmDelete = ({ visible, onClose, delete: deleteAction }) => {
             <TouchableOpacity
               style={styles.yes}
               onPress={() => {
-                deleteAction(); // Call the delete function
+                handleDelete(); // Call the delete function
                 onClose(); // Close the modal after confirming
               }}
             >

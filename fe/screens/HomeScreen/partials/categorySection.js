@@ -22,11 +22,13 @@ import SewingMachineIcon from "../../../assets/icons/SewingMachineIcon";
 import MotobikeIcon from "../../../assets/icons/MotobikeIcon";
 import AllCategoryIcon from "../../../assets/icons/AllCategoryIcon";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 
 export default function CategorySection() {
   const navigation = useNavigation();
   const [categories, setCategories] = useState([]);
   const numColumns = Math.ceil(categories.length / 2);
+  const user = useSelector((state) => state.auth?.user);
   useEffect(() => {
     fetch(BE_ENDPOINT + "/category/")
       .then((res) => res.json())
@@ -67,7 +69,7 @@ export default function CategorySection() {
             height={24}
             uri="https://firebasestorage.googleapis.com/v0/b/passwme-ec9f7.appspot.com/o/tabler_coin.svg?alt=media&token=602b1ca1-16d2-4674-9f51-e53c769cbef3"
           />
-          <Text style={styles.coin}>500</Text>
+          <Text style={styles.coin}>{user.coin ? user.coin : 0}</Text>
         </View>
         <Text style={styles.coinText}>Nhấn để nhận xu mỗi ngày</Text>
       </TouchableOpacity>

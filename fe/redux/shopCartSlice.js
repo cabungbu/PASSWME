@@ -6,6 +6,7 @@ const shopCartSlice = createSlice({
   name: "shopCart",
   initialState: {
     shopCart: [],
+    totalSum: 0,
     isFetching: false,
     error: null,
     isCheckingAll: false,
@@ -21,6 +22,8 @@ const shopCartSlice = createSlice({
       state.shopCart = action.payload.map((item) => ({
         id: item.id,
         user: item.user,
+        phone: item.phone,
+        address: item.address,
         items: item.listItem.map((listItem) => ({
           postId: listItem.postId,
           title: listItem.title,
@@ -79,9 +82,10 @@ const shopCartSlice = createSlice({
     },
     setShopCartAllTrue(state, action) {
       state.isCheckingAll = true;
+
       state.shopCart.forEach((item) => {
         item.items.forEach((listItem) => {
-          listItem.isCheck = true;
+          listItem.product.isCheck = true;
         });
       });
     },
@@ -142,6 +146,167 @@ const shopCartSlice = createSlice({
         };
       }
     },
+
+    deleteCheckedItem(state, action) {
+      const updatedShopCart = state.shopCart.map((element) => {
+        const updatedItems = element.items.filter(
+          (item) => item.product.isCheck !== true
+        );
+        return {
+          ...element,
+          items: updatedItems,
+        };
+      });
+
+      state.shopCart = updatedShopCart.filter((item) => item.items.length > 0);
+    },
+    increaseQuantity(state, action) {
+      const product = action.payload.product;
+      const updatedShopCart = state.shopCart.map((element) => {
+        if (element.id === product.sellerId) {
+          const updatedItems = element.items.map((item) => {
+            if (
+              item.product.productId === product.productId &&
+              item.postId === product.postId
+            ) {
+              return {
+                ...item,
+                product: {
+                  ...item.product,
+                  quantityInShopcart:
+                    Number(item.product.quantityInShopcart) + 1, // Cập nhật thuộc tính quantityInShopcart trong product
+                },
+              };
+            }
+            return item;
+          });
+
+          return {
+            ...element,
+            items: updatedItems,
+          };
+        }
+        return element;
+      });
+
+      // Cập nhật lại state với giỏ hàng đã được thay đổi
+      state.shopCart = updatedShopCart;
+    },
+
+    decreaseQuantity(state, action) {
+      const product = action.payload.product;
+      const updatedShopCart = state.shopCart.map((element) => {
+        if (element.id === product.sellerId) {
+          const updatedItems = element.items.map((item) => {
+            if (
+              item.product.productId === product.productId &&
+              item.postId === product.postId
+            ) {
+              return {
+                ...item,
+                product: {
+                  ...item.product,
+                  quantityInShopcart:
+                    Number(item.product.quantityInShopcart) - 1, // Cập nhật thuộc tính quantityInShopcart trong product
+                },
+              };
+            }
+            return item;
+          });
+
+          return {
+            ...element,
+            items: updatedItems,
+          };
+        }
+        return element;
+      });
+
+      // Cập nhật lại state với giỏ hàng đã được thay đổi
+      state.shopCart = updatedShopCart;
+    },
+    getSum(state, action) {
+      const totalSum = state.shopCart.reduce((accumulator, currentValue) => {
+        return (
+          accumulator +
+          currentValue.items.reduce((acc, item) => {
+            // Kiểm tra nếu isCheck là true trước khi tính tổng
+            if (item.product.isCheck) {
+              return (
+                acc +
+                Number(item.product.price) *
+                  Number(item.product.quantityInShopcart)
+              );
+            }
+            return acc;
+          }, 0)
+        );
+      }, 0);
+
+      state.totalSum = totalSum;
+    },
+    clickItem(state, action) {
+      const product = action.payload.product;
+      const updatedShopCart = state.shopCart.map((element) => {
+        if (element.id === product.sellerId) {
+          const updatedItems = element.items.map((item) => {
+            if (
+              item.product.productId === product.productId &&
+              item.postId === product.postId
+            ) {
+              return {
+                ...item,
+                product: {
+                  ...item.product,
+                  isCheck: true,
+                },
+              };
+            }
+            return item;
+          });
+
+          return {
+            ...element,
+            items: updatedItems,
+          };
+        }
+        return element;
+      });
+
+      // Cập nhật lại state với giỏ hàng đã được thay đổi
+      state.shopCart = updatedShopCart;
+    },
+    unClickItem(state, action) {
+      const product = action.payload.product;
+      const updatedShopCart = state.shopCart.map((element) => {
+        if (element.id === product.sellerId) {
+          const updatedItems = element.items.map((item) => {
+            if (
+              item.product.productId === product.productId &&
+              item.postId === product.postId
+            ) {
+              return {
+                ...item,
+                product: {
+                  ...item.product,
+                  isCheck: false,
+                },
+              };
+            }
+            return item;
+          });
+
+          return {
+            ...element,
+            items: updatedItems,
+          };
+        }
+        return element;
+      });
+
+      // Cập nhật lại state với giỏ hàng đã được thay đổi
+      state.shopCart = updatedShopCart;
+    },
   },
 });
 
@@ -154,6 +319,12 @@ export const {
   setShopCartAllTrue,
   setShopCartAllFalse,
   deleteProductShopCart,
+  deleteCheckedItem,
+  increaseQuantity,
+  decreaseQuantity,
+  getSum,
+  clickItem,
+  unClickItem,
 } = shopCartSlice.actions;
 
 export default shopCartSlice.reducer;

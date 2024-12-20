@@ -38,6 +38,8 @@ const register = async (req, res) => {
       email: data.email || "",
       password: hashedPassword,
       phone: data.phone || "",
+      coin: 0,
+      lastTimeCheckIn: new Date().toISOString,
       avatar:
         "https://firebasestorage.googleapis.com/v0/b/passwme-ec9f7.appspot.com/o/5ee082781b8c41406a2a50a0f32d6aa6.jpg?alt=media&token=6f5c44d6-60eb-487a-b3dd-4dce39316dbc",
       refreshToken: "", // Set refreshToken to an empty string initially
@@ -69,6 +71,8 @@ const register = async (req, res) => {
         email: newUser.email,
         phone: newUser.phone,
         avatar: newUser.avatar,
+        coin: newUser.coin,
+        lastTimeCheckIn: newUser.lastTimeCheckIn,
       },
       accessToken,
       refreshToken,
@@ -212,11 +216,13 @@ const takeRefreshToken = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   const firestoreDb = getFirestoreDb();
-  const userId = req.params.id; 
+  const userId = req.params.id;
   const data = req.body;
 
   if (!data.currentPassword || !data.newPassword) {
-    return res.status(400).json({ error: "Current and new passwords are required." });
+    return res
+      .status(400)
+      .json({ error: "Current and new passwords are required." });
   }
 
   try {
@@ -228,7 +234,10 @@ const resetPassword = async (req, res) => {
     }
 
     // So sánh mật khẩu hiện tại
-    const isMatch = await bcrypt.compare(data.currentPassword, userData.data().password);
+    const isMatch = await bcrypt.compare(
+      data.currentPassword,
+      userData.data().password
+    );
     if (!isMatch) {
       return res.status(402).json({ message: "Sai mật khẩu hiện tại." });
     }
@@ -245,9 +254,9 @@ const resetPassword = async (req, res) => {
     res.status(200).json({
       message: "Password changed successfully.",
       user: {
-        id: userId, 
-        ...updatedUserData.data() // Spread toàn bộ dữ liệu người dùng
-      }
+        id: userId,
+        ...updatedUserData.data(), // Spread toàn bộ dữ liệu người dùng
+      },
     });
   } catch (error) {
     console.error("Error changing password:", error);

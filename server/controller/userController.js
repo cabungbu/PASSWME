@@ -202,6 +202,8 @@ const getUserShopCart = async (req, res) => {
           ...shopData,
           listItem: listItem,
           user: username,
+          phone: userShopDoc.data().phone,
+          address: userShopDoc.data().address,
         };
       })
     );
@@ -449,6 +451,25 @@ const setProductNotCheck = async (req, res) => {
   }
 };
 
+function updateShopcartListItem(
+  transaction,
+  shopcartRef,
+  listItem,
+  itemIndex,
+  updateData
+) {
+  const updatedListItem = [...listItem];
+  updatedListItem[itemIndex] = {
+    ...updatedListItem[itemIndex],
+    ...updateData, // Cập nhật các trường
+  };
+
+  // Cập nhật Firestore với transaction
+  transaction.set(shopcartRef, { listItem: updatedListItem }, { merge: true });
+
+  return updatedListItem; // Trả về danh sách đã được cập nhật
+}
+
 const checkboxProduct = async (req, res) => {
   const db = getFirestoreDb();
   const { sellerId, postId, productId, quantity, currentPrice } = req.body;
@@ -456,131 +477,25 @@ const checkboxProduct = async (req, res) => {
 
   try {
     const result = await runTransaction(db, async (transaction) => {
-      const userDocRef = doc(db, "users", userId);
-      const shopcartRef = doc(collection(userDocRef, "shopcart"), sellerId);
+      const shopcartRef = doc(
+        collection(db, "users", userId, "shopcart"),
+        sellerId
+      );
 
       // Lấy dữ liệu giỏ hàng
       const shopcartDoc = await transaction.get(shopcartRef);
-
-      // Đảm bảo luôn có listItem là mảng
       const shopcartData = shopcartDoc.exists() ? shopcartDoc.data() : {};
       const listItem = shopcartData.listItem || [];
 
       const itemIndex = listItem.findIndex(
         (item) => item.productId === productId
       );
-
-      // Kiểm tra sản phẩm có trong giỏ hàng không
-      if (itemIndex === -1) {
+      if (itemIndex === -1)
         throw new HttpError(404, "Sản phẩm không tồn tại trong giỏ hàng");
-      }
-
-      // Lấy dữ liệu bài viết và sản phẩm
-      const postRef = doc(db, "posts", postId);
-      const productRef = doc(postRef, "products", productId);
-
-      const [postDoc, productDoc] = await Promise.all([
-        transaction.get(postRef),
-        transaction.get(productRef),
-      ]);
-
-      // Kiểm tra bài viết tồn tại
-      if (!postDoc.exists()) {
-        const updatedListItem = [...listItem];
-        updatedListItem[itemIndex] = {
-          ...updatedListItem[itemIndex],
-          isCheck: true,
-        };
-        transaction.set(
-          shopcartRef,
-          { listItem: updatedListItem },
-          { merge: true }
-        );
-        throw new HttpError(404, "Bài viết không xác định");
-      }
-
-      // Kiểm tra sản phẩm tồn tại
-      if (!productDoc.exists()) {
-        const updatedListItem = [...listItem];
-        updatedListItem[itemIndex] = {
-          ...updatedListItem[itemIndex],
-          isCheck: true,
-        };
-        transaction.set(
-          shopcartRef,
-          { listItem: updatedListItem },
-          { merge: true }
-        );
-        throw new HttpError(
-          404,
-          "Sản phẩm không xác định, có thể bài viết đã bị ẩn"
-        );
-      }
-
-      const postData = postDoc.data();
-      const productData = productDoc.data();
-
-      // Kiểm tra thay đổi giá
-      if (productData.price !== currentPrice) {
-        const updatedListItem = [...listItem];
-        updatedListItem[itemIndex] = {
-          ...updatedListItem[itemIndex],
-          isCheck: true,
-        };
-        transaction.set(
-          shopcartRef,
-          { listItem: updatedListItem },
-          { merge: true }
-        );
-        throw new HttpError(200, "Giá sản phẩm đã thay đổi", {
-          price: productData.price,
-        });
-      }
-
-      // Kiểm tra số lượng
-      if (productData.quantity < quantity) {
-        const updatedListItem = [...listItem];
-        updatedListItem[itemIndex] = {
-          ...updatedListItem[itemIndex],
-          isCheck: true,
-        };
-        transaction.set(
-          shopcartRef,
-          { listItem: updatedListItem },
-          { merge: true }
-        );
-        return {
-          status: 200,
-          message: `Kho sản phẩm đã thay đổi, chỉ còn ${productData.quantity}`,
-          quantity: productData.quantity,
-          listItem: updatedListItem,
-        };
-      }
-
-      // Lấy thông tin chủ sở hữu
-      const ownerDoc = await transaction.get(
-        doc(db, "users", postData.owner.id)
-      );
-      const ownerData = ownerDoc.data();
-
-      // Cập nhật trạng thái checked
-      const updatedListItem = [...listItem];
-      updatedListItem[itemIndex] = {
-        ...updatedListItem[itemIndex],
+      updateShopcartListItem(transaction, shopcartRef, listItem, itemIndex, {
         isCheck: true,
-      };
-      transaction.set(
-        shopcartRef,
-        { listItem: updatedListItem },
-        { merge: true }
-      );
-
-      return {
-        postTitle: postData.title,
-        images: productData.image,
-        name: productData.name,
-        user: ownerData.username,
-      };
+      });
+      return {};
     });
 
     return res.status(200).json({
@@ -588,13 +503,10 @@ const checkboxProduct = async (req, res) => {
       ...result,
     });
   } catch (error) {
-    // Xử lý HttpError
+    // Xử lý lỗi
     if (error instanceof HttpError) {
       return res.status(error.status).json(error.toJSON().message);
     }
-
-    // Xử lý các lỗi khác
-    console.error("Error checkboxProduct in shopcart:", error);
     return res.status(500).json({
       message: error.message || "Đã xảy ra lỗi",
     });
