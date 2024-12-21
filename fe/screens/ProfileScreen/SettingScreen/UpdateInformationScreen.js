@@ -20,7 +20,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
 import mainStyles from "../../../styles/mainStyles";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import AddressPicker from "./AddressPicker";
 import { updateUserInformation } from "../../../redux/authService";
 
@@ -36,11 +36,11 @@ const UpdateInformation = () => {
   const user = useSelector((state) => state.auth.user);
   const refreshTokenRedux = useSelector((state) => state.auth.refreshToken);
   const accessToken = useSelector((state) => state.auth.accessToken);
-
+  const route = useRoute();
   const handleUpdateInformation = () => {
     const newUser = {
       email: email ? email : user?.email,
-      phone: sdt ? sdt : user?.sdt,
+      phone: sdt ? sdt : user?.phone,
       username: username ? username : user?.username,
       address: fullAddress ? fullAddress : user?.address,
     };
@@ -52,6 +52,19 @@ const UpdateInformation = () => {
       refreshTokenRedux,
       accessToken
     );
+    const isOrder = route.params?.isOrder;
+
+    if (isOrder) {
+      navigation.navigate("CheckOut", { newUser });
+      return;
+    }
+    // updateUserInformation(
+    //   newUser,
+    //   dispatch,
+    //   user,
+    //   refreshTokenRedux,
+    //   accessToken
+    // );
   };
 
   return (

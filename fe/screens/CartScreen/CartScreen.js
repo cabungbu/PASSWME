@@ -1,127 +1,204 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import {
   TouchableOpacity,
   View,
   Text,
-// import '../../styles/mainStyles'
-// import styles from '../../styles/mainStyles';
-// import './CartScreen'
-
-StatusBar,
-Platform,
+  StatusBar,
+  Platform,
+  ActivityIndicator,
 } from "react-native";
 import { COLOR } from '../../assets/constant/color';
 import { scaleWidth } from '../../assets/constant/responsive';
 import styles from "./style";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserShopcart } from "../../redux/shopCartService";
-import { setShopCart } from "../../redux/shopCartSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  checkIfShopcartUpdate,
+  getUserShopcart,
+} from "../../redux/shopCartService";
 import RenderContent from "./renderContent/RenderContent";
 import FooterBuy from "./Footer/FooterBuy";
 import FooterDelete from "./Footer/FooterDelete";
-
-
-export default function CartScreen() {
+import { useNavigation } from "@react-navigation/native";
+import { isEqual } from "lodash";
+import styles from "./style";
+import { shallowEqual } from "react-redux";
+import BottomSheet, {
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from "@gorhom/bottom-sheet";
+import ProductBottom from "../PostDetailScreen/productBottomSheet/ProductBottom";
+import { BE_ENDPOINT } from "../../settings/localVars";
+const CartScreen = () => {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
   const [isSua, setIsSua] = useState(false);
-  const user = useSelector((state) => state.auth?.user);
+  const [productIdBefore, setProductIdBefore] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  // Memoize selector để tránh re-render không cần thiết
 
-  // Use useMemo to memoize the shopCart selector
-  const shopCart = useSelector(
-    (state) => state.shopCartContainer?.shopCart,
-    (prev, next) => {
-      // Custom comparison to prevent unnecessary re-renders
-      return JSON.stringify(prev) === JSON.stringify(next);
-    }
+  // Sử dụng useCallback cho các hàm callback
+  const handleGoBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
+  const toggleSua = useCallback(() => {
+    setIsSua((prev) => !prev);
+  }, []);
+
+  // Memoize các component con
+  const MemoizedRenderContent = useMemo(() => <RenderContent />, []);
+
+  const Footer = useMemo(
+    () => (isSua ? <FooterDelete /> : <FooterBuy />),
+    [isSua]
   );
 
-  // Memoize the effect to run only when necessary
-  useEffect(() => {
-    const checkShopCartStatus = async () => {
+  const bottomSheetRef = useRef(null);
+
+  const ContentRef = React.forwardRef((props, ref) => {
+    return <Text>Đang tải...</Text>;
+  });
+
+  const [contentHeight, setContentHeight] = useState(0);
+  const [post, setPost] = useState(null);
+  const handlePresentModalPress = (post) => {
+    setPost(null);
+    console.log("mở");
+    const fetchPost = async () => {
       try {
-        const storedShopCart = await AsyncStorage.getItem("shopCart");
-        if (storedShopCart) {
-          const parsedShopCart = JSON.parse(storedShopCart);
-          // Only dispatch if the stored cart is different from current cart
-          if (JSON.stringify(parsedShopCart) !== JSON.stringify(shopCart)) {
-            dispatch(setShopCart(parsedShopCart));
+        requestAnimationFrame(() => {
+          // Mở bottom sheet
+
+          if (bottomSheetRef.current) {
+            bottomSheetRef.current.snapToIndex(0);
           }
-        } else if (user?.id) {
-          await getUserShopcart(user.id, dispatch);
-        }
+        });
+        const response = await fetch(
+          `${BE_ENDPOINT}/post/getPostById/${post.postId}/`
+        );
+        const data = await response.json();
+        setPost(data);
+        setProductIdBefore(post.product.productId);
       } catch (error) {
-        console.error("Error loading shop cart data:", error);
-      } finally {
-        setIsLoading(false);
+        console.error("Error fetching post:", error);
       }
     };
 
-    checkShopCartStatus();
-  }, [user?.id, dispatch, shopCart]);
+    fetchPost();
+    console.log("Đã mở");
+  };
+  const handleSheetChanges = useCallback((index) => {}, []);
+
+  const renderBackdrop = useCallback(
+    (props) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+      />
+    ),
+    []
+  );
+  useEffect(() => {
+    const measureHeight = () => {
+      if (ContentRef.current) {
+        ContentRef.current.measure((x, y, width, height) => {
+          setContentHeight(height);
+        });
+      }
+    };
+
+    // Nếu post đã được load, measure height
+    if (post) {
+      // Sử dụng requestAnimationFrame để đảm bảo layout đã được render
+      requestAnimationFrame(measureHeight);
+    }
+  }, [post]);
+
+  const renderPostContent = () => {
+    if (post === null)
+      return (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            paddingTop: 50,
+          }}
+        >
+          <ActivityIndicator size="large" color="#A0A0A0" />
+        </View>
+      );
+
+    return (
+      <BottomSheetView
+        ref={ContentRef}
+        onLayout={(event) => {
+          const { height } = event.nativeEvent.layout;
+          setContentHeight(height);
+        }}
+      >
+        <ProductBottom
+          products={post.products}
+          post={post}
+          isUpdate={true}
+          productIdBefore={productIdBefore}
+        />
+      </BottomSheetView>
+    );
+  };
+
   return (
     <View style={{ flex: 1 }}>
-      {Platform.OS === "android" ? (
-        <>
-          <StatusBar
-            barStyle="dark-content"
-            backgroundColor="#fff"
-            translucent={true}
-          />
-          <View style={styles.headerAndroid}>
-            <Ionicons
-              name="chevron-back"
-              size={24}
-              color="white"
-              onPress={() => {
-                navigation.goBack();
-              }}
-            />
-            <Text style={styles.headerText}>Giỏ hàng</Text>
-            <TouchableOpacity onPress={() => setIsSua(!isSua)}>
-              {isSua ? (
-                <Text style={styles.sua}>Xong</Text>
-              ) : (
-                <Text style={styles.sua}>Sửa</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        </>
-      ) : (
-        <>
-          <StatusBar
-            barStyle="dark-content"
-            backgroundColor="#fff"
-            translucent={true}
-          />
-          <View style={styles.headerIOS}>
-            <Ionicons
-              style={styles.iconHeaderIOS}
-              name="chevron-back"
-              size={24}
-              color="#E30414"
-              onPress={() => {
-                navigation.goBack();
-              }}
-            />
-            <Text style={styles.headerTextIOS}>Giỏ hàng</Text>
-            <TouchableOpacity onPress={() => setIsSua(!isSua)}>
-              {isSua ? (
-                <Text style={styles.sua}>Xong</Text>
-              ) : (
-                <Text style={styles.sua}>Sửa</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        </>
-      )}
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="#fff"
+        translucent={true}
+      />
+      <View
+        style={
+          Platform.OS === "android" ? styles.headerAndroid : styles.headerIOS
+        }
+      >
+        <Ionicons
+          name="chevron-back"
+          size={24}
+          color={Platform.OS === "android" ? "white" : "#E30414"}
+          onPress={handleGoBack}
+        />
+        <Text
+          style={
+            Platform.OS === "android" ? styles.headerText : styles.headerTextIOS
+          }
+        >
+          Giỏ hàng
+        </Text>
+        <TouchableOpacity onPress={toggleSua}>
+          <Text style={styles.sua}>{isSua ? "Xong" : "Sửa"}</Text>
+        </TouchableOpacity>
+      </View>
 
-      <RenderContent shopCart={shopCart} navigation={navigation} />
-      {isSua ? <FooterDelete></FooterDelete> : <FooterBuy></FooterBuy>}
+      <RenderContent onAddPress={(post) => handlePresentModalPress(post)} />
+      {Footer}
+
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        // snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        onChange={handleSheetChanges}
+        backdropComponent={renderBackdrop}
+        style={{ zIndex: 5, elevation: 5 }}
+      >
+        <View style={{ padding: 1 }}>{renderPostContent()}</View>
+      </BottomSheet>
     </View>
   );
-}
+};
+export default CartScreen;

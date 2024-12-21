@@ -37,6 +37,7 @@ export default function PostDetailScreen({ route }) {
   const navigation = useNavigation();
   const bottomSheetRef = useRef(null);
   const [contentHeight, setContentHeight] = useState(0);
+  const [isBuy, setIsBuy] = useState(false);
   // variables
   const snapPoints = useMemo(() => ["50%", "75%"], []);
 
@@ -95,7 +96,7 @@ export default function PostDetailScreen({ route }) {
     return (
       <SafeAreaView style={styles.container}>
         <Text style={{ textAlign: "center", textAlignVertical: "center" }}>
-          Không tìm thấy bài đăng
+          Không tìm thấy thông tin bài đăng
         </Text>
       </SafeAreaView>
     );
@@ -138,7 +139,12 @@ export default function PostDetailScreen({ route }) {
         <DataSection post={post} />
       </ScrollView>
 
-      <BottomTabSection onAddPress={handlePresentModalPress} />
+      <BottomTabSection
+        onBuyNow={() => {
+          handlePresentModalPress(), setIsBuy(true);
+        }}
+        onAddPress={handlePresentModalPress}
+      />
 
       <BottomSheet
         ref={bottomSheetRef}
@@ -162,7 +168,9 @@ export default function PostDetailScreen({ route }) {
         >
           <ProductBottom
             products={post.products}
-            onClosePress={handleClosePress}
+            post={post}
+            isUpdate={false}
+            isBuy={isBuy}
           />
         </BottomSheetView>
       </BottomSheet>

@@ -1,7 +1,6 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BE_ENDPOINT } from "../settings/localVars";
 import {
   registerStart,
   registerFailure,
@@ -19,6 +18,7 @@ import {
   updatePasswordSuccess,
   updatePasswordFailure,
 } from "./authSlice";
+import { BE_ENDPOINT } from "../settings/localVars";
 import { getUserShopcart } from "./shopCartService";
 
 export const loginUser = async (user, dispatch, navigation) => {
@@ -253,7 +253,7 @@ export const changePassword = async (
   dispatch,
   user,
   refreshTokenRedux,
-  accessToken 
+  accessToken
 ) => {
   try {
     if (!user || !user.id) {
@@ -269,7 +269,7 @@ export const changePassword = async (
     );
 
     const res = await axiosJWT.patch(
-      `${BE_ENDPOINT}/auth/resetPassword/${user.id}`, 
+      `${BE_ENDPOINT}/auth/resetPassword/${user.id}`,
       password,
       {
         headers: {

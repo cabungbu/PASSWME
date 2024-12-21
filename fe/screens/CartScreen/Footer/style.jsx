@@ -5,6 +5,8 @@ const styles = StyleSheet.create({
   footerContainer: {
     display: "flex",
     flexDirection: "row",
+    position: "absolute",
+    bottom: 0,
   },
   buyNowText: {
     color: "white",
@@ -49,7 +51,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: scaleHeight(30),
   },
-
   footerDeleteContainer: {
     display: "flex",
     flexDirection: "row",
@@ -60,6 +61,11 @@ const styles = StyleSheet.create({
     paddingVertical: scaleHeight(20),
     borderTopWidth: 1,
     borderColor: "#E5E5E5",
+  },
+  chooseAll: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
   buttonDelete: {
     borderWidth: 1,
@@ -72,6 +78,38 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: "medium",
     color: COLOR.mainColor,
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark overlay
+  },
+  modalView: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 10,
+    maxWidth: "80%",
+  },
+  line: {
+    borderBottomColor: COLOR.mainColor,
+    borderBottomWidth: 1,
+    paddingHorizontal: scaleWidth(20),
+    paddingVertical: scaleHeight(15),
+    marginBottom: scaleHeight(15),
+    fontFamily: "regular",
+    fontSize: scaleWidth(13),
+    textAlign: "center",
+  },
+  buttonDong: {
+    marginBottom: scaleHeight(15),
+  },
+  textButton: {
+    color: COLOR.mainColor,
+    fontFamily: "medium",
+    fontSize: scaleWidth(15),
   },
 });
 

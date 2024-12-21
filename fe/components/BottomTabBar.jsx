@@ -44,6 +44,10 @@ import Posted from "../screens/PostScreen/PostedScreen/Posted";
 import PostingRules from "../screens/PostScreen/PostingScreen/PostingRules";
 import ChatRoom from "../screens/ChatScreen/ChatRoom";
 
+import { getUserShopcart } from "../redux/shopCartService";
+import CheckOut from "../screens/CheckOutScreen/CheckOut";
+import CheckOut2 from "../screens/CheckOutScreen/CheckOut2";
+import OrderSuccess from "../screens/OrderSuccessScreen/orderSuccess";
 const Stack = createNativeStackNavigator();
 
 function HomeStack() {
@@ -267,7 +271,13 @@ export default function MainContainer() {
       try {
         const storedUser = await AsyncStorage.getItem("user");
         if (storedUser) {
-          dispatch(setUser(JSON.parse(storedUser)));
+          const parsedUser = JSON.parse(storedUser);
+          dispatch(setUser(parsedUser));
+
+          // Check if user is defined before calling getUserShopcart
+          if (parsedUser && parsedUser.id) {
+            await getUserShopcart(parsedUser.id, dispatch);
+          }
         }
       } catch (error) {
         console.error("Error loading user data:", error);
@@ -307,11 +317,17 @@ export default function MainContainer() {
           <Stack.Screen name="MyRatingsScreen" component={MyRatings} />
           <Stack.Screen name="OrderStatusScreen" component={OrderStatus} />
           <Stack.Screen name="PostsDisplay" component={PostsDisplay} />
-          <Stack.Screen name="UpdateInformation" component={UpdateInformation} />
+          <Stack.Screen
+            name="UpdateInformation"
+            component={UpdateInformation}
+          />
           <Stack.Screen name="PostingDetailScreen" component={PostingDetail} />
           <Stack.Screen name="PostedScreen" component={Posted} />
           <Stack.Screen name="PostingRulesScreen" component={PostingRules} />
           <Stack.Screen name="ChatRoomScreen" component={ChatRoom} />
+          <Stack.Screen name="CheckOut" component={CheckOut} />
+          <Stack.Screen name="CheckOut2" component={CheckOut2} />
+          <Stack.Screen name="OrderSuccess" component={OrderSuccess} />
         </>
       )}
     </Stack.Navigator>

@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import MainContainer from "./components/BottomTabBar";
 import Store from "./redux/store";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ToastProvider } from "react-native-toast-notifications";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -34,7 +35,9 @@ export default function App() {
     <Provider store={Store}>
       <NavigationContainer>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <MainContainer />
+          <ToastProvider>
+            <MainContainer />
+          </ToastProvider>
         </GestureHandlerRootView>
       </NavigationContainer>
     </Provider>

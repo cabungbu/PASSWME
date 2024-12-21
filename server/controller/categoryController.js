@@ -88,7 +88,7 @@ const CategoryController = {
       const categoryDoc = await getDoc(categoryDocRef);
 
       if (!categoryDoc.exists()) {
-        return res.status(404).json({ error: "Category not found" });
+        return res.status(404).json({ error: "Không tìm thấy thông tin danh mục này" });
       }
 
       let validPosts = [];

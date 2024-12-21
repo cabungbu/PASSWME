@@ -16,6 +16,8 @@ const {
   query,
   Timestamp,
   orderBy,
+  transaction,
+  runTransaction,
 } = require("firebase/firestore");
 
 const addUser = async (req, res) => {
@@ -24,9 +26,9 @@ const addUser = async (req, res) => {
     const data = req.body;
     const newUser = new user({
       username: data.username,
-      email: data.email, 
+      email: data.email,
       password: data.password,
-      phone: data.phone, 
+      phone: data.phone,
       avatar: data.avatar,
       address: data.address || "",
       posts: data.posts || [],
@@ -52,7 +54,7 @@ const getAllUsers = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   try {
     const userCollection = collection(firestoreDb, "users");
-    const snapshot = await getDocs(userCollection); 
+    const snapshot = await getDocs(userCollection);
 
     const users = await Promise.all(
       snapshot.docs.map(async (doc) => {
@@ -163,18 +165,35 @@ const getUserShopCart = async (req, res) => {
             const postDoc = await getDoc(postRef);
 
             if (!postDoc.exists()) {
-              return res.status(404).json({ error: "Post not found" });
+              return {
+                postId: null,
+              };
             }
 
             const postData = postDoc.data();
             const productsRef = collection(postRef, "products");
-            const productRef = doc(productsRef, item.productId); // Sửa ở đây
-            const productSnapshot = await getDoc(productRef); // Sử dụng getDoc thay vì getDocs
+            const productRef = doc(productsRef, item.productId);
+
+            const productSnapshot = await getDoc(productRef);
+            if (!productSnapshot.exists()) {
+              return {
+                postId: postDoc.id,
+                title: postData.title,
+                images: postData.images,
+                product: null,
+              };
+            }
             return {
               postId: postDoc.id,
               title: postData.title,
               images: postData.images,
-              product: productSnapshot.data(),
+              product: {
+                quantityInShopcart: item.quantity,
+                isCheck:
+                  productSnapshot.data().quantity > 0 ? item.isCheck : false,
+                productId: productSnapshot.id,
+                ...productSnapshot.data(),
+              },
             };
           })
         );
@@ -184,6 +203,8 @@ const getUserShopCart = async (req, res) => {
           ...shopData,
           listItem: listItem,
           user: username,
+          phone: userShopDoc.data().phone,
+          address: userShopDoc.data().address,
         };
       })
     );
@@ -215,7 +236,7 @@ const updateUser = async (req, res) => {
 
     res.status(200).json({
       message: "User updated successfully.",
-      user: { id: updatedUserDoc.id, ...updatedUserDoc.data() }, 
+      user: { id: updatedUserDoc.id, ...updatedUserDoc.data() },
     });
   } catch (error) {
     console.error("Error updating user:", error);
@@ -251,7 +272,9 @@ const addToShopCart = async (req, res) => {
     const sellerDoc = await getDoc(sellerRef);
 
     if (!sellerDoc.exists()) {
-      return res.status(404).json({ error: "Seller not found" });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy thông tin người bán" });
     }
 
     // 2. Lấy thông tin về post
@@ -259,7 +282,9 @@ const addToShopCart = async (req, res) => {
     const postDoc = await getDoc(postRef);
 
     if (!postDoc.exists()) {
-      return res.status(404).json({ error: "Post not found" });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy thông tin bài đăng" });
     }
 
     const postData = postDoc.data();
@@ -276,7 +301,9 @@ const addToShopCart = async (req, res) => {
     const selectedProduct = product.find((p) => p.id === productId);
 
     if (!selectedProduct) {
-      return res.status(404).json({ error: "Product not found in this post" });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy thông tin sản phẩm này" });
     }
 
     if (selectedProduct.quantity < quantity) {
@@ -291,7 +318,7 @@ const addToShopCart = async (req, res) => {
     const userDoc = await getDoc(userRef);
 
     if (!userDoc.exists()) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // 5. Cập nhật giỏ hàng của user
@@ -304,6 +331,7 @@ const addToShopCart = async (req, res) => {
       batch.set(shopCartRef, {
         listItem: [
           {
+            isCheck: false,
             postId,
             productId,
             quantity,
@@ -315,27 +343,38 @@ const addToShopCart = async (req, res) => {
     } else {
       const existingItems = shopCartDoc.data().listItem;
       const existingProduct = existingItems.find(
-        (p) => p.productId === productId
+        (p) => p.productId === productId && p.postId === postId
       );
 
       if (existingProduct) {
         const newQuantity = Number(existingProduct.quantity) + Number(quantity);
-        const updatedItems = existingItems.map((item) =>
-          item.productId === productId
-            ? { ...item, quantity: newQuantity }
-            : item
-        );
+        if (newQuantity > selectedProduct.quantity) {
+          return res.status(400).json({
+            message:
+              "Sản phẩm này đã tồn tại trong giỏ hàng với số lượng: " +
+              existingProduct.quantity +
+              ", bạn chỉ có thể thêm số lượng tối đa là: " +
+              (selectedProduct.quantity - existingProduct.quantity),
+          });
+        } else {
+          const updatedItems = existingItems.map((item) =>
+            item.productId === productId
+              ? { ...item, quantity: newQuantity }
+              : item
+          );
 
-        batch.update(shopCartRef, {
-          listItem: updatedItems,
-          updatedAt: Timestamp.now(),
-        });
+          batch.update(shopCartRef, {
+            listItem: updatedItems,
+            updatedAt: Timestamp.now(),
+          });
+        }
       } else {
         const newItem = {
           postId,
           productId,
           quantity,
           selectedAt: Timestamp.now(),
+          isCheck: false,
         };
 
         const updatedItems = [newItem, ...existingItems];
@@ -358,28 +397,172 @@ const addToShopCart = async (req, res) => {
   }
 };
 
+const setProductNotCheck = async (req, res) => {
+  const db = getFirestoreDb();
+  const { sellerId, productId } = req.body;
+  const userId = req.params.id;
+
+  try {
+    const result = await runTransaction(db, async (transaction) => {
+      const userDocRef = doc(db, "users", userId);
+      const shopcartRef = doc(collection(userDocRef, "shopcart"), sellerId);
+
+      // Lấy dữ liệu giỏ hàng
+      const shopcartDoc = await transaction.get(shopcartRef);
+
+      // Đảm bảo luôn có listItem là mảng
+      const shopcartData = shopcartDoc.exists() ? shopcartDoc.data() : {};
+      const listItem = shopcartData.listItem || [];
+
+      const itemIndex = listItem.findIndex(
+        (item) => item.productId === productId
+      );
+
+      if (itemIndex === -1) {
+        throw new HttpError(404, "Sản phẩm không tồn tại trong giỏ hàng");
+      }
+
+      const updatedListItem = [...listItem];
+      updatedListItem[itemIndex] = {
+        ...updatedListItem[itemIndex],
+        isCheck: false,
+      };
+      transaction.set(
+        shopcartRef,
+        { listItem: updatedListItem },
+        { merge: true }
+      );
+
+      return {};
+    });
+    return res.status(200).json({
+      message: "Cập nhật sản phẩm của giỏ hàng thành công",
+      ...result,
+    });
+  } catch (e) {
+    if (error instanceof HttpError) {
+      return res.status(error.status).json(error.toJSON());
+    }
+
+    // Xử lý các lỗi khác
+    console.error("Error checkboxProduct in shopcart:", error);
+    return res.status(500).json({
+      message: error.message || "Đã xảy ra lỗi",
+    });
+  }
+};
+
+function updateShopcartListItem(
+  transaction,
+  shopcartRef,
+  listItem,
+  itemIndex,
+  updateData
+) {
+  const updatedListItem = [...listItem];
+  updatedListItem[itemIndex] = {
+    ...updatedListItem[itemIndex],
+    ...updateData, // Cập nhật các trường
+  };
+
+  // Cập nhật Firestore với transaction
+  transaction.set(shopcartRef, { listItem: updatedListItem }, { merge: true });
+
+  return updatedListItem; // Trả về danh sách đã được cập nhật
+}
+
+const checkboxProduct = async (req, res) => {
+  const db = getFirestoreDb();
+  const { sellerId, postId, productId, quantity, currentPrice } = req.body;
+  const userId = req.params.id;
+
+  try {
+    const result = await runTransaction(db, async (transaction) => {
+      const shopcartRef = doc(
+        collection(db, "users", userId, "shopcart"),
+        sellerId
+      );
+
+      // Lấy dữ liệu giỏ hàng
+      const shopcartDoc = await transaction.get(shopcartRef);
+      const shopcartData = shopcartDoc.exists() ? shopcartDoc.data() : {};
+      const listItem = shopcartData.listItem || [];
+
+      const itemIndex = listItem.findIndex(
+        (item) => item.productId === productId
+      );
+      if (itemIndex === -1)
+        throw new HttpError(404, "Sản phẩm không tồn tại trong giỏ hàng");
+      updateShopcartListItem(transaction, shopcartRef, listItem, itemIndex, {
+        isCheck: true,
+      });
+      return {};
+    });
+
+    return res.status(200).json({
+      message: "Cập nhật sản phẩm của giỏ hàng thành công",
+      ...result,
+    });
+  } catch (error) {
+    // Xử lý lỗi
+    if (error instanceof HttpError) {
+      return res.status(error.status).json(error.toJSON().message);
+    }
+    return res.status(500).json({
+      message: error.message || "Đã xảy ra lỗi",
+    });
+  }
+};
+
+// Custom Error Class
+class HttpError extends Error {
+  constructor(status, message, data = {}) {
+    super(message);
+    this.status = status;
+    this.data = data;
+  }
+
+  toJSON() {
+    return {
+      message: this.message,
+      ...this.data,
+    };
+  }
+}
+
 const updateShopCart = async (req, res) => {
   const db = getFirestoreDb();
   const userId = req.params.id;
   try {
-    const { sellerId, postId, productIdBefore, productIdAfter, quantity } =
-      req.body;
+    const {
+      sellerId,
+      postId,
+      productIdBefore,
+      productIdAfter,
+      quantity,
+      isCheck,
+    } = req.body;
 
     // Reference to user's shopcart collection
     const userDocRef = doc(db, "users", userId);
     const shopcartRef = doc(collection(userDocRef, "shopcart"), sellerId);
 
-    // Get the current shopcart data
+    // Lấy dữ liệu giỏ hàng
     const shopcartDoc = await getDoc(shopcartRef);
-    const shopcartData = shopcartDoc.data() || { listItem: [] };
-    let { listItem } = shopcartData;
+
+    const shopcartData = shopcartDoc.exists() ? shopcartDoc.data() : {};
+    const listItem = shopcartData.listItem || [];
 
     const beforeIndex = listItem.findIndex(
       (item) => item.productId === productIdBefore
     );
-
+    console.log("beforeIndex: " + beforeIndex);
     if (beforeIndex === -1) {
-      return res.status(400).json({ message: "ProductId not found" });
+      console.log("case 0", productIdBefore, shopcartData);
+      return res.status(400).json({
+        message: "Product not found",
+        productIdBefore: productIdBefore,
+      });
     }
 
     let afterIndex = beforeIndex;
@@ -392,23 +575,26 @@ const updateShopCart = async (req, res) => {
     // Case 2: Change product ID (with possible merge)
     else {
       // Find if productIdAfter already exists
+      console.log("case 2 ", productIdBefore, productIdAfter, quantity);
       afterIndex = listItem.findIndex(
         (item) => item.productId === productIdAfter
       );
+      console.log("afterIndex ", afterIndex);
 
       if (afterIndex !== -1) {
         // Merge quantities and remove old item
         listItem[afterIndex].quantity += listItem[beforeIndex].quantity;
         listItem[afterIndex].updatedAt = Timestamp.now();
         listItem.splice(beforeIndex, 1);
+        afterIndex = afterIndex - 1;
       } else {
         // Just update the productId
         listItem[beforeIndex].productId = productIdAfter;
+        listItem[beforeIndex].quantity = quantity;
         listItem[beforeIndex].updatedAt = Timestamp.now();
       }
     }
 
-    // Update the document first
     await setDoc(shopcartRef, { listItem }, { merge: true });
 
     // Check maximum quantity
@@ -417,7 +603,10 @@ const updateShopCart = async (req, res) => {
     const maxQuantityDoc = await getDoc(productRef);
 
     if (!maxQuantityDoc.exists()) {
-      return res.status(404).json({ message: "Product not found" });
+      console.log("case 3", maxQuantityDoc.data());
+      return res
+        .status(404)
+        .json({ message: "Sản phẩm không xác định trong bài đăng" });
     }
 
     const maxQuantityData = maxQuantityDoc.data();
@@ -426,6 +615,7 @@ const updateShopCart = async (req, res) => {
       afterIndex >= 0 &&
       maxQuantityData.quantity < listItem[afterIndex].quantity
     ) {
+      console.log("case 4");
       listItem[afterIndex].quantity = maxQuantityData.quantity;
       await setDoc(shopcartRef, { listItem }, { merge: true });
       return res.status(401).json({ message: "Đã đạt số lượng tối đa" });
@@ -435,133 +625,55 @@ const updateShopCart = async (req, res) => {
     return res.status(200).json({ message: "Cập nhật giỏ hàng thành công" });
   } catch (error) {
     console.error("Error updating cart:", error);
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
 const removeProductFromCart = async (req, res) => {
-  const firestoreDb = getFirestoreDb();
-  const userId = req.params.id;
-  const { postId, productId } = req.body; // Lấy postId và productId từ body
-
   try {
-    const userRef = doc(firestoreDb, "users", userId);
-    const userDoc = await getDoc(userRef);
+    const db = getFirestoreDb();
+    const userId = req.params.id;
+    const { sellerId, postId, productId } = req.body;
 
-    if (!userDoc.exists()) {
-      return res.status(404).json({ error: "User not found" });
+    // Reference to user's shopcart collection
+    const userDocRef = doc(db, "users", userId);
+    const shopcartRef = doc(collection(userDocRef, "shopcart"), sellerId);
+
+    // Lấy dữ liệu giỏ hàng
+    const shopcartDoc = await getDoc(shopcartRef);
+
+    const shopcartData = shopcartDoc.exists() ? shopcartDoc.data() : {};
+    const listItem = shopcartData.listItem || [];
+
+    if (listItem.length == 0) {
+      await deleteDoc(shopcartRef);
+      return res
+        .status(200)
+        .json({ message: "Xóa sản phẩm khỏi giỏ hàng thành công" });
     }
 
-    const userData = userDoc.data();
-    const userCart = userData.shopcart || [];
+    const index = listItem.findIndex((item) => item.productId === productId);
+    if (index === -1) {
+      return res
+        .status(404)
+        .json({ error: "Không tìm thấy sản phẩm trong giỏ hàng" });
+    }
+    listItem.splice(index, 1);
 
-    // Tìm chỉ số của post trong shopcart
-    const postIndex = userCart.findIndex((item) => item.postId === postId);
-    if (postIndex === -1) {
-      return res.status(404).json({ error: "Post not found in cart" });
+    if (listItem.length === 0) {
+      await deleteDoc(shopcartRef);
+      return res
+        .status(200)
+        .json({ message: "Xóa sản phẩm khỏi giỏ hàng thành công" });
     }
 
-    const existingPost = userCart[postIndex];
-
-    // Kiểm tra xem mảng product có tồn tại không
-    if (!existingPost.product || !Array.isArray(existingPost.product)) {
-      return res.status(404).json({ error: "No products found for this post" });
-    }
-
-    const existingProductIndex = existingPost.product.findIndex(
-      (p) => p.productId === productId
-    );
-    if (existingProductIndex === -1) {
-      return res.status(404).json({ error: "Product not found in cart" });
-    }
-
-    // Xóa sản phẩm khỏi mảng product
-    existingPost.product.splice(existingProductIndex, 1);
-
-    // Nếu mảng product rỗng, xóa post khỏi shopcart
-    if (existingPost.product.length === 0) {
-      userCart.splice(postIndex, 1);
-    }
-
-    // Cập nhật shopcart trong Firestore
-    await setDoc(userRef, { shopcart: userCart });
-
-    res
+    await setDoc(shopcartRef, { listItem }, { merge: true });
+    return res
       .status(200)
-      .json({ message: "Product removed successfully", cart: userCart });
+      .json({ message: "Xóa sản phẩm khỏi giỏ hàng thành công" });
   } catch (error) {
     console.error("Error removing product from cart:", error);
     res.status(400).json({ error: error.message });
-  }
-};
-
-const addToLike = async (req, res) => {
-  const firestoreDb = getFirestoreDb();
-  const userId = req.params.id;
-  const { postId } = req.body;
-
-  try {
-    const userRef = doc(firestoreDb, "users", userId);
-    const userDoc = await getDoc(userRef);
-    if (!userDoc.exists()) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const currentLikes = userDoc.data().like || [];
-
-    // Kiểm tra nếu postId đã tồn tại trong mảng likes
-    if (currentLikes.includes(postId)) {
-      return res.status(400).json({ error: "Post already liked" });
-    }
-    await updateDoc(userRef, {
-      like: [postId, ...currentLikes],
-    });
-
-    return res.status(200).json({ message: "Added to likes successfully" });
-  } catch (e) {
-    return res
-      .status(500)
-      .json({ error: "Error add to like:", errorMessage: e });
-  }
-};
-
-const removeFromLike = async (req, res) => {
-  const firestoreDb = getFirestoreDb();
-  const userId = req.params.id;
-  const { postId } = req.body;
-
-  try {
-    const userRef = doc(firestoreDb, "users", userId);
-    const userDoc = await getDoc(userRef);
-
-    if (!userDoc.exists()) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    // Lấy mảng likes hiện tại
-    const currentLikes = userDoc.data().like || [];
-
-    // Kiểm tra xem postId có tồn tại trong mảng likes không
-    if (!currentLikes.includes(postId)) {
-      return res.status(400).json({ error: "Post is not in likes" });
-    }
-
-    // Lọc ra mảng mới không chứa postId cần xóa
-    const updatedLikes = currentLikes.filter((id) => id !== postId);
-
-    // Cập nhật document với mảng likes mới
-    await updateDoc(userRef, {
-      like: updatedLikes,
-    });
-
-    return res.status(200).json({
-      message: "Removed from likes successfully",
-      remainingLikes: updatedLikes,
-    });
-  } catch (e) {
-    return res
-      .status(500)
-      .json({ error: "Error removing from like:", errorMessage: e });
   }
 };
 
@@ -575,4 +687,6 @@ module.exports = {
   addToShopCart,
   updateShopCart,
   removeProductFromCart,
+  checkboxProduct,
+  setProductNotCheck,
 };

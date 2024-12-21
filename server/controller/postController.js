@@ -168,7 +168,7 @@ const getPostById = async (req, res) => {
     const postDoc = await getDoc(postDocRef);
 
     if (!postDoc.exists()) {
-      return res.status(404).json({ error: "Post not found" });
+      return res.status(404).json({ message: "Không tìm thấy thông tin bài đăng" });
     }
 
     // Lấy subcollection products
@@ -184,12 +184,15 @@ const getPostById = async (req, res) => {
       });
     });
 
+     // Fetch seller data
     const categoryDoc = await getDoc(postDoc.data().category);
     const catagoryData = categoryDoc.data();
 
     // Fetch seller data
     const ownerDoc = await getDoc(postDoc.data().owner);
     const ownerData = ownerDoc.data();
+
+
     const feedbacksData = [];
     if (
       postDoc &&
