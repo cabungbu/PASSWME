@@ -47,6 +47,8 @@ const shopCartSlice = createSlice({
         ? action.payload.map((item) => ({
             id: item.id,
             user: item.user,
+            phone: item.phone,
+            address: item.address,
             items: item.listItem.map((listItem) => ({
               postId: listItem.postId,
               title: listItem.title,
@@ -65,6 +67,8 @@ const shopCartSlice = createSlice({
       updatedShopCart[action.payload.index] = {
         id: action.payload.item.id,
         user: action.payload.item.user,
+        phone: action.payload.item.phone,
+        address: action.payload.item.address,
         items: action.payload.item.listItem.map((listItem) => ({
           postId: listItem.postId,
           title: listItem.title,

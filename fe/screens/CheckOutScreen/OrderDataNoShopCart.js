@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { scaleWidth, scaleHeight } from "../../assets/constant/responsive";
 import { COLOR } from "../../assets/constant/color";
 
-const OrderData = forwardRef((props, ref) => {
+const OrderDataNoShopCart = forwardRef((props, ref) => {
   const totalSum = useSelector((state) => state.shopCartContainer?.totalSum);
   const shopCart = useSelector((state) => state.shopCartContainer?.shopCart);
   const user = useSelector((state) => state.auth?.user);
@@ -20,47 +20,54 @@ const OrderData = forwardRef((props, ref) => {
 
   const [message, setMessage] = useState(""); // Quản lý nội dung lời nhắn
 
-  const data = shopCart.flatMap((element) => {
-    return element.items
-      .filter((item) => item.product.isCheck === true)
-      .map((item) => ({
-        ...item,
-        sellerId: element.id,
-        user: element.user,
-        phone: element.phone,
-        address: element.address,
-      }));
-  });
+  const data = props.post;
 
-  const items = data.flatMap((item) => ({
-    postId: item.postId,
-    title: item.title,
-    quantity: item.product.quantityInShopcart,
-    productId: item.product.productId,
-    image: item.product.image,
-    name: item.product.name,
-    price: item.product.price,
-  }));
+  //   const items = data.flatMap((item) => ({
+  //     postId: item.postId,
+  //     title: item.title,
+  //     quantity: item.product.quantityInShopcart,
+  //     productId: item.product.productId,
+  //     image: item.product.image,
+  //     name: item.product.name,
+  //     price: item.product.price,
+  //   }));
 
   // Quản lý thông tin đơn hàng
+  //   const orderInfo = {
+  //     buyerId: user.id,
+  //     buyerName: user.username,
+  //     buyerPhone: user.phone,
+  //     buyerAddress: user.address,
+  //     sellerId: data[0].sellerId,
+  //     sellerName: data[0].user,
+  //     sellerPhone: data[0].phone,
+  //     sellerAddress: data[0].address,
+  //     items: items,
+  //     note: message,
+  //     orderPrice: totalSum,
+  //     coin: isEnabled ? user.coin : 0,
+  //     totalPrice: isEnabled ? totalSum - user.coin : totalSum,
+  //     status: "choxuly",
+  //     deleteShopCart: true,
+  //   };
+
   const orderInfo = {
     buyerId: user.id,
     buyerName: user.username,
     buyerPhone: user.phone,
     buyerAddress: user.address,
-    sellerId: data[0].sellerId,
-    sellerName: data[0].user,
-    sellerPhone: data[0].phone,
-    sellerAddress: data[0].address,
-    items: items,
+    sellerId: data.sellerId,
+    sellerName: data.user,
+    sellerPhone: data.phone,
+    sellerAddress: data.address,
+    items: data.item,
     note: message,
-    orderPrice: totalSum,
+    orderPrice: data.item[0].price,
     coin: isEnabled ? user.coin : 0,
-    totalPrice: isEnabled ? totalSum - user.coin : totalSum,
+    totalPrice: isEnabled ? data.item[0].price - user.coin : data.item[0].price,
     status: "choxuly",
-    deleteShopCart: true,
+    deleteShopCart: false,
   };
-
   // Expose dữ liệu order lên cha qua ref
   useImperativeHandle(ref, () => ({
     getOrderData: () => orderInfo, // Trả về dữ liệu đơn hàng khi được gọi
@@ -70,40 +77,37 @@ const OrderData = forwardRef((props, ref) => {
     <>
       {/* Giao diện hiển thị thông tin đơn hàng */}
       <View style={styles.orderContainer}>
-        <Text style={styles.username}>Người bán: {data[0].user}</Text>
-        {data.map((item, index) => (
-          <View key={index} style={styles.cardContainer}>
-            <Image
-              source={{ uri: item.product.image }}
-              style={{ width: 100, height: 100, borderRadius: 20 }}
-            />
+        <Text style={styles.username}>Người bán: {data.user}</Text>
+
+        <View style={styles.cardContainer}>
+          <Image
+            source={{ uri: data.item[0].image }}
+            style={{ width: 100, height: 100, borderRadius: 20 }}
+          />
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "space-between",
+              marginLeft: 10,
+            }}
+          >
+            <View>
+              <Text style={styles.title}>{data.item[0].title}</Text>
+              <Text style={styles.name}>{data.item[0].name}</Text>
+            </View>
             <View
               style={{
-                flex: 1,
+                flexDirection: "row",
                 justifyContent: "space-between",
-                marginLeft: 10,
               }}
             >
-              <View>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.name}>{item.product.name}</Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={styles.price}>
-                  đ {formatPrice(item.product.price)}
-                </Text>
-                <Text style={styles.quantity}>
-                  x{item.product.quantityInShopcart}
-                </Text>
-              </View>
+              <Text style={styles.price}>
+                đ {formatPrice(data.item[0].price)}
+              </Text>
+              <Text style={styles.quantity}>x{data.item[0].quantity}</Text>
             </View>
           </View>
-        ))}
+        </View>
 
         <View style={styles.line} />
         <View style={{ justifyContent: "space-between" }}>
@@ -119,10 +123,8 @@ const OrderData = forwardRef((props, ref) => {
         </View>
 
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={styles.title}>
-            Tổng số tiền ({data.length} sản phẩm)
-          </Text>
-          <Text style={styles.price}>đ {formatPrice(totalSum)}</Text>
+          <Text style={styles.title}>Tổng số tiền (1) sản phẩm</Text>
+          <Text style={styles.price}>đ {formatPrice(data.item[0].price)}</Text>
         </View>
       </View>
 
@@ -164,17 +166,17 @@ const OrderData = forwardRef((props, ref) => {
         <Text style={styles.title}>Tổng thanh toán</Text>
         {isEnabled && user.coin ? (
           <Text style={styles.price}>
-            đ {formatPrice(totalSum - user.coin)}
+            đ {formatPrice(data.item[0].price - user.coin)}
           </Text>
         ) : (
-          <Text style={styles.price}>đ {formatPrice(totalSum)}</Text>
+          <Text style={styles.price}>đ {formatPrice(data.item[0].price)}</Text>
         )}
       </View>
     </>
   );
 });
 
-export default OrderData;
+export default OrderDataNoShopCart;
 
 const styles = StyleSheet.create({
   orderContainer: {

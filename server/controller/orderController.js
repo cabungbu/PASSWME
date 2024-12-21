@@ -1,7 +1,7 @@
 const { getFirestoreDb } = require("../config/firebase.js");
 const {
   collection,
-  addDoc,
+  setDoc,
   getDoc,
   getDocs,
   updateDoc,
@@ -37,14 +37,18 @@ const OrderController = {
       orderDate: new Date().toISOString(),
       feedbacks: [],
     };
-    try {
-      for (const item of data.items) {
-        const postRef = db.collection("posts").doc(item.postId);
-        const productRef = postRef.collection("products").doc(item.productId);
-        const postData = await postRef.get();
-        const productDoc = await productRef.get();
 
-        if (productDoc.exists) {
+    try {
+      // Duyệt qua từng sản phẩm trong đơn hàng
+      for (const item of data.items) {
+        const postRef = doc(db, "posts", item.postId);
+        const productRef = doc(postRef, "products", item.productId);
+
+        // Lấy dữ liệu từ Firestore
+        const postData = await getDoc(postRef);
+        const productDoc = await getDoc(productRef);
+
+        if (productDoc.exists()) {
           const productData = productDoc.data();
           const updatedStock = productData.quantity - item.quantity;
           if (updatedStock < 0)
@@ -57,47 +61,82 @@ const OrderController = {
                 ") : " +
                 productData.quantity,
             });
-          const updatedSold = postData.sold + item.quantity;
 
-          // Update product stock and sold count
-          await postRef.update({ sold: updatedSold });
-          await productRef.update({
-            stock: updatedStock,
-          });
+          const updatedSold = postData.data().sold
+            ? postData.data().sold + item.quantity
+            : item.quantity;
+
+          // Cập nhật thông tin sản phẩm (số lượng bán và kho)
+          await updateDoc(postRef, { sold: updatedSold });
+          await updateDoc(productRef, { quantity: updatedStock });
         } else {
-          // Handle case where the product doesn't exist (optional, depending on your use case)
+          // Nếu sản phẩm không tồn tại
           console.log(`Product not found: ${item.productId}`);
         }
       }
 
-      const orderRef = await db.collection("orders").add(newOrderData);
+      // Thêm đơn hàng vào collection 'orders'
+      const orderRef = doc(collection(db, "orders"));
+      await setDoc(orderRef, newOrderData);
 
-      // 2. Add the reference of the order to the seller's 'ordersReceived' field
-      const sellerRef = db.collection("users").doc(data.sellerId);
-      await sellerRef.update({
+      // Thêm tham chiếu đến đơn hàng trong trường 'ordersReceived' của người bán
+      const sellerRef = doc(db, "users", data.sellerId);
+      await updateDoc(sellerRef, {
         ordersReceived: arrayUnion(orderRef),
       });
 
-      const buyerRef = db.collection("users").doc(data.buyerId);
-      await buyerRef.update({
+      // Thêm tham chiếu đến đơn hàng trong trường 'myOrders' của người mua
+      const buyerRef = doc(db, "users", data.buyerId);
+      await updateDoc(buyerRef, {
         myOrders: arrayUnion(orderRef),
       });
 
       if (data.coin > 0) {
-        // Update the seller's coin balance
-        const sellerDoc = await sellerRef.get();
+        // Cập nhật xu của người bán
+        const sellerDoc = await getDoc(sellerRef);
         const sellerCoin =
-          sellerDoc.exists && sellerDoc.data().coin ? sellerDoc.data().coin : 0;
-        await sellerRef.update({ coin: sellerCoin + data.coin });
+          sellerDoc.exists() && sellerDoc.data().coin
+            ? sellerDoc.data().coin
+            : 0;
+        await updateDoc(sellerRef, { coin: sellerCoin + data.coin });
 
-        // Update the buyer's coin balance
-        const buyerRef = db.collection("users").doc(data.buyerId);
-        const buyerDoc = await buyerRef.get();
+        // Cập nhật xu của người mua
+        const buyerDoc = await getDoc(buyerRef);
         const buyerCoin =
-          buyerDoc.exists && buyerDoc.data().coin ? buyerDoc.data().coin : 0;
-        await buyerRef.update({ coin: buyerCoin - data.coin });
+          buyerDoc.exists() && buyerDoc.data().coin ? buyerDoc.data().coin : 0;
+        await updateDoc(buyerRef, { coin: buyerCoin - data.coin });
       }
 
+      if (data.deleteShopCart) {
+        const shopcartDocRef = doc(
+          db,
+          "users",
+          data.buyerId,
+          "shopcart",
+          data.sellerId
+        );
+
+        // Lấy dữ liệu của document này
+        const shopcartDoc = await getDoc(shopcartDocRef);
+        if (shopcartDoc.exists()) {
+          const shopcartData = shopcartDoc.data();
+
+          // Duyệt qua mảng items trong request để xóa từng phần tử trong shopcart
+          const updatedListItems = shopcartData.listItem.filter((item) => {
+            // Kiểm tra nếu productId không có trong data.items
+            return !data.items.some(
+              (deleteItem) =>
+                deleteItem.productId === item.productId &&
+                deleteItem.postId === item.postId
+            );
+          });
+          await updateDoc(shopcartDocRef, {
+            listItem: updatedListItems,
+          });
+        }
+      }
+
+      // Trả về response thành công
       res
         .status(200)
         .json({ message: "Order created successfully", orderId: orderRef.id });

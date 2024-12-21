@@ -11,11 +11,13 @@ import {
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { useToast } from "react-native-toast-notifications";
+import { useNavigation } from "@react-navigation/native";
 export default function ProductBottom({
   products,
   post,
   isUpdate,
   productIdBefore,
+  isBuy,
 }) {
   const [selectedProduct, setSelectedProduct] = useState(products[0]);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
@@ -30,6 +32,7 @@ export default function ProductBottom({
   const formatPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
+  const navigation = useNavigation();
   const toast = useToast();
   useEffect(() => {
     if (products.length > 0) {
@@ -135,6 +138,26 @@ export default function ProductBottom({
     setIsAdd("Thêm vào giỏ hàng");
   };
 
+  const buyNow = () => {
+    const navigationpost = {
+      sellerId: post.owner.id,
+      user: post.owner.username,
+      phone: post.owner.phone,
+      address: post.owner.address,
+      item: [
+        {
+          postId: post.id,
+          title: post.title,
+          quantity: selectedQuantity,
+          productId: selectedProduct.id,
+          image: selectedProduct.image,
+          name: selectedProduct.name,
+          price: selectedProduct.price,
+        },
+      ],
+    };
+    navigation.navigate("CheckOut2", { post: navigationpost });
+  };
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
       key={item.id}
@@ -227,9 +250,15 @@ export default function ProductBottom({
           </Text>
         </TouchableOpacity>
       ) : null}
-      <TouchableOpacity style={styles.button} onPress={() => addToShopCart()}>
-        <Text style={styles.addCartText}>{isAdd}</Text>
-      </TouchableOpacity>
+      {isBuy ? (
+        <TouchableOpacity style={styles.button} onPress={() => buyNow()}>
+          <Text style={styles.addCartText}>Mua ngay</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity style={styles.button} onPress={() => addToShopCart()}>
+          <Text style={styles.addCartText}>{isAdd}</Text>
+        </TouchableOpacity>
+      )}
 
       <View style={styles.bottom} />
     </View>

@@ -37,6 +37,7 @@ export default function PostDetailScreen({ route }) {
   const navigation = useNavigation();
   const bottomSheetRef = useRef(null);
   const [contentHeight, setContentHeight] = useState(0);
+  const [isBuy, setIsBuy] = useState(false);
   // variables
   const snapPoints = useMemo(() => ["50%", "75%"], []);
 
@@ -138,7 +139,12 @@ export default function PostDetailScreen({ route }) {
         <DataSection post={post} />
       </ScrollView>
 
-      <BottomTabSection onAddPress={handlePresentModalPress} />
+      <BottomTabSection
+        onBuyNow={() => {
+          handlePresentModalPress(), setIsBuy(true);
+        }}
+        onAddPress={handlePresentModalPress}
+      />
 
       <BottomSheet
         ref={bottomSheetRef}
@@ -164,6 +170,7 @@ export default function PostDetailScreen({ route }) {
             products={post.products}
             post={post}
             isUpdate={false}
+            isBuy={isBuy}
           />
         </BottomSheetView>
       </BottomSheet>

@@ -7,13 +7,12 @@ import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 import Footer from "./Footer";
 import Address from "./Address";
-import OrderData from "./OrderData";
+import OrderDataNoShopCart from "./OrderDataNoShopCart";
 import { BE_ENDPOINT } from "../../settings/localVars";
 import { getUserShopcart } from "../../redux/shopCartService";
 import { useDispatch } from "react-redux";
 import { deleteCheckedItemFunction } from "../../redux/checkShopCart";
-import OrderDataNoShopCart from "./OrderDataNoShopCart";
-export default function CheckOut({ route }) {
+export default function CheckOut2({ route }) {
   const navigation = useNavigation();
   const handleGoBack = () => {
     navigation.goBack();
@@ -87,11 +86,7 @@ export default function CheckOut({ route }) {
       </View>
       <ScrollView style={styles.scrollView}>
         <Address newUser={newUser} />
-        {postData ? (
-          <OrderDataNoShopCart post={postData} ref={orderDataRef} />
-        ) : (
-          <OrderData ref={orderDataRef} />
-        )}
+        <OrderDataNoShopCart post={route.params.post} ref={orderDataRef} />
       </ScrollView>
       <Footer
         onSendData={() =>

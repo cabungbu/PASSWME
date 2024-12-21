@@ -189,7 +189,8 @@ const getUserShopCart = async (req, res) => {
               images: postData.images,
               product: {
                 quantityInShopcart: item.quantity,
-                isCheck: item.isCheck,
+                isCheck:
+                  productSnapshot.data().quantity > 0 ? item.isCheck : false,
                 productId: productSnapshot.id,
                 ...productSnapshot.data(),
               },

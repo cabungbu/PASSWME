@@ -43,6 +43,8 @@ import PostingDetail from "../screens/PostScreen/PostingScreen/PostingDetail";
 import Posted from "../screens/PostScreen/PostedScreen/Posted";
 import { getUserShopcart } from "../redux/shopCartService";
 import CheckOut from "../screens/CheckOutScreen/CheckOut";
+import CheckOut2 from "../screens/CheckOutScreen/CheckOut2";
+import OrderSuccess from "../screens/OrderSuccessScreen/orderSuccess";
 const Stack = createNativeStackNavigator();
 
 function HomeStack() {
@@ -319,6 +321,8 @@ export default function MainContainer() {
           <Stack.Screen name="PostingDetailScreen" component={PostingDetail} />
           <Stack.Screen name="PostedScreen" component={Posted} />
           <Stack.Screen name="CheckOut" component={CheckOut} />
+          <Stack.Screen name="CheckOut2" component={CheckOut2} />
+          <Stack.Screen name="OrderSuccess" component={OrderSuccess} />
         </>
       )}
     </Stack.Navigator>

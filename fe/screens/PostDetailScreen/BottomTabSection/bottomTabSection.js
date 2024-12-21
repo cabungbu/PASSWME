@@ -12,9 +12,10 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import styles from "./style";
 import { COLOR } from "../../../assets/constant/color";
-import BottomSheet from "@gorhom/bottom-sheet";
+import { useNavigation } from "@react-navigation/native";
 
-export default function BottomTabSection({ onAddPress }) {
+export default function BottomTabSection({ onAddPress, onBuyNow }) {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.chatAndAddContainer}>
@@ -37,7 +38,7 @@ export default function BottomTabSection({ onAddPress }) {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.buyNowContainer}>
+      <TouchableOpacity style={styles.buyNowContainer} onPress={onBuyNow}>
         <Text style={styles.buyNowText}>Mua ngay</Text>
       </TouchableOpacity>
     </View>
