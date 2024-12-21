@@ -18,7 +18,7 @@ import ActivePosts from "./ActivePosts";
 import ClosedPosts from "./ClosedPosts";
 import SoldItems from "./SoldItems";
 import PendingOrders from "./PendingOrders";
-import DeliveredOrders from "./DeliveredOrders";
+import DeliveringOrders from "./DeliveringOrders";
 
 //custom
 import { COLOR } from "../../assets/constant/color";
@@ -55,7 +55,7 @@ export default function MyStore() {
 
   const DeliveredOrdersTab = () => (
     <View style={{ flex: 1 }}>
-      <DeliveredOrders />
+      <DeliveringOrders />
     </View>
   );
 

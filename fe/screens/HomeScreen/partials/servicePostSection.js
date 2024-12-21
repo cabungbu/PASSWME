@@ -24,7 +24,7 @@ export default function ServicePostSection() {
         setServicePost(data);
       })
       .catch((error) => {
-        console.error("Error fetching servicePost:", error);
+        cconsole.error("Error fetching service posts:", error.response?.data?.message);
       });
   }, []);
   return (

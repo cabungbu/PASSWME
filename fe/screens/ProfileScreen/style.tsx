@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
   orderText: {
     fontFamily: "regular",
-    fontSize: scaleWidth(12),
+    fontSize: 12,
     color: "black",
     marginTop: scaleHeight(5),
   },
@@ -87,14 +87,14 @@ const styles = StyleSheet.create({
   },
   supportText: {
     color: "black",
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "regular",
     flex: 1,
     marginLeft: scaleWidth(10),
   },
   //Text
   subtitleText: {
-    fontSize: scaleWidth(15),
+    fontSize: 15,
     fontFamily: "semiBold",
     color: "black",
   },

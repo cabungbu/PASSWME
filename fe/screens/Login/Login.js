@@ -25,8 +25,9 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
 import FacebookBrandIcon from "../../assets/icons/FacebookBrandIcon";
 import GoogleBrandIcon from "../../assets/icons/GoogleBrandIcon";
-import { scaleHeight } from "../../assets/constant/responsive";
+import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
 import Information_TextInput from "../../components/Information_TextInput";
+import mainStyles from "../../styles/mainStyles";
 
 const LoginPage = () => {
   const navigation = useNavigation();
@@ -54,17 +55,17 @@ const LoginPage = () => {
             backgroundColor="transparent"
             translucent={true}
           />
-          <View style={styles.header}>
+          <View style={mainStyles.headerCenterContainer}>
             <Ionicons
-              style={styles.headerIcon}
+              style={mainStyles.headerIcon}
               name="chevron-back"
-              size={24}
+              size={scaleWidth(30)}
               color="white"
               onPress={() => {
                 navigation.navigate("Welcome");
               }}
             />
-            <Text style={styles.headerText}>Đăng nhập</Text>
+            <Text style={[mainStyles.headerCenterText, {marginRight: scaleWidth(30)}]}>Đăng nhập</Text>
           </View>
         </>
       ) : (

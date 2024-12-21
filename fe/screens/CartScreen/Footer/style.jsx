@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   },
   buyNowText: {
     color: "white",
-    fontSize: scaleHeight(15),
+    fontSize: 15,
     fontFamily: "semiBold",
   },
   allContainer: {
@@ -21,17 +21,17 @@ const styles = StyleSheet.create({
     paddingVertical: scaleHeight(20),
   },
   allText: {
-    fontSize: scaleHeight(13),
+    fontSize: 13,
     fontFamily: "medium",
   },
   payText: {
-    fontSize: scaleHeight(13),
+    fontSize: 13,
     fontFamily: "medium",
     marginBottom: scaleHeight(5),
   },
   payMoney: {
     color: COLOR.mainColor,
-    fontSize: scaleWidth(13),
+    fontSize: 13,
     fontFamily: "semiBold",
   },
   payContainer: {
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   deleteText: {
-    fontSize: scaleHeight(13),
+    fontSize: 13,
     fontFamily: "medium",
     color: COLOR.mainColor,
   },

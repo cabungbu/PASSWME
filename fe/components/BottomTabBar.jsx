@@ -30,7 +30,7 @@ import OrderStatus from "../screens/ProfileScreen/OrderStatusScreen/OrderStatus"
 import PostsDisplay from "../screens/postsDisplay/mainSection/PostsDisplay";
 import WelcomePage from "../screens/WelcomeScreen/welcome";
 import LoginPage from "../screens/Login/Login";
-import PostDetailScreen from "../screens/PostDetailScreen/PostDetailScreen";
+import PostDetailScreen from "../screens/PostDetailScreen/PostDetails";
 import CartScreen from "../screens/CartScreen/CartScreen";
 import { useNavigation } from "@react-navigation/native";
 import { COLOR } from "../assets/constant/color";
@@ -41,6 +41,8 @@ import { setUser } from "../redux/authSlice";
 import UpdateInformation from "../screens/ProfileScreen/SettingScreen/UpdateInformationScreen";
 import PostingDetail from "../screens/PostScreen/PostingScreen/PostingDetail";
 import Posted from "../screens/PostScreen/PostedScreen/Posted";
+import PostingRules from "../screens/PostScreen/PostingScreen/PostingRules";
+import ChatRoom from "../screens/ChatScreen/ChatRoom";
 
 const Stack = createNativeStackNavigator();
 
@@ -59,7 +61,7 @@ function HomeStack() {
 const MyStoreStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MyStoreScreen" component={MyStore} />
+      <Stack.Screen name="MyStoreScreen" component={MyStore} /> 
     </Stack.Navigator>
   );
 };
@@ -308,6 +310,8 @@ export default function MainContainer() {
           <Stack.Screen name="UpdateInformation" component={UpdateInformation} />
           <Stack.Screen name="PostingDetailScreen" component={PostingDetail} />
           <Stack.Screen name="PostedScreen" component={Posted} />
+          <Stack.Screen name="PostingRulesScreen" component={PostingRules} />
+          <Stack.Screen name="ChatRoomScreen" component={ChatRoom} />
         </>
       )}
     </Stack.Navigator>
@@ -332,7 +336,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
   },
-  bottomBar: {},
   btnCircleUp: {
     width: 70,
     height: 70,

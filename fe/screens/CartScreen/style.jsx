@@ -7,7 +7,7 @@ const statusBarHeight = StatusBar.currentHeight || 20;
 const styles = StyleSheet.create({
   headerText: {
     color: "black",
-    fontSize: scaleWidth(18),
+    fontSize: 18,
     fontFamily: "semiBold",
     flex: 1,
     textAlign: "center",
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
   headerTextIOS: {
     color: "black",
-    fontSize: scaleWidth(18),
+    fontSize: 18,
     fontFamily: "semiBold",
     flex: 1,
     textAlign: "center",
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     left: scaleWidth(15),
   },
   sua: {
-    fontSize: scaleWidth(13),
+    fontSize: 13,
     color: "black",
     marginRight: scaleWidth(15),
     fontFamily: "regular",

@@ -159,7 +159,7 @@ const AddressPicker = ({ setFullAddress, onClose }) => {
         width={scaleWidth(150)}
         height={scaleHeight(50)}
         marginTop={scaleHeight(10)}
-        backgroundColor={COLOR.successColor}
+        backgroundColor={COLOR.sentColor}
       />
     </View>
   );
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   pickerContainer: {
-    width: scaleWidth(130),
+    width: "33%",
     height: "auto",
   },
   label: {

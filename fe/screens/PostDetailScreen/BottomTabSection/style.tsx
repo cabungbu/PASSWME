@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   },
   buyNowText: {
     color: "white",
-    fontSize: scaleHeight(15),
+    fontSize: 15,
     fontFamily: "semiBold",
   },
 });

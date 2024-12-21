@@ -37,7 +37,7 @@ const Post = () => {
         setCategories(data);
       })
       .catch((error) => {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching categories:", error.response?.data?.message);
       });
   }, []);
 
@@ -74,8 +74,8 @@ const Post = () => {
           return (
             <TouchableOpacity
               key={category.id}
-              onPress={() => {
-                navigation.navigate("PostingDetailScreen", {
+              onPress={() => { //PostingDetailScreen
+                navigation.navigate("PostingDetailScreen", { 
                   categoryId: category.id,
                   categoryName: category.nameOfCategory,
                 });

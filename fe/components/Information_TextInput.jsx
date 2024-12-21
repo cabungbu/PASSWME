@@ -75,6 +75,7 @@ const Information_TextInput = ({
           size={scaleWidth(24)}
           color={updateAddress ? COLOR.mainColor : "#a0a0a0"}
           onPress={toggleUpdateState}
+          style={styles.HidePasswordIcon}
         />
       )}
     </View>

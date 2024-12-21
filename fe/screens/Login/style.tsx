@@ -10,27 +10,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  headerText: {
-    color: "#fff",
-    marginTop: statusBarHeight,
-    fontSize: 18,
-    fontFamily: "semiBold",
-    flex: 1,
-    textAlign: "center",
-  },
-  headerIcon: {
-    marginTop: statusBarHeight,
-  },
-  header: {
-    backgroundColor: COLOR.mainColor,
-    height: scaleHeight(80) + statusBarHeight,
-    paddingTop: statusBarHeight,
-    paddingHorizontal: scaleWidth(20),
-    alignItems: "center",
-    borderBottomEndRadius: 10,
-    borderBottomStartRadius: 10,
-    flexDirection: "row",
-  },
   headerIOS: {
     backgroundColor: "#E30414",
     display: "flex",

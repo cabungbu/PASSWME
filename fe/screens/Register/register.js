@@ -23,6 +23,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
 import FacebookBrandIcon from "../../assets/icons/FacebookBrandIcon";
 import GoogleBrandIcon from "../../assets/icons/GoogleBrandIcon";
+import mainStyles from "../../styles/mainStyles";
 
 const RegisterPage = () => {
   const navigation = useNavigation();
@@ -55,13 +56,13 @@ const RegisterPage = () => {
       {Platform.OS === "android" ? (
         <>
           <StatusBar
-            barStyle="dark-content"
+            barStyle="light-content"
             backgroundColor="transparent"
             translucent={true}
           />
-          <View style={styles.header}>
+          <View style={mainStyles.headerCenterContainer}>
             <Ionicons
-              style={styles.headerIcon}
+              style={mainStyles.headerIcon}
               name="chevron-back"
               size={scaleWidth(28)}
               color="white"
@@ -69,7 +70,7 @@ const RegisterPage = () => {
                 navigation.navigate("Welcome");
               }}
             />
-            <Text style={styles.headerText}>Đăng nhập</Text>
+            <Text style={[mainStyles.headerCenterText, {marginRight: scaleWidth(30)}]}>Đăng ký</Text>
           </View>
         </>
       ) : (

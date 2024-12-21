@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
   },
   shopNameText: {
     fontFamily: "regular",
-    fontSize: scaleWidth(13),
+    fontSize: 13,
     color: "#949292",
     marginLeft: scaleWidth(5),
   },
@@ -30,11 +30,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: "medium",
-    fontSize: scaleWidth(13),
+    fontSize: 13,
   },
   name: {
     fontFamily: "regular",
-    fontSize: scaleWidth(13),
+    fontSize: 13,
     color: "#A0A0A0",
     flex: 1,
   },
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
     width: "100%",
     color: COLOR.mainColor,
-    fontSize: scaleWidth(13),
+    fontSize: 13,
     fontFamily: "medium",
   },
   updateQuantity: {
@@ -64,13 +64,13 @@ const styles = StyleSheet.create({
     borderColor: "#bcbbbb",
     borderRightWidth: 1,
     fontFamily: "medium",
-    fontSize: scaleWidth(13),
+    fontSize: 13,
     color: "black",
     // paddingVertical: scaleWidth(5),
   },
   text: {
     fontFamily: "regular",
-    fontSize: scaleWidth(13),
+    fontSize: 13,
     color: "black",
   },
   dropdownButtonStyle: {
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: scaleWidth(5),
     paddingVertical: scaleWidth(5),
     fontFamily: "regular",
-    fontSize: scaleWidth(13),
+    fontSize: 13,
     color: "black",
   },
   dropdownItemTxtStyle: {

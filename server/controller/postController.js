@@ -10,6 +10,7 @@ const {
   deleteDoc,
   doc,
   writeBatch,
+  arrayUnion 
 } = require("firebase/firestore");
 const post = require("../model/post.js");
 const product = require("../model/productOfPost.js");
@@ -29,7 +30,8 @@ const addPost = async (req, res) => {
     const newPost = new post({
       title: data.title,
       category: doc(firestoreDb, "categories", data.category), // Lưu reference tới category
-      image: data.image,
+      images: data.images,
+      video: data.video,
       status: data.status,
       description: data.description,
       service: data.service,
@@ -37,6 +39,7 @@ const addPost = async (req, res) => {
       time: new Date().toLocaleTimeString(),
       owner: doc(firestoreDb, "users", data.owner), // Lưu reference tới owner
       condition: data.condition,
+      address: data.address,
       soldQuantity: data.soldQuantity || 0,
       feedbacks: [],
       //       rating: data.rating || 0,
@@ -121,6 +124,7 @@ const addPost = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 const getAllPost = async (req, res) => {
   const firestoreDb = getFirestoreDb();
 

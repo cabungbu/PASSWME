@@ -22,13 +22,12 @@ import GameIcon from "../../../assets/icons/GameIcon";
 import SewingMachineIcon from "../../../assets/icons/SewingMachineIcon";
 import MotobikeIcon from "../../../assets/icons/MotobikeIcon";
 import AllCategoryIcon from "../../../assets/icons/AllCategoryIcon";
-import { useNavigation } from "@react-navigation/native";
 
 export default function CategorySection() {
   const navigation = useNavigation();
   const [categories, setCategories] = useState([]);
   const numColumns = Math.ceil(categories.length / 2);
-  const navigation = useNavigation();
+
   useEffect(() => {
     fetch(BE_ENDPOINT + "/category/")
       .then((res) => res.json())
@@ -36,7 +35,7 @@ export default function CategorySection() {
         setCategories(data);
       })
       .catch((error) => {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching categories:", error.response?.data?.message);
       });
   }, []);
 

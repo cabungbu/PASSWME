@@ -19,8 +19,6 @@ import {
   updatePasswordSuccess,
   updatePasswordFailure,
 } from "./authSlice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BE_ENDPOINT } from "../settings/localVars";
 import { getUserShopcart } from "./shopCartService";
 
 export const loginUser = async (user, dispatch, navigation) => {

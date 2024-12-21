@@ -10,7 +10,6 @@ import {
 StatusBar,
 Platform,
 } from "react-native";
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { COLOR } from '../../assets/constant/color';
 import { scaleWidth } from '../../assets/constant/responsive';
 import styles from "./style";

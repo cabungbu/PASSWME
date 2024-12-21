@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "black",
-    fontSize: scaleWidth(13),
+    fontSize: 14,
     fontFamily: "medium",
     flex: 1,
     marginLeft: scaleWidth(10),

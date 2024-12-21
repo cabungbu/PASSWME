@@ -94,7 +94,7 @@ const pickerStyles = StyleSheet.create({
     justifyContent: "space-between",
   },
   text: {
-    fontSize: 14,
+    fontSize: 13,
     color: "black",
     fontFamily: "regular",
     flex: 1

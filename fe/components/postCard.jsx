@@ -17,9 +17,11 @@ import { useNavigation } from "@react-navigation/native";
 
 const PostCard = React.memo(({ post }) => {
   const [products, setProduct] = useState(post.products);
-  const navigation = useNavigation();
+  const navigation = useNavigation(); 
 
   const { minPrice, maxPrice } = useMemo(() => {
+    
+    console.log("check ",post.products)
     if (!products || products.length === 0) {
       return { minPrice: 0, maxPrice: 0 };
     }
@@ -122,19 +124,19 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   title: {
-    fontSize: scaleWidth(12),
+    fontSize: 12,
     marginVertical: 5,
     fontFamily: "regular",
     height: scaleHeight(40),
   },
   start: {
-    fontSize: scaleWidth(11),
+    fontSize: 11,
     marginVertical: 5,
     color: "#737373",
     fontFamily: "regular",
   },
   price: {
-    fontSize: scaleWidth(12),
+    fontSize: 12,
     paddingLeft: 5,
     color: "#E30414",
     fontFamily: "semibold",

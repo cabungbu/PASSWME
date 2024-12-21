@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
   },
   text: {
-    fontSize: scaleWidth(16),
+    fontSize: 16,
     fontFamily: "semiBold",
     color: "#b1b0b0",
     textAlign: "center",

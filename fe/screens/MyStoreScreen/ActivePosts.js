@@ -31,7 +31,7 @@ export default function ActiveListings() {
         const postsData = res.data.posts || [];
         setPosts(postsData);
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        console.error("Error fetching posts:", error.response?.data?.message);
         Alert.alert("Lỗi", "Không thể tải bài đăng");
       } finally {
         setLoading(false);

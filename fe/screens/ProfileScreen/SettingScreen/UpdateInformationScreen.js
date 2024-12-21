@@ -45,7 +45,13 @@ const UpdateInformation = () => {
       address: fullAddress ? fullAddress : user?.address,
     };
 
-    updateUserInformation(newUser, dispatch, user, refreshTokenRedux, accessToken);
+    updateUserInformation(
+      newUser,
+      dispatch,
+      user,
+      refreshTokenRedux,
+      accessToken
+    );
   };
 
   return (
@@ -116,12 +122,10 @@ const UpdateInformation = () => {
         />
 
         {updateAddress && (
-          <View style={{}}>
-            <AddressPicker
-              setFullAddress={setFullAddress}
-              onClose={() => setUpdateAddress(false)}
-            />
-          </View>
+          <AddressPicker
+            setFullAddress={setFullAddress}
+            onClose={() => setUpdateAddress(false)}
+          />
         )}
         <CustomButton
           onPress={handleUpdateInformation}
