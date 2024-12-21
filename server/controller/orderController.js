@@ -157,43 +157,34 @@ const OrderController = {
       const orders = await Promise.all(
         snapshot.docs.map(async (doc) => {
           const orderData = doc.data();
+          // const buyerDoc = await getDoc(orderData.buyerId);
+          // const buyerData = buyerDoc.data();
 
-          // Fetch buyer data
-          const buyerDoc = await getDoc(orderData.buyerId);
-          const buyerData = buyerDoc.data();
+          // const sellerDoc = await getDoc(orderData.sellerId);
+          // const sellerData = sellerDoc.data();
 
-          // Fetch seller data
-          const sellerDoc = await getDoc(orderData.sellerId);
-          const sellerData = sellerDoc.data();
+          // const feedbacksData = await Promise.all(
+          //   orderData.feedbacks.map(async (feedbackId) => {
+          //     const feedbackDoc = await getDoc(feedbackId);
+          //     return { id: feedbackDoc.id, ...feedbackDoc.data() };
+          //   })
+          // );
 
-          const feedbacksData = await Promise.all(
-            orderData.feedbacks.map(async (feedbackId) => {
-              const feedbackDoc = await getDoc(feedbackId);
-              return { id: feedbackDoc.id, ...feedbackDoc.data() };
-            })
-          );
-
-          // Fetch all posts data
-          const postsData = await Promise.all(
-            orderData.postIds.map(async (postId) => {
-              const postDoc = await getDoc(postId);
-              return { id: postDoc.id, ...postDoc.data() };
-            })
-          );
+          // const postsData = await Promise.all(
+          //   orderData.postIds.map(async (postId) => {
+          //     const postDoc = await getDoc(postId);
+          //     return { id: postDoc.id, ...postDoc.data() };
+          //   })
+          // );
 
           // Return order với đầy đủ dữ liệu
           return {
             id: doc.id,
             ...orderData,
-            buyer: { id: buyerDoc.id, ...buyerData },
-            seller: { id: sellerDoc.id, ...sellerData },
-            posts: postsData,
-            feedbacks: feedbacksData,
           };
         })
       );
 
-      // Trả về tất cả orders
       return res.status(200).json(orders);
     } catch (error) {
       console.error("Error fetching orders:", error);

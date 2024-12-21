@@ -57,7 +57,7 @@ const OrderData = forwardRef((props, ref) => {
     orderPrice: totalSum,
     coin: isEnabled ? user.coin : 0,
     totalPrice: isEnabled ? totalSum - user.coin : totalSum,
-    status: "choxuly",
+    status: "pending",
     deleteShopCart: true,
   };
 
