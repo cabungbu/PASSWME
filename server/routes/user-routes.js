@@ -11,6 +11,7 @@ const {
   removeProductFromCart,
   checkboxProduct,
   setProductNotCheck,
+  updateCoin,
 } = require("../controller/userController");
 const {
   checkAllBoxTrue,
@@ -37,5 +38,7 @@ router.patch("/checkAllBoxTrue/:id", checkAllBoxTrue);
 router.patch("/checkAllBoxFalse/:id", checkAllBoxFalse);
 
 router.patch("/updateQuantity/:id", updateQuantity);
+
+router.get("/updateCoin/:id", updateCoin);
 
 module.exports = { routes: router };

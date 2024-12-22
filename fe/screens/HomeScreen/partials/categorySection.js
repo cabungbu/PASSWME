@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  ScrollView,
-  FlatList,
-} from "react-native";
+import { TouchableOpacity, View, Text, ScrollView, Alert } from "react-native";
 import { SvgUri } from "react-native-svg";
 import styles from "./style";
 import { BE_ENDPOINT } from "../../../settings/localVars";
@@ -22,13 +16,15 @@ import SewingMachineIcon from "../../../assets/icons/SewingMachineIcon";
 import MotobikeIcon from "../../../assets/icons/MotobikeIcon";
 import AllCategoryIcon from "../../../assets/icons/AllCategoryIcon";
 import { useNavigation } from "@react-navigation/native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setCoin } from "../../../redux/authSlice";
 
 export default function CategorySection() {
   const navigation = useNavigation();
   const [categories, setCategories] = useState([]);
   const numColumns = Math.ceil(categories.length / 2);
   const user = useSelector((state) => state.auth?.user);
+  const dispatch = useDispatch();
   useEffect(() => {
     fetch(BE_ENDPOINT + "/category/")
       .then((res) => res.json())
@@ -36,7 +32,10 @@ export default function CategorySection() {
         setCategories(data);
       })
       .catch((error) => {
-        console.error("Error fetching categories:", error.response?.data?.message);
+        console.error(
+          "Error fetching categories:",
+          error.response?.data?.message
+        );
       });
   }, []);
 
@@ -54,9 +53,41 @@ export default function CategorySection() {
     "Văn phòng phẩm, công nông nghiệp": SewingMachineIcon,
   };
 
+  const updateCoin = async () => {
+    await fetch(BE_ENDPOINT + `/user/updateCoin/${user.id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json()) // Phân tích phản hồi thành JSON
+      .then((data) => {
+        // Sau khi đã có dữ liệu JSON, bạn có thể truy cập vào message
+        Alert.alert(
+          "Thông báo",
+          data.message, // Sử dụng data.message thay vì res.message
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                dispatch(setCoin(data.coin)), console.log(data);
+              },
+            },
+          ],
+          { cancelable: true, onDismiss: () => console.log("Alert dismissed") }
+        );
+      })
+      .catch((error) => {
+        console.error("Error get coin:", error);
+      });
+  };
+
   return (
     <View style={styles.categoryContainer}>
-      <TouchableOpacity style={styles.coinContainer}>
+      <TouchableOpacity
+        style={styles.coinContainer}
+        onPress={() => updateCoin()}
+      >
         <View
           style={{
             display: "flex",

@@ -216,6 +216,67 @@ const getUserShopCart = async (req, res) => {
   }
 };
 
+const updateCoin = async (req, res) => {
+  const firestoreDb = getFirestoreDb();
+  try {
+    const userId = req.params.id;
+    const userRef = doc(firestoreDb, "users", userId);
+    const userDoc = await getDoc(userRef);
+    const userData = userDoc.data();
+    const coin = userData.coin || 0;
+
+    // Lấy thời gian hiện tại
+    const currentTime = new Date();
+
+    // Kiểm tra nếu không có lastTimeReceiveCoin trong dữ liệu
+    const lastTimeReceiveCoin = userData.lastTimeReceiveCoin
+      ? new Date(userData.lastTimeReceiveCoin)
+      : null;
+
+    // Nếu không có lastTimeReceiveCoin, cộng thêm xu và lưu lại thời gian hiện tại
+    if (!lastTimeReceiveCoin) {
+      await updateDoc(userRef, {
+        coin: coin + 100, // Tăng thêm 100 xu
+        lastTimeReceiveCoin: currentTime.toISOString(), // Thêm trường lastTimeReceiveCoin
+      });
+      return res
+        .status(200)
+        .json({ message: "Bạn đã nhận 100 Passwme xu", coin: coin + 100 });
+    }
+
+    // Tính toán chênh lệch thời gian tính bằng giờ
+    const timeDifference =
+      (currentTime - lastTimeReceiveCoin) / (1000 * 60 * 60); // Chênh lệch thời gian tính bằng giờ
+
+    // Nếu chênh lệch thời gian lớn hơn hoặc bằng 24 giờ, cộng thêm xu
+    if (timeDifference >= 24) {
+      await updateDoc(userRef, {
+        coin: coin + 100, // Tăng thêm 100 xu
+        lastTimeReceiveCoin: currentTime.toISOString(), // Cập nhật lại thời gian nhận xu
+      });
+      return res
+        .status(200)
+        .json({ message: "Bạn đã được nhận 100 xu", coin: coin + 100 });
+    } else {
+      // Tính thời gian còn lại (trong phút)
+      const remainingTime = 24 - timeDifference; // Thời gian còn lại (trong giờ)
+      const remainingHours = Math.floor(remainingTime); // Số giờ còn lại
+      const remainingMinutes = Math.floor(
+        (remainingTime - remainingHours) * 60
+      ); // Số phút còn lại
+
+      // Trả về lỗi với thời gian còn lại
+      return res.status(400).json({
+        message: `Bạn có thể nhận xu sau ${remainingHours} giờ ${remainingMinutes} phút nữa.`,
+        coin: coin,
+      });
+    }
+  } catch (error) {
+    console.error("Error updating coin:", error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
 const updateUser = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   try {
@@ -689,4 +750,5 @@ module.exports = {
   removeProductFromCart,
   checkboxProduct,
   setProductNotCheck,
+  updateCoin,
 };

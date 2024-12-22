@@ -10,8 +10,9 @@ import Address from "./Address";
 import OrderDataNoShopCart from "./OrderDataNoShopCart";
 import { BE_ENDPOINT } from "../../settings/localVars";
 import { getUserShopcart } from "../../redux/shopCartService";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteCheckedItemFunction } from "../../redux/checkShopCart";
+import { setCoin } from "../../redux/authSlice";
 export default function CheckOut2({ route }) {
   const navigation = useNavigation();
   const handleGoBack = () => {
@@ -21,7 +22,7 @@ export default function CheckOut2({ route }) {
   const [error, setError] = useState(null);
   const [newUser, setNewUser] = useState(null);
   const [postData, setPostData] = useState(null);
-
+  const user = useSelector((state) => state.auth?.user);
   // const [orderData, setOrderData] = useState(null);
 
   const orderDataRef = useRef(null); // Create a ref to access OrderData
@@ -41,8 +42,8 @@ export default function CheckOut2({ route }) {
 
       if (res.ok) {
         console.log("Thêm đơn hàng thành công trên server.");
-        // Navigate to 'OrderSuccess' if the order is added successfully
         navigation.navigate("OrderSuccess");
+        dispatch(setCoin(user.coin - data.coin));
         // deleteCheckedItemFunction(data.buyerId, dispatch);
       } else {
         const errorData = await res.json();

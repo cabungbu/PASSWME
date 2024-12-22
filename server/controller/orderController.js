@@ -99,12 +99,14 @@ const OrderController = {
           sellerDoc.exists() && sellerDoc.data().coin
             ? sellerDoc.data().coin
             : 0;
+        console.log(sellerDoc.data().coin);
         await updateDoc(sellerRef, { coin: sellerCoin + data.coin });
 
         // Cập nhật xu của người mua
         const buyerDoc = await getDoc(buyerRef);
         const buyerCoin =
           buyerDoc.exists() && buyerDoc.data().coin ? buyerDoc.data().coin : 0;
+        console.log(buyerDoc.data().coin);
         await updateDoc(buyerRef, { coin: buyerCoin - data.coin });
       }
 
