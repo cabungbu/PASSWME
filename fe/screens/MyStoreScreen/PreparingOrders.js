@@ -3,11 +3,14 @@ import React from "react";
 import styles from "./style";
 import OrderCardSeller from "../../components/OrderCard/orderCardSeller";
 
-const SoldOrders = React.memo(
-  ({ orders }) => {
-    console.log("Sold");
+const PreparingOrders = React.memo(
+  ({ orders, onDelivering }) => {
+    console.log("PreparingOrder");
     const getPendingOrders = (orders) => {
-      return orders.filter((order) => order.status === "sold");
+      return orders.filter((order) => order.status === "preparing");
+    };
+    const handleOrderDelivery = (order) => {
+      onDelivering(order); // Gọi callback và truyền order lên cha
     };
 
     return (
@@ -18,7 +21,12 @@ const SoldOrders = React.memo(
             showsVerticalScrollIndicator={false}
             // style={styles.Wrapper}
             keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => <OrderCardSeller order={item} />}
+            renderItem={({ item, index }) => (
+              <OrderCardSeller
+                order={item}
+                onDelivering={() => handleOrderDelivery(item)}
+              />
+            )}
           />
         ) : (
           <View>
@@ -36,4 +44,4 @@ const SoldOrders = React.memo(
   }
 );
 
-export default SoldOrders;
+export default PreparingOrders;

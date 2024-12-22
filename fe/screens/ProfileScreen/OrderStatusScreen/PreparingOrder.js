@@ -1,13 +1,13 @@
 import { View, Text, Image, FlatList } from "react-native";
 import React from "react";
 import styles from "./style";
-import OrderCardSeller from "../../components/OrderCard/orderCardSeller";
+import OrderCard from "../../../components/OrderCard/orderCard";
 
-const SoldOrders = React.memo(
+const PreparingOrder = React.memo(
   ({ orders }) => {
-    console.log("Sold");
+    console.log("PreparingOrder");
     const getPendingOrders = (orders) => {
-      return orders.filter((order) => order.status === "sold");
+      return orders.filter((order) => order.status === "preparing");
     };
 
     return (
@@ -18,7 +18,7 @@ const SoldOrders = React.memo(
             showsVerticalScrollIndicator={false}
             // style={styles.Wrapper}
             keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => <OrderCardSeller order={item} />}
+            renderItem={({ item, index }) => <OrderCard order={item} />}
           />
         ) : (
           <View>
@@ -36,4 +36,4 @@ const SoldOrders = React.memo(
   }
 );
 
-export default SoldOrders;
+export default PreparingOrder;
