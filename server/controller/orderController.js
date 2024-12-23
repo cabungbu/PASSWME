@@ -9,6 +9,7 @@ const {
   doc,
   writeBatch,
   arrayUnion,
+  arrayRemove,
 } = require("firebase/firestore");
 
 const OrderController = {
@@ -98,12 +99,14 @@ const OrderController = {
           sellerDoc.exists() && sellerDoc.data().coin
             ? sellerDoc.data().coin
             : 0;
+        console.log(sellerDoc.data().coin);
         await updateDoc(sellerRef, { coin: sellerCoin + data.coin });
 
         // Cập nhật xu của người mua
         const buyerDoc = await getDoc(buyerRef);
         const buyerCoin =
           buyerDoc.exists() && buyerDoc.data().coin ? buyerDoc.data().coin : 0;
+        console.log(buyerDoc.data().coin);
         await updateDoc(buyerRef, { coin: buyerCoin - data.coin });
       }
 
@@ -157,43 +160,34 @@ const OrderController = {
       const orders = await Promise.all(
         snapshot.docs.map(async (doc) => {
           const orderData = doc.data();
+          // const buyerDoc = await getDoc(orderData.buyerId);
+          // const buyerData = buyerDoc.data();
 
-          // Fetch buyer data
-          const buyerDoc = await getDoc(orderData.buyerId);
-          const buyerData = buyerDoc.data();
+          // const sellerDoc = await getDoc(orderData.sellerId);
+          // const sellerData = sellerDoc.data();
 
-          // Fetch seller data
-          const sellerDoc = await getDoc(orderData.sellerId);
-          const sellerData = sellerDoc.data();
+          // const feedbacksData = await Promise.all(
+          //   orderData.feedbacks.map(async (feedbackId) => {
+          //     const feedbackDoc = await getDoc(feedbackId);
+          //     return { id: feedbackDoc.id, ...feedbackDoc.data() };
+          //   })
+          // );
 
-          const feedbacksData = await Promise.all(
-            orderData.feedbacks.map(async (feedbackId) => {
-              const feedbackDoc = await getDoc(feedbackId);
-              return { id: feedbackDoc.id, ...feedbackDoc.data() };
-            })
-          );
-
-          // Fetch all posts data
-          const postsData = await Promise.all(
-            orderData.postIds.map(async (postId) => {
-              const postDoc = await getDoc(postId);
-              return { id: postDoc.id, ...postDoc.data() };
-            })
-          );
+          // const postsData = await Promise.all(
+          //   orderData.postIds.map(async (postId) => {
+          //     const postDoc = await getDoc(postId);
+          //     return { id: postDoc.id, ...postDoc.data() };
+          //   })
+          // );
 
           // Return order với đầy đủ dữ liệu
           return {
             id: doc.id,
             ...orderData,
-            buyer: { id: buyerDoc.id, ...buyerData },
-            seller: { id: sellerDoc.id, ...sellerData },
-            posts: postsData,
-            feedbacks: feedbacksData,
           };
         })
       );
 
-      // Trả về tất cả orders
       return res.status(200).json(orders);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -268,29 +262,28 @@ const OrderController = {
 
       // Chỉ cho phép cập nhật status hoặc (to và note nếu status là "Chưa xử lý")
       if (updateData.status) {
-        // Cập nhật trạng thái
-        await updateDoc(orderDocRef, { status: updateData.status });
-      } else if (currentOrderData.status === "Chưa xử lý") {
-        // Nếu status là "Chưa xử lý", cho phép cập nhật to và note
-        const allowedUpdates = {};
-        if (updateData.to) allowedUpdates.to = updateData.to;
-        if (updateData.note) allowedUpdates.note = updateData.note;
+        const updatedData = { status: updateData.status };
 
-        if (Object.keys(allowedUpdates).length === 0) {
-          return res.status(400).json({
-            error:
-              "Cần cung cấp ít nhất một trong các trường 'to' hoặc 'note' để cập nhật.",
-          });
+        // Kiểm tra nếu status là "sold" thì thêm trường completeDate
+        if (updateData.status === "sold") {
+          updatedData.completeDate = new Date().toISOString(); // Thêm thời gian hiện tại ở định dạng ISO
         }
 
-        await updateDoc(orderDocRef, allowedUpdates);
-      } else {
-        return res.status(400).json({
-          error:
-            "Chỉ cho phép cập nhật status hoặc 'to/note' nếu status là 'Chưa xử lý'.",
-        });
+        // Cập nhật tài liệu với các trường mới
+        await updateDoc(orderDocRef, updatedData);
       }
 
+      if (updateData.buyerAddress) {
+        if (currentOrderData.status === "pending")
+          await updateDoc(orderDocRef, {
+            buyerAddress: updateData.buyerAddress,
+          });
+      }
+
+      if (updateData.note) {
+        if (currentOrderData.status === "pending")
+          await updateDoc(orderDocRef, { note: updateData.note });
+      }
       res.status(200).json({ message: "Order updated successfully." });
     } catch (error) {
       console.error("Error updating order:", error);
@@ -308,24 +301,142 @@ const OrderController = {
       const orderSnapshot = await getDoc(orderDocRef);
 
       if (!orderSnapshot.exists()) {
-        return res.status(404).json({ error: "Order not found" });
+        return res
+          .status(404)
+          .json({ message: "Đơn hàng đã bị hủy hoặc không tồn tại" });
       }
 
-      const batch = writeBatch(firestoreDb);
-      batch.delete(orderDocRef);
+      const orderData = orderSnapshot.data();
 
-      // Xóa tất cả các sản phẩm trong đơn hàng
-      const productsCollection = collection(orderDocRef, "products");
-      const productsSnapshot = await getDocs(productsCollection);
-      productsSnapshot.docs.forEach((productDoc) => {
-        batch.delete(doc(productsCollection, productDoc.id));
+      // Khởi tạo batch để thực hiện nhiều tác vụ cùng một lúc
+      const batch = writeBatch(firestoreDb);
+
+      // Cập nhật post và product (song song)
+      const productUpdates = orderData.items.map(async (item) => {
+        const postRef = doc(firestoreDb, "posts", item.postId);
+        const productRef = doc(postRef, "products", item.productId);
+
+        const [postDoc, productDoc] = await Promise.all([
+          getDoc(postRef),
+          getDoc(productRef),
+        ]);
+
+        if (productDoc.exists() && postDoc.exists()) {
+          batch.update(postRef, {
+            sold: postDoc.data().sold - item.quantity,
+          });
+          batch.update(productRef, {
+            quantity: productDoc.data().quantity + item.quantity,
+          });
+        } else {
+          // Nếu không tìm thấy bài viết hoặc sản phẩm
+          console.log(
+            `Không tìm thấy bài viết hoặc sản phẩm: ${item.productId}`
+          );
+        }
       });
 
+      // Thực hiện song song các cập nhật post/product
+      await Promise.all(productUpdates);
+
+      // Cập nhật thông tin seller (song song)
+      const sellerSnapShot = await getDoc(orderData.seller);
+      if (sellerSnapShot.exists()) {
+        const sellerData = sellerSnapShot.data();
+        const currentCoin = sellerData.coin || 0;
+        let coinAfter = currentCoin - orderData.coin;
+        if (coinAfter < 0) coinAfter = 0;
+
+        batch.update(sellerSnapShot.ref, {
+          ordersReceived: arrayRemove(orderDocRef),
+          coin: coinAfter,
+        });
+      } else {
+        console.log("Không tìm thấy seller.");
+      }
+
+      // Cập nhật thông tin buyer (song song)
+      const buyerSnapShot = await getDoc(orderData.buyer);
+      if (buyerSnapShot.exists()) {
+        batch.update(buyerSnapShot.ref, {
+          myOrders: arrayRemove(orderDocRef),
+        });
+      } else {
+        console.log("Không tìm thấy buyer.");
+      }
+
+      // Xóa đơn hàng
+      batch.delete(orderDocRef);
+
+      // Commit tất cả các thay đổi trong một batch
       await batch.commit();
-      res.status(200).json({ message: "Order deleted successfully." });
+
+      res.status(200).json({ message: "Đơn hàng đã được xóa thành công." });
     } catch (error) {
       console.error("Error deleting order:", error);
-      res.status(400).json({ error: error.message });
+      res.status(400).json({ error: "Có lỗi xảy ra khi xóa đơn hàng." });
+    }
+  },
+
+  getUserOrder: async (req, res) => {
+    const firestoreDb = getFirestoreDb();
+    const userId = req.params.id;
+    const userDoc = doc(firestoreDb, "users", userId);
+    const userSnapshot = await getDoc(userDoc);
+
+    const listOrderRef = userSnapshot.data().myOrders;
+
+    try {
+      const orderPromises = listOrderRef.map(async (orderRef) => {
+        const orderSnapshot = await getDoc(orderRef); // Lấy snapshot của từng document
+        if (orderSnapshot.exists) {
+          return { id: orderSnapshot.id, ...orderSnapshot.data() }; // Trả về dữ liệu nếu document tồn tại
+        } else {
+          console.log(`Order not found for reference: ${orderRef.id}`);
+          return null; // Trả về null nếu không tìm thấy order
+        }
+      });
+      const orders = await Promise.all(orderPromises);
+
+      // Trả về dữ liệu
+      res.status(200).json({ orders });
+    } catch (error) {
+      console.error("Error getting orders:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message || "Internal Server Error",
+      });
+    }
+  },
+
+  getUserOrderReceived: async (req, res) => {
+    const firestoreDb = getFirestoreDb();
+    const userId = req.params.id;
+    const userDoc = doc(firestoreDb, "users", userId);
+    const userSnapshot = await getDoc(userDoc);
+
+    const listOrderRef = userSnapshot.data().ordersReceived;
+
+    try {
+      const orderPromises = listOrderRef.map(async (orderRef) => {
+        const orderSnapshot = await getDoc(orderRef); // Lấy snapshot của từng document
+        if (orderSnapshot.exists) {
+          return { id: orderSnapshot.id, ...orderSnapshot.data() }; // Trả về dữ liệu nếu document tồn tại
+        } else {
+          console.log(`Order not found for reference: ${orderRef.id}`);
+          return null; // Trả về null nếu không tìm thấy order
+        }
+      });
+      const orders = await Promise.all(orderPromises);
+
+      // Trả về dữ liệu
+      res.status(200).json({ orders });
+    } catch (error) {
+      console.error("Error getting orders:", error);
+      res.status(500).json({
+        success: false,
+        message: error.message || "Internal Server Error",
+      });
     }
   },
 };

@@ -13,9 +13,8 @@ import {
   Platform,
   ActivityIndicator,
 } from "react-native";
-import { COLOR } from '../../assets/constant/color';
-import { scaleWidth } from '../../assets/constant/responsive';
-import styles from "./style";
+import { COLOR } from "../../assets/constant/color";
+import { scaleWidth } from "../../assets/constant/responsive";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useDispatch, useSelector } from "react-redux";
 import {

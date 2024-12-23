@@ -57,8 +57,12 @@ export default function PostsDisplay() {
       }),
     [RelativeScene, LastestScene]
   );
-  const renderTabBar = RenderTabBar({scroll: false, fontSize: 12, padding: 5, autoWidth: true});
-
+  const renderTabBar = RenderTabBar({
+    scroll: false,
+    fontSize: 12,
+    padding: 5,
+    autoWidth: true,
+  });
 
   const fetchPosts = () => {
     setLoading(true);

@@ -5,8 +5,6 @@ import { scaleWidth, scaleHeight } from "../../assets/constant/responsive";
 import { COLOR } from "../../assets/constant/color";
 
 const OrderDataNoShopCart = forwardRef((props, ref) => {
-  const totalSum = useSelector((state) => state.shopCartContainer?.totalSum);
-  const shopCart = useSelector((state) => state.shopCartContainer?.shopCart);
   const user = useSelector((state) => state.auth?.user);
 
   const formatPrice = (price) =>
@@ -65,7 +63,7 @@ const OrderDataNoShopCart = forwardRef((props, ref) => {
     orderPrice: data.item[0].price,
     coin: isEnabled ? user.coin : 0,
     totalPrice: isEnabled ? data.item[0].price - user.coin : data.item[0].price,
-    status: "choxuly",
+    status: "pending",
     deleteShopCart: false,
   };
   // Expose dữ liệu order lên cha qua ref

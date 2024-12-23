@@ -1,17 +1,29 @@
-import { View, Text, Image, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  Platform,
+  StatusBar,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import React from "react";
 import styles from "./style";
-import OrderCardSeller from "../../components/OrderCard/orderCardSeller";
+import OrderCard from "../../../components/OrderCard/orderCard";
 
-const DeliveringOrders = React.memo(
-  ({ orders }) => {
-    console.log("DeliveringOrders");
+const PendingOrder = React.memo(
+  ({ orders, onOrderDelete }) => {
+    console.log("PendingOrder");
+
     const getPendingOrders = (orders) => {
-      return orders.filter((order) => order.status === "delivering");
+      return orders.filter((order) => order.status === "pending");
     };
-
-    const handleOrderComplete = (order) => {
-      onComplete(order); // Gọi callback và truyền order lên cha
+    const handleOrderDelete = (order) => {
+      // In ra thông tin order để debug
+      if (onOrderDelete) {
+        console.log("Delete order:", order.id);
+        onOrderDelete(order); // Gọi callback và truyền order lên cha
+      }
     };
 
     return (
@@ -23,9 +35,9 @@ const DeliveringOrders = React.memo(
             // style={styles.Wrapper}
             keyExtractor={(item) => item.id}
             renderItem={({ item, index }) => (
-              <OrderCardSeller
+              <OrderCard
                 order={item}
-                onComplete={() => handleOrderComplete(item)}
+                onDelete={() => handleOrderDelete(item)}
               />
             )}
           />
@@ -45,4 +57,4 @@ const DeliveringOrders = React.memo(
   }
 );
 
-export default DeliveringOrders;
+export default PendingOrder;

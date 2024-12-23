@@ -1,13 +1,25 @@
-import { View, Text, Image, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  Platform,
+  StatusBar,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 import React from "react";
 import styles from "./style";
-import OrderCardSeller from "../../components/OrderCard/orderCardSeller";
+import OrderCard from "../../../components/OrderCard/orderCard";
 
-const SoldOrders = React.memo(
-  ({ orders }) => {
-    console.log("Sold");
+const DeliveringOrder = React.memo(
+  ({ orders, onComplete }) => {
+    console.log("DeliveringOrder");
     const getPendingOrders = (orders) => {
-      return orders.filter((order) => order.status === "sold");
+      return orders.filter((order) => order.status === "delivering");
+    };
+
+    const handleOrderComplete = (order) => {
+      onComplete(order); // Gọi callback và truyền order lên cha
     };
 
     return (
@@ -18,7 +30,12 @@ const SoldOrders = React.memo(
             showsVerticalScrollIndicator={false}
             // style={styles.Wrapper}
             keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => <OrderCardSeller order={item} />}
+            renderItem={({ item, index }) => (
+              <OrderCard
+                order={item}
+                onComplete={() => handleOrderComplete(item)}
+              />
+            )}
           />
         ) : (
           <View>
@@ -36,4 +53,4 @@ const SoldOrders = React.memo(
   }
 );
 
-export default SoldOrders;
+export default DeliveringOrder;

@@ -1,21 +1,25 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const OrderController = require('../controller/orderController');
+const OrderController = require("../controller/orderController");
 
 // Route để thêm danh mục
-router.post('/addOrder/', OrderController.addOrder);
+router.post("/addOrder/", OrderController.addOrder);
 
 // Route để lấy tất cả danh mục
-router.get('/', OrderController.getAllOrders);
+router.get("/", OrderController.getAllOrders);
+
+router.get("/getUserOrder/:id", OrderController.getUserOrder);
+
+router.get("/getUserOrderReceived/:id", OrderController.getUserOrderReceived);
 
 // Route để lấy danh mục theo ID
-router.get('/:id', OrderController.getOrderById);
+router.get("/:id", OrderController.getOrderById);
 
 // Route để cập nhật danh mục
-router.put('/:id/updateOrder', OrderController.updateOrder);
+router.put("/updateOrder/:id", OrderController.updateOrder);
 
 // Route để xóa danh mục
-router.delete('/:id/deleteOrder', OrderController.deleteOrder);
+router.delete("/deleteOrder/:id", OrderController.deleteOrder);
 
 // module.exports = router;
 
