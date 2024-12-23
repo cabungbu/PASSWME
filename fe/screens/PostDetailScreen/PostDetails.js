@@ -30,7 +30,10 @@ import BottomSheet, {
   BottomSheetBackdrop,
 } from "@gorhom/bottom-sheet";
 import ProductBottom from "./productBottomSheet/ProductBottom";
+import { navigateToChat } from "../../services/navigateToChat";
+import { useSelector } from "react-redux";
 export default function PostDetailScreen({ route }) {
+  const user = useSelector((state) => state.auth.user);
   const { postId } = route.params;
   const [post, setPost] = useState();
   const [loading, setLoading] = useState(true);
@@ -40,6 +43,19 @@ export default function PostDetailScreen({ route }) {
   const [isBuy, setIsBuy] = useState(false);
   // variables
   const snapPoints = useMemo(() => ["50%", "75%"], []);
+
+  const handleOpenChat = async () => {
+    await navigateToChat({
+      navigation,
+      senderId: user.id,
+      recipientId: post?.owner.id,
+      recipientName: post?.owner.username,
+      recipientAvatar: post?.owner.avatar || "",
+      // updateLastMessage: (chatRoomId, lastMessage) => {
+      //   // Optional: Cập nhật last message nếu cần
+      // }
+    });
+  };
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -144,6 +160,7 @@ export default function PostDetailScreen({ route }) {
           handlePresentModalPress(), setIsBuy(true);
         }}
         onAddPress={handlePresentModalPress}
+        onChatPress={handleOpenChat}
       />
 
       <BottomSheet

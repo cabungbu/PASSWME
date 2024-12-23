@@ -162,85 +162,99 @@ const PostingDetail = ({ route, navigation }) => {
   };
 
   const handlePost = async () => {
-    if (!title || !description || products.length === 0 || images.every(img => img === null)) {
+    if (
+      !title ||
+      !description ||
+      products.length === 0 ||
+      images.every((img) => img === null)
+    ) {
       alert("Vui lòng điền đầy đủ thông tin bắt buộc");
       return;
-    } 
+    }
 
     for (const product of products) {
-      if (!product.name || product.price < 0 || product.quantity <= 0 || !product.image) {
-        alert("Vui lòng đảm bảo tất cả các sản phẩm đều có tên, giá, số lượng và hình ảnh hợp lệ.");
+      if (
+        !product.name ||
+        product.price < 0 ||
+        product.quantity <= 0 ||
+        !product.image
+      ) {
+        alert(
+          "Vui lòng đảm bảo tất cả các sản phẩm đều có tên, giá, số lượng và hình ảnh hợp lệ."
+        );
         return;
       }
     }
 
-    if (images.length > 0) {
-      try {
-        const storage = getStorage();
+    try {
+      const storage = getStorage();
+      const uploadedImageUrls = [];
+      let uploadedVideoUrl = null;
 
-        for (const image of images) {
-          if (image) {
-            const filename = `image_${Date.now()}.jpg`;
-            const storageRef = ref(storage, `images/${filename}`);
+      // Upload images and get their download URLs
+      for (const image of images) {
+        if (image) {
+          const filename = `image_${Date.now()}_${Math.random()
+            .toString(36)
+            .substring(7)}.jpg`;
+          const storageRef = ref(storage, `images/${filename}`);
 
-            const response = await fetch(image);
-            const blob = await response.blob();
+          const response = await fetch(image);
+          const blob = await response.blob();
 
-            await uploadBytes(storageRef, blob);
-          }
+          await uploadBytes(storageRef, blob);
+          // Get the download URL after upload
+          const downloadURL = await getDownloadURL(storageRef);
+          uploadedImageUrls.push(downloadURL);
         }
-      } catch (error) {
-        console.error("Upload error:", error);
-        alert("Failed to upload images");
       }
-    }
 
-    if (video) {
-      try {
-        const storage = getStorage();
-        const videoFilename = `video_${Date.now()}.mp4`;
+      // Upload video if exists
+      if (video) {
+        const videoFilename = `video_${Date.now()}_${Math.random()
+          .toString(36)
+          .substring(7)}.mp4`;
         const videoRef = ref(storage, `videos/${videoFilename}`);
 
         const response = await fetch(video);
         const videoBlob = await response.blob();
 
         await uploadBytes(videoRef, videoBlob);
-      } catch (error) {
-        console.error("Upload error:", error);
-        alert("Failed to upload video");
+        // Get the download URL for video
+        uploadedVideoUrl = await getDownloadURL(videoRef);
       }
-    }
 
-    const validImages = images.filter((image) => image !== null);
+      const postData = {
+        title: title,
+        category: categoryId,
+        images: uploadedImageUrls, // Use the Firebase Storage URLs instead of local URIs
+        video: uploadedVideoUrl, // Use the Firebase Storage URL for video
+        status: "active",
+        description: description,
+        service: "",
+        start: new Date().toISOString(),
+        owner: user.id,
+        condition: condition,
+        address: fullAddress ? fullAddress : user?.address,
+        soldQuantity: 0,
+        products: products,
+      };
 
-    const postData = {
-      title: title,
-      category: categoryId,
-      images: validImages,
-      video: video,
-      status: "active",
-      description: description,
-      service: "",
-      start: new Date().toISOString(),
-      owner: user.id,
-      condition: condition,
-      address: fullAddress ? fullAddress : user?.address,
-      soldQuantity: 0,
-      products: products,
-    };
-
-    try {
       const response = await axios.post(
         BE_ENDPOINT + "/post/addPost",
         postData
       );
+
       navigation.navigate("PostedScreen", {
-        image: images[0],
+        image: uploadedImageUrls[0],
         title: title,
-        price: minPrice === maxPrice ? formatPrice(minPrice) : `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}`,
+        price:
+          minPrice === maxPrice
+            ? formatPrice(minPrice)
+            : `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}`,
       });
     } catch (error) {
-      console.error("Error posting data:", error);
+      console.error("Error uploading files or posting data:", error);
       alert("Đã xảy ra lỗi khi đăng bài.");
     }
   };

@@ -5,24 +5,6 @@ import { COLOR } from "../../assets/constant/color";
 const statusBarHeight = StatusBar.currentHeight || 20;
 
 const styles = StyleSheet.create({
-  headerText: {
-    color: "black",
-    fontSize: 18,
-    fontFamily: "semiBold",
-    flex: 1,
-    textAlign: "center",
-    backgroundColor: "red",
-  },
-  headerAndroid: {
-    backgroundColor: COLOR.mainColor,
-    height: scaleHeight(80),
-    marginTop: statusBarHeight,
-    paddingHorizontal: scaleWidth(20),
-    alignItems: "center",
-    borderBottomEndRadius: 10,
-    borderBottomStartRadius: 10,
-    flexDirection: "row",
-  },
   headerIOS: {
     backgroundColor: "#fff",
     display: "flex",
@@ -45,11 +27,11 @@ const styles = StyleSheet.create({
   iconHeaderIOS: {
     left: scaleWidth(15),
   },
-  sua: {
-    fontSize: 13,
-    color: "black",
-    marginRight: scaleWidth(15),
-    fontFamily: "regular",
-  },
+  // sua: {
+  //   fontSize: 13,
+  //   color: "black",
+  //   marginRight: scaleWidth(15),
+  //   fontFamily: "regular",
+  // },
 });
 export default styles;

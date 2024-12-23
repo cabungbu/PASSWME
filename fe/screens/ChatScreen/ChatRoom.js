@@ -36,7 +36,8 @@ const ChatRoom = () => {
     ortherUserName,
     senderId,
     ortherUserId,
-    updateLastMessage
+    updateLastMessage,
+    isNewChat 
   } = route.params;
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -89,12 +90,22 @@ const ChatRoom = () => {
   const sendMessage = async () => {
     if (!image && newMessage.trim() === "") return;
     try {
+      let actualChatRoomId = chatRoomId;
+      if (isNewChat && !actualChatRoomId) {
+        const createResponse = await axios.post(`${BE_ENDPOINT}/chatRoom/create`, {
+          senderId: senderId,
+          recipientId: ortherUserId
+        });
+        
+        actualChatRoomId = createResponse.data.chatRoomId;
+      }
+      
       let messageData;
       let lastMessageContent;
 
       if (image) {
         messageData = {
-          chatRoomId: chatRoomId,
+          chatRoomId: actualChatRoomId,
           senderId: senderId,
           recipientId: ortherUserId,
           content: image,
@@ -104,15 +115,15 @@ const ChatRoom = () => {
 
         lastMessageContent = `${senderId === ortherUserId ? ortherUserName : "Bạn"} đã gửi hình ảnh`;
 
-        route.params?.updateLastMessage?.(chatRoomId, {
-          content: lastMessageContent,
-          senderId: senderId,
-          type: "image",
-          sendTime: new Date().toISOString(),
-        });
+        // route.params?.updateLastMessage?.(actualChatRoomId , {
+        //   content: lastMessageContent,
+        //   senderId: senderId,
+        //   type: "image",
+        //   sendTime: new Date().toISOString(),
+        // });
       } else {
         messageData = {
-          chatRoomId: chatRoomId,
+          chatRoomId: actualChatRoomId ,
           senderId: senderId,
           recipientId: ortherUserId,
           content: newMessage,
@@ -120,12 +131,12 @@ const ChatRoom = () => {
           sendTime: new Date().toISOString(),
         };
 
-        route.params?.updateLastMessage?.(chatRoomId, {
-          content: newMessage,
-          senderId: senderId,
-          type: "text",
-          sendTime: new Date().toISOString(),
-        });
+        // route.params?.updateLastMessage?.(actualChatRoomId , {
+        //   content: newMessage,
+        //   senderId: senderId,
+        //   type: "text",
+        //   sendTime: new Date().toISOString(),
+        // });
       }
 
       const res = await axios.post(
@@ -143,6 +154,13 @@ const ChatRoom = () => {
           type: messageData.type,
         },
       ]);
+
+      updateLastMessage?.(actualChatRoomId, {
+        content: messageData.type === 'image' ? lastMessageContent : newMessage,
+        senderId: senderId,
+        type: messageData.type,
+        sendTime: new Date().toISOString(),
+      });
 
       setImage(null);
       setNewMessage("");

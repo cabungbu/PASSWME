@@ -15,25 +15,26 @@ const Chat = () => {
   const [chatRooms, setChatRooms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchAllChatRooms = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(BE_ENDPOINT + "/chatRoom/" + user?.id);
-        const chatRoomsData = res.data || [];
-        setChatRooms(chatRoomsData);
-      } catch (error) {
-        console.error(
-          "Error fetching chat rooms:",
-          error.response?.data?.message
-        );
-        Alert.alert("Lỗi", "Không thể tải các chat rooms");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAllChatRooms();
-  }, [user?.id]);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchAllChatRooms = async () => {
+        try {
+          setLoading(true);
+          const res = await axios.get(BE_ENDPOINT + "/chatRoom/" + user?.id);
+          const chatRoomsData = res.data || [];
+          setChatRooms(chatRoomsData);
+        } catch (error) {
+          console.error("Error fetching chat rooms:", error.response?.data?.message);
+          Alert.alert("Lỗi", "Không thể tải các chat rooms");
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchAllChatRooms();
+    }, [user?.id]) // Chỉ gọi lại khi user.id thay đổi
+  );
+  
 
   if (loading) {
     return (

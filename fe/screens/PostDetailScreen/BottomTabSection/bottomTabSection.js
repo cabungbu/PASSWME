@@ -9,21 +9,22 @@ import {
   TouchableOpacity,
 } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import Ionicons from '@expo/vector-icons/Ionicons';
 import styles from "./style";
 import { COLOR } from "../../../assets/constant/color";
 import { useNavigation } from "@react-navigation/native";
 
-export default function BottomTabSection({ onAddPress, onBuyNow }) {
+export default function BottomTabSection({onChatPress, onAddPress, onBuyNow }) {
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.chatAndAddContainer}>
         <TouchableOpacity style={styles.chatContainer}>
-          <MaterialCommunityIcons
-            name="chat-processing-outline"
+          <Ionicons
+            name="chatbubble-ellipses-outline"
             size={26}
             color={COLOR.mainColor}
+            onPress={onChatPress}
           />
         </TouchableOpacity>
 

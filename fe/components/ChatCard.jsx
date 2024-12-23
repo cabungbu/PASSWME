@@ -48,18 +48,19 @@ const ChatCard = ({
     <TouchableOpacity
       style={styles.container}
       onPress={() => {
-        updateUnreadCount(chatRoom.id, 0);
-        navigation.navigate("ChatRoomScreen", {
-          chatRoomId: chatRoom.id,
-          senderId: userId,
-          ortherUserId: chatRoom.otherUser.id,
-          otherUserAvatar: chatRoom.otherUser.avatar,
-          ortherUserName: chatRoom.otherUser.username,
-          updateLastMessage,
-        });
-        navigation.setOptions({
-          updateLastMessage: updateLastMessage, // Truyền hàm qua `setOptions`
-        });
+        if (chatRoom.id) {
+          // Nếu đã có chatRoom, cập nhật unreadCount và navigate
+          updateUnreadCount(chatRoom.id, 0);
+          navigation.navigate("ChatRoomScreen", {
+            chatRoomId: chatRoom.id,
+            senderId: userId,
+            ortherUserId: chatRoom.otherUser.id,
+            otherUserAvatar: chatRoom.otherUser.avatar,
+            ortherUserName: chatRoom.otherUser.username,
+            updateLastMessage,
+            isNewChat: false,
+          });
+        }
       }}
     >
       {chatRoom?.otherUser?.avatar ? (

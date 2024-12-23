@@ -27,7 +27,6 @@ import FooterBuy from "./Footer/FooterBuy";
 import FooterDelete from "./Footer/FooterDelete";
 import { useNavigation } from "@react-navigation/native";
 import { isEqual } from "lodash";
-import styles from "./style";
 import { shallowEqual } from "react-redux";
 import BottomSheet, {
   BottomSheetView,
@@ -35,9 +34,12 @@ import BottomSheet, {
 } from "@gorhom/bottom-sheet";
 import ProductBottom from "../PostDetailScreen/productBottomSheet/ProductBottom";
 import { BE_ENDPOINT } from "../../settings/localVars";
+import mainStyles from "../../styles/mainStyles";
+import Feather from "@expo/vector-icons/Feather";
+
 const CartScreen = () => {
   const navigation = useNavigation();
-  const [isSua, setIsSua] = useState(false);
+  const [isFix, setIsFix] = useState(false);
   const [productIdBefore, setProductIdBefore] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   // Memoize selector để tránh re-render không cần thiết
@@ -47,16 +49,16 @@ const CartScreen = () => {
     navigation.goBack();
   }, [navigation]);
 
-  const toggleSua = useCallback(() => {
-    setIsSua((prev) => !prev);
+  const toggleFix = useCallback(() => {
+    setIsFix((prev) => !prev);
   }, []);
 
   // Memoize các component con
   const MemoizedRenderContent = useMemo(() => <RenderContent />, []);
 
   const Footer = useMemo(
-    () => (isSua ? <FooterDelete /> : <FooterBuy />),
-    [isSua]
+    () => (isFix ? <FooterDelete /> : <FooterBuy />),
+    [isFix]
   );
 
   const bottomSheetRef = useRef(null);
@@ -157,31 +159,30 @@ const CartScreen = () => {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar
-        barStyle="dark-content"
-        backgroundColor="#fff"
+        barStyle="light-content"
+        backgroundColor="transparent"
         translucent={true}
       />
       <View
         style={
-          Platform.OS === "android" ? styles.headerAndroid : styles.headerIOS
+          Platform.OS === "android" ? mainStyles.headerCenterContainer : styles.headerIOS
         }
       >
         <Ionicons
           name="chevron-back"
-          size={24}
+          size={scaleWidth(28)}
           color={Platform.OS === "android" ? "white" : "#E30414"}
           onPress={handleGoBack}
+          style={mainStyles.headerIcon}
         />
         <Text
           style={
-            Platform.OS === "android" ? styles.headerText : styles.headerTextIOS
+            Platform.OS === "android" ? mainStyles.headerCenterText : styles.headerTextIOS
           }
         >
           Giỏ hàng
         </Text>
-        <TouchableOpacity onPress={toggleSua}>
-          <Text style={styles.sua}>{isSua ? "Xong" : "Sửa"}</Text>
-        </TouchableOpacity>
+        <Feather name="more-vertical" size={scaleWidth(25)} color={isFix? "white" : COLOR.disableWhiteColor} style={mainStyles.headerIcon}  onPress={toggleFix}/>
       </View>
 
       <RenderContent onAddPress={(post) => handlePresentModalPress(post)} />
