@@ -10,7 +10,7 @@ const {
   deleteDoc,
   doc,
   writeBatch,
-  arrayUnion 
+  arrayUnion,
 } = require("firebase/firestore");
 const post = require("../model/post.js");
 const product = require("../model/productOfPost.js");
@@ -40,7 +40,7 @@ const addPost = async (req, res) => {
       owner: doc(firestoreDb, "users", data.owner), // Lưu reference tới owner
       condition: data.condition,
       address: data.address,
-      soldQuantity: data.soldQuantity || 0,
+      sold: data.soldQuantity || 0,
       feedbacks: [],
       //       rating: data.rating || 0,
     });
@@ -168,7 +168,9 @@ const getPostById = async (req, res) => {
     const postDoc = await getDoc(postDocRef);
 
     if (!postDoc.exists()) {
-      return res.status(404).json({ message: "Không tìm thấy thông tin bài đăng" });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy thông tin bài đăng" });
     }
 
     // Lấy subcollection products
@@ -184,14 +186,13 @@ const getPostById = async (req, res) => {
       });
     });
 
-     // Fetch seller data
+    // Fetch seller data
     const categoryDoc = await getDoc(postDoc.data().category);
     const catagoryData = categoryDoc.data();
 
     // Fetch seller data
     const ownerDoc = await getDoc(postDoc.data().owner);
     const ownerData = ownerDoc.data();
-
 
     const feedbacksData = [];
     if (

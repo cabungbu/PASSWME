@@ -24,6 +24,11 @@ const ChangePassword = ({ isModalVisible = false, closeModal }) => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   const handleChangePassword = async () => {
+    if (newPassword.length() < 6) {
+      dispatch(updatePasswordFailure("Mật khẩu phải có ít nhất 6 ký tự"));
+      return;
+    }
+
     if (newPassword !== confirmNewPassword) {
       dispatch(updatePasswordFailure("Mật khẩu mới không khớp"));
       return;

@@ -30,6 +30,11 @@ export default function CheckOut2({ route }) {
   const handleDataFromOrderData = async (data) => {
     setLoading(true); // Show loading indicator when the data is being sent
     setError(null); // Clear any previous error
+    if (newUser) {
+      data.sellerName = newUser.username;
+      data.sellerPhone = newUser.phone;
+      data.sellerAddress = newUser.address;
+    }
 
     try {
       const res = await fetch(`${BE_ENDPOINT}/order/addOrder`, {

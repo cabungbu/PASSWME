@@ -53,7 +53,7 @@ export const registerUser = async (user, dispatch, navigation) => {
       return;
     }
 
-    if (user.username.length <= 8) {
+    if (user.username.length() <= 8) {
       dispatch(registerFailure("Tên người dùng phải có hơn 8 ký tự"));
       return;
     }
@@ -70,7 +70,7 @@ export const registerUser = async (user, dispatch, navigation) => {
       return;
     }
 
-    if (user.password.length < 6) {
+    if (user.password.length() < 6) {
       dispatch(registerFailure("Mật khẩu phải có ít nhất 6 ký tự"));
       return;
     }

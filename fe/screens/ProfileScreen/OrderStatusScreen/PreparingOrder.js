@@ -1,7 +1,7 @@
 import { View, Text, Image, FlatList } from "react-native";
 import React from "react";
 import styles from "./style";
-import OrderCard from "../../../components/OrderCard/orderCard";
+import OrderCard from "../../../components/orderCard";
 
 const PreparingOrder = React.memo(
   ({ orders }) => {
