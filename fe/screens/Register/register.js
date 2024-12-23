@@ -108,7 +108,7 @@ const RegisterPage = () => {
               textAlign: "left",
               marginBottom: scaleHeight(10),
               fontFamily: "lightItalic",
-              fontSize: "10",
+              fontSize: 10,
             }}
           >
             *{error}

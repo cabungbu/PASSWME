@@ -15,7 +15,6 @@ import RelativePost from "../relativePost/RelativePost";
 import LastestPost from "../relativePost/LastestPost";
 import IncreasePost from "../relativePost/IncreasePost";
 import DecreasePost from "../relativePost/DecreasePost";
-
 export default function PostsDisplay() {
   const route = useRoute();
   const { categoryId } = route.params;
