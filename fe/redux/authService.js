@@ -17,6 +17,9 @@ import {
   updatePasswordStart,
   updatePasswordSuccess,
   updatePasswordFailure,
+  updateAvatar,
+  updateAvatarFailure,
+  updateAvatarSuccess,
 } from "./authSlice";
 import { BE_ENDPOINT } from "../settings/localVars";
 import { getUserShopcart } from "./shopCartService";
@@ -182,7 +185,6 @@ export const updateUserInformation = async (
 ) => {
   console.log("Đã chạy cập nhật");
   try {
-    console.log("Đã thử chạy cập nhật");
     dispatch(updateUserStart());
 
     // Validation checks
@@ -298,5 +300,53 @@ export const changePassword = async (
     }
 
     dispatch(updatePasswordFailure(errorMessage));
+  }
+};
+
+export const changeAvatar = async (
+  avatarData,
+  dispatch,
+  user,
+  refreshTokenRedux,
+  accessToken
+) => {
+  try {
+    dispatch(updateAvatar());
+    const axiosJWT = createAxiosJWT(
+      accessToken,
+      refreshTokenRedux,
+      user,
+      dispatch
+    );
+    const res = await axiosJWT.patch(
+      `${BE_ENDPOINT}/user/updateUser/${user?.id}`,
+      avatarData,
+      {
+        headers: {
+          token: "Bearer " + accessToken,
+        },
+      }
+    );
+
+    if (res.data) {
+      dispatch(updateAvatarSuccess(res.data.user));
+      await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
+    }
+  } catch (error) {
+    console.error("Update user's avatar error:", error);
+
+    let errorMessage = "Cập nhật ảnh đại diện người dùng thất bại";
+
+    if (error.response) {
+      errorMessage =
+        error.response.data.message ||
+        error.response.data.error ||
+        errorMessage;
+    } else if (error.request) {
+      errorMessage = "Không thể kết nối đến server";
+    } else {
+      errorMessage = error.message || errorMessage;
+    }
+    dispatch(updateAvatarFailure(errorMessage));
   }
 };

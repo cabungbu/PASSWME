@@ -18,9 +18,36 @@ import { useNavigation } from "@react-navigation/native";
 const PostCard = React.memo(({ post }) => {
   const [products, setProduct] = useState(post.products);
   const navigation = useNavigation(); 
+  const getProvince = (address) => {
+    if (!address) return ""; // Nếu address không tồn tại, trả về chuỗi rỗng
+  
+    const addressParts = address.split(",");
+    
+    // Lấy phần đầu tiên của địa chỉ và loại bỏ khoảng trắng đầu cuối
+    let firstPart = addressParts[0].trim();
+    
+    // Kiểm tra nếu phần đầu tiên là "Thành phố" hoặc "Tỉnh"
+    if (firstPart.startsWith("Thành phố")) {
+      // Lấy phần sau từ dấu cách để có tên thành phố
+      return firstPart.replace("Thành phố", "").trim();
+    }
+  
+    if (firstPart.startsWith("Tỉnh")) {
+      // Lấy phần sau từ dấu cách để có tên tỉnh
+      return firstPart.replace("Tỉnh", "").trim();
+    }
+  
+    // Nếu không có điều kiện nào thỏa mãn, chỉ trả về phần đầu tiên
+    return firstPart;
+  };
+  
+  // Sử dụng hàm trong component
+  const province = getProvince(post.address);
+  
+  
+
 
   const { minPrice, maxPrice } = useMemo(() => {
-    
     console.log("check ",post.products)
     if (!products || products.length === 0) {
       return { minPrice: 0, maxPrice: 0 };
@@ -59,6 +86,12 @@ const PostCard = React.memo(({ post }) => {
     );
   };
 
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, options); 
+  };
+
   const moveToPostDetails = () => {
     navigation.navigate("PostDetail", { postId: post.id });
   };
@@ -95,7 +128,7 @@ const PostCard = React.memo(({ post }) => {
             color="#737373"
             style={{ marginRight: 2 }}
           />
-          <Text style={styles.start}>{post.start}</Text>
+          <Text style={styles.start}>{formatDate(post.start)} {province ? `- ${province}` : ""}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -117,6 +150,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderRadius: 5,
     marginBottom: 5,
+    overflow: "hidden"
   },
   image: {
     width: scaleWidth(205),
@@ -124,7 +158,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   title: {
-    fontSize: 12,
+    fontSize: 13,
     marginVertical: 5,
     fontFamily: "regular",
     height: scaleHeight(40),
@@ -136,7 +170,7 @@ const styles = StyleSheet.create({
     fontFamily: "regular",
   },
   price: {
-    fontSize: 12,
+    fontSize: 13,
     paddingLeft: 5,
     color: "#E30414",
     fontFamily: "semibold",

@@ -16,19 +16,24 @@ import { COLOR } from "../../assets/constant/color";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 export default function DataSection({ post }) {
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, options);
+  };
   return (
     <>
       <View style={{ paddingHorizontal: 15, backgroundColor: "white" }}>
         <Text style={styles.title}>{post.title}</Text>
         <View style={styles.locationContainer}>
-          <FontAwesome6 name="location-dot" size={20} color="#A0A0A0" />
+          <FontAwesome6 name="location-dot" size={20} color="#A0A0A0"/>
           <Text style={styles.location}>
-            {post.owner.address ? post.owner.address : "Chưa xác định"}
+            {post.address ? post.address : "Chưa xác định"}
           </Text>
         </View>
         <View style={styles.locationContainer}>
           <Ionicons name="time-outline" size={20} color="#A0A0A0" />
-          <Text style={styles.location}>{post.start}</Text>
+          <Text style={styles.location}>{formatDate(post.start)}</Text>
         </View>
       </View>
       <View style={styles.phanCachXam} />
@@ -45,7 +50,9 @@ export default function DataSection({ post }) {
           <View
             style={{ display: "flex", flexDirection: "row", marginBottom: 10 }}
           >
-            <Text style={styles.follower}>5 người theo dõi</Text>
+            <Text style={styles.follower}>
+              {post.owner.numberOfFollowers} người theo dõi
+            </Text>
             <Text style={styles.ownerPost}>
               {post.owner.posts.length} sản phẩm
             </Text>

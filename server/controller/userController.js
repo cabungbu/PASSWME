@@ -34,6 +34,8 @@ const addUser = async (req, res) => {
       posts: data.posts || [],
       order: data.order || [],
       customerOrder: data.order || [],
+      numberOfFollowers: data.numberOfFollowers || 0,
+      numberOfFollowing: data.numberOfFollowing || 0
     });
     if (!data || Object.keys(data).length === 0) {
       return res.status(400).json({ error: "Data is required." });

@@ -122,8 +122,8 @@ export default function PostDetailScreen({ route }) {
       {Platform.OS === "android" ? (
         <>
           <StatusBar
-            barStyle="light-content"
-            backgroundColor="#E30414"
+            barStyle="dark-content"
+            backgroundColor="transparent"
             translucent={true}
           />
         </>
@@ -140,13 +140,13 @@ export default function PostDetailScreen({ route }) {
           style={styles.backIcon}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="chevron-back" size={20} color="black" />
+          <Ionicons name="chevron-back" size={24} color="black" />
         </TouchableOpacity>
 
         <View style={styles.cartIconContainer}>
-          <ShoppingCartIcon cartColor={"black"} size={20} />
+          <ShoppingCartIcon cartColor={"black"} size={24} />
 
-          <Feather name="more-vertical" size={20} color="black" />
+          <Feather name="more-vertical" size={24} color="black" />
         </View>
       </View>
 

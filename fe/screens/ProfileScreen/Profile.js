@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import React from "react";
+import React, { useState } from "react";
 import {
   TouchableOpacity,
   Image,
@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 //icons
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -34,16 +36,61 @@ import styles from "./style";
 import DeliveryTruckClockIcon from "../../assets/icons/DeliveryTruckClockIcon";
 import ListStarLightIcon from "../../assets/icons/ListStarLightIcon";
 import ShoppingCartIcon from "../../components/shoppingCartIcon";
+import { storage } from "../../firebase_config";
+import { updateAvatar } from "../../redux/authSlice";
+import { changeAvatar } from "../../redux/authService";
 
 export default function Profile() {
   const user = useSelector((state) => state.auth.user);
+  const refreshTokenRedux = useSelector((state) => state.auth.refreshToken);
+  const accessToken = useSelector((state) => state.auth.accessToken);
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const [image, setImage] = useState(null);
 
   const handleLogout = () => {
     // const id = { id: user.id };
     navigation.navigate("Welcome");
     // logoutUserService(id, dispatch, navigation);
+  };
+
+  const pickImage = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: "images",
+        allowsEditing: true,
+        aspect: [5, 5],
+        quality: 0.8,
+      });
+  
+      if (!result.canceled) {
+        const imageUri = result.assets[0].uri;
+        setImage(imageUri);
+  
+        const filename = `avatar_${user.id}_${Date.now()}.jpg`;
+        const storageRef = ref(storage, `avatars/${filename}`);
+  
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+        await uploadBytes(storageRef, blob);
+  
+        const avatarData = {
+          avatar: await getDownloadURL(storageRef),
+        };
+        
+        await changeAvatar(
+          avatarData,
+          dispatch,
+          user,
+          refreshTokenRedux,
+          accessToken
+        );
+  
+      }
+    } catch (error) {
+      console.error("Error picking/uploading image:", error);
+      Alert.alert("Lỗi", "Không thể tải ảnh lên. Vui lòng thử lại.");
+    }
   };
 
   return (
@@ -113,6 +160,7 @@ export default function Profile() {
                   bottom: -5,
                   right: -5,
                 }}
+                onPress={pickImage}
               />
             </View>
             <View style={{ marginLeft: scaleWidth(20) }}>
@@ -121,7 +169,10 @@ export default function Profile() {
               ) : (
                 <Text></Text>
               )}
-              <Text>Information</Text>
+              <Text style={styles.followsText}>
+                {user?.numberOfFollowers} Người theo dõi {"     "}
+                <Text>{user?.numberOfFollowing} Người theo dõi</Text>
+              </Text>
             </View>
           </View>
         </View>

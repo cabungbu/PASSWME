@@ -5,13 +5,14 @@ class user {
     this.password = password;
     this.phone = phone;
     this.avatar = avatar;
-    this.address = address || ""; 
-    this.posts = posts || []; 
+    this.address = address || "";
+    this.posts = posts || [];
     this.order = order || [];
     this.customerOrder = customerOrder || [];
     this.bought = [];
     this.shopcart = [];
-    this.like = [];
+    this.numberOfFollowers = numberOfFollowers || 0;
+    this.numberOfFollowing = numberOfFollowing || 0;
   }
   toPlainObject() {
     return {
@@ -22,11 +23,12 @@ class user {
       avatar: this.avatar,
       address: this.address,
       posts: this.posts,
-      order:this.order,
+      order: this.order,
       customerOrder: this.customerOrder,
       bought: this.bought,
       shopcart: this.shopcart,
-      like: this.like,
+      numberOfFollowers: this.numberOfFollowers,
+      numberOfFollowing: this.numberOfFollowing,
     };
   }
 }

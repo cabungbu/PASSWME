@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 1,
     width: "100%",
-    marginTop: 50,
+    marginTop: scaleHeight(40),
     paddingLeft: 15,
   },
   backText: {
@@ -42,22 +42,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   backIcon: {
-    width: scaleWidth(24),
-    height: scaleHeight(24),
+    width: scaleWidth(30),
+    height: scaleHeight(30),
     backgroundColor: "rgba(255, 255, 255, 0.64)",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 50,
-  },
-  numberOfNoti: {
-    width: 15,
-    height: 15,
-    borderRadius: 100,
-    backgroundColor: COLOR.mainColor,
-    justifyContent: "center",
-    alignItems: "center",
-    marginLeft: -7,
-    marginTop: -7,
   },
   cartIconContainer: {
     display: "flex",
@@ -86,20 +76,19 @@ const styles = StyleSheet.create({
   locationContainer: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 10,
   },
   title: {
     fontFamily: "medium",
-    fontSize: 14,
+    fontSize: 16,
     color: "#000",
     marginBottom: 10,
   },
   location: {
     fontFamily: "regular",
-    fontSize: 12,
+    fontSize: 13,
     color: "#000",
-    marginBottom: 10,
     marginLeft: 10,
   },
   phanCachXam: {

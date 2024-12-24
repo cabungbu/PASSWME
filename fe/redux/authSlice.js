@@ -53,7 +53,18 @@ const authSlide = createSlice({
     setUser(state, action) {
       state.user = action.payload;
     },
-
+    updateAvatar(state, action) {
+      state.user.avatar = action.payload;
+    },
+    updateAvatarFailure(state, action) {
+      state.isFetching = false;
+      state.error = action.payload;
+    },
+    updateAvatarSuccess(state, action) {
+      state.isFetching = false;
+      state.user = action.payload;
+      state.error = false;
+    },
     setCoin(state, action) {
       state.user.coin = action.payload;
     },
@@ -105,5 +116,8 @@ export const {
   updatePasswordFailure,
   updatePasswordSuccess,
   setCoin,
+  updateAvatar,
+  updateAvatarFailure,
+  updateAvatarSuccess
 } = authSlide.actions;
 export default authSlide.reducer;
