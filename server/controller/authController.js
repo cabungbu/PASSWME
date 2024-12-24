@@ -14,6 +14,8 @@ const { getAuth } = require("firebase-admin/auth");
 const bcrypt = require("bcrypt");
 const user = require("../model/user.js");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 const register = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   const data = req.body;
@@ -219,12 +221,6 @@ const resetPassword = async (req, res) => {
   const userId = req.params.id;
   const data = req.body;
 
-  if (!data.currentPassword || !data.newPassword) {
-    return res
-      .status(400)
-      .json({ error: "Current and new passwords are required." });
-  }
-
   try {
     const userDoc = doc(firestoreDb, "users", userId);
     const userData = await getDoc(userDoc); // Lấy thông tin người dùng
@@ -287,10 +283,76 @@ const logout = async (req, res) => {
   }
 };
 
+const ForgotPassword = async (req, res) => {
+  const firestoreDb = getFirestoreDb();
+  const { email } = req.body; // Lấy email từ request body
+
+  try {
+    // Tạo truy vấn tìm người dùng theo email
+    const usersCollection = collection(firestoreDb, "users"); // Truy cập collection 'users'
+    const q = query(usersCollection, where("email", "==", email)); // Tạo query
+
+    // Lấy danh sách document thỏa mãn query
+    const userSnapshot = await getDocs(q);
+
+    if (userSnapshot.empty) {
+      return res.status(404).json({
+        message:
+          "Email không tồn tại, hãy chắc rằng bạn đã đăng ký tài khoản Passwme.",
+      });
+    }
+
+    const userDoc = userSnapshot.docs[0]; // Lấy document người dùng đầu tiên
+    const userId = userDoc.id;
+
+    // Sinh mã OTP ngẫu nhiên
+    const otp = String(Math.floor(100000 + Math.random() * 900000)); // Tạo mã OTP gồm 6 ký tự hexa (3 bytes = 6 ký tự)
+
+    // Gửi email trong background (không chờ đợi gửi email xong mới trả kết quả)
+    const sendOtpEmail = async () => {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "coffeeshopxh@gmail.com",
+          pass: "nbwz atbl grzu pnhs", // Đảm bảo mật khẩu được bảo mật!
+        },
+      });
+
+      const mailOptions = {
+        from: "coffeeshopxh@gmail.com",
+        to: email,
+        subject: "Mã OTP của bạn",
+        text: `Mã OTP của bạn là: ${otp}. Mã OTP này có hiệu lực trong 5 phút.`,
+      };
+
+      try {
+        await transporter.sendMail(mailOptions);
+      } catch (error) {
+        console.error("Error sending OTP email:", error);
+      }
+    };
+
+    // Gọi hàm gửi email nhưng không đợi nó hoàn thành
+    sendOtpEmail();
+
+    // Trả về thông tin người dùng và OTP đã gửi mà không đợi email
+    res.status(200).json({
+      message: "OTP sent successfully.",
+      userId: userId,
+      otp: otp,
+      otpGeneratedAt: new Date(),
+    });
+  } catch (error) {
+    console.error("Error handling ForgotPassword:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   login,
   register,
   takeRefreshToken,
   logout,
   resetPassword,
+  ForgotPassword,
 };

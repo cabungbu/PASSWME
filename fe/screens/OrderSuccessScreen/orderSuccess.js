@@ -12,8 +12,10 @@ import { scaleWidth } from "../../assets/constant/responsive";
 import { ScrollView } from "react-native-gesture-handler";
 import Entypo from "@expo/vector-icons/Entypo";
 import { COLOR } from "../../assets/constant/color";
+import { useNavigation } from "@react-navigation/native";
 
 export default function OrderSuccess() {
+  const navigation = useNavigation();
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -38,10 +40,18 @@ export default function OrderSuccess() {
 
           <View style={styles.namngang}>
             <TouchableOpacity style={styles.buttonContainer}>
-              <Entypo name="home" size={24} color={COLOR.mainColor} />
+              <Entypo
+                name="home"
+                size={24}
+                color={COLOR.mainColor}
+                onPress={() => navigation.navigate("HomeScreen")}
+              />
               <Text style={styles.TextBtn}>Trang chủ</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => navigation.navigate("OrderStatusScreen")}
+            >
               <Ionicons name="bag-handle" size={24} color={COLOR.mainColor} />
               <Text style={styles.TextBtn}>Đơn mua</Text>
             </TouchableOpacity>

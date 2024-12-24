@@ -7,6 +7,7 @@ import {
   View,
   Text,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
@@ -34,6 +35,7 @@ import styles from "./style";
 import DeliveryTruckClockIcon from "../../assets/icons/DeliveryTruckClockIcon";
 import ListStarLightIcon from "../../assets/icons/ListStarLightIcon";
 import ShoppingCartIcon from "../../components/shoppingCartIcon";
+import { logoutUser } from "../../redux/authService";
 
 export default function Profile() {
   const user = useSelector((state) => state.auth.user);
@@ -41,9 +43,32 @@ export default function Profile() {
   const dispatch = useDispatch();
 
   const handleLogout = () => {
+    Alert.alert(
+      "Thông báo",
+      "Bạn chắc chắn muốn đăng xuất", // Sử dụng data.message thay vì res.message
+      [
+        {
+          text: "Hủy",
+          onPress: () => {},
+        },
+        {
+          text: "Đăng xuất",
+          onPress: () => {
+            // const id = { id: user.id };
+            navigation.reset({
+              index: 0, // Chỉ định chỉ có 1 màn hình trong stack
+              routes: [{ name: "Welcome" }], // Điều hướng tới màn hình Welcome
+            });
+            logoutUser(user.id, dispatch, navigation);
+          },
+        },
+      ],
+      { cancelable: true, onDismiss: () => console.log("Alert dismissed") }
+    );
+
     // const id = { id: user.id };
-    navigation.navigate("Welcome");
-    // logoutUserService(id, dispatch, navigation);
+    // navigation.navigate("Welcome");
+    // logoutUser(id, dispatch, navigation);
   };
 
   return (

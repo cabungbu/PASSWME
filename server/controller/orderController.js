@@ -255,7 +255,9 @@ const OrderController = {
       const orderSnapshot = await getDoc(orderDocRef);
 
       if (!orderSnapshot.exists()) {
-        return res.status(404).json({ error: "Order not found" });
+        return res
+          .status(404)
+          .json({ message: "Đơn hàng đã bị hủy hoặc không tồn tại" });
       }
 
       const currentOrderData = orderSnapshot.data();

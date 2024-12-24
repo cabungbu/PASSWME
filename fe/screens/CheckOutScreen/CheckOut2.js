@@ -63,9 +63,9 @@ export default function CheckOut2({ route }) {
 
   useEffect(() => {
     // Kiểm tra nếu có dữ liệu mới từ màn hình 2
-    if (route.params?.newUser) {
-      const updatedUser = route.params.newUser;
-      setNewUser(updatedUser); // Cập nhật dữ liệu mới vào state newUser
+    if (route.params) {
+      const { newUser } = route.params;
+      setNewUser(newUser); // Cập nhật dữ liệu mới vào state newUser
     }
     if (route.params?.post) {
       const updatedPost = route.params.post;

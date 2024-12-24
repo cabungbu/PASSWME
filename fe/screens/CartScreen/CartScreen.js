@@ -35,6 +35,7 @@ import ProductBottom from "../PostDetailScreen/productBottomSheet/ProductBottom"
 import { BE_ENDPOINT } from "../../settings/localVars";
 import mainStyles from "../../styles/mainStyles";
 import Feather from "@expo/vector-icons/Feather";
+import styles from "./style";
 
 const CartScreen = () => {
   const navigation = useNavigation();
@@ -164,7 +165,9 @@ const CartScreen = () => {
       />
       <View
         style={
-          Platform.OS === "android" ? mainStyles.headerCenterContainer : styles.headerIOS
+          Platform.OS === "android"
+            ? mainStyles.headerCenterContainer
+            : styles.headerIOS
         }
       >
         <Ionicons
@@ -176,12 +179,20 @@ const CartScreen = () => {
         />
         <Text
           style={
-            Platform.OS === "android" ? mainStyles.headerCenterText : styles.headerTextIOS
+            Platform.OS === "android"
+              ? mainStyles.headerCenterText
+              : styles.headerTextIOS
           }
         >
           Giỏ hàng
         </Text>
-        <Feather name="more-vertical" size={scaleWidth(25)} color={isFix? "white" : COLOR.disableWhiteColor} style={mainStyles.headerIcon}  onPress={toggleFix}/>
+        <Feather
+          name="more-vertical"
+          size={scaleWidth(25)}
+          color={isFix ? "white" : COLOR.disableWhiteColor}
+          style={mainStyles.headerIcon}
+          onPress={toggleFix}
+        />
       </View>
 
       <RenderContent onAddPress={(post) => handlePresentModalPress(post)} />

@@ -106,8 +106,9 @@ export const registerUser = async (user, dispatch, navigation) => {
 
 export const logoutUser = async (user, dispatch, navigation) => {
   try {
-    await axios.post(BE_ENDPOINT + `/auth/logout/${user.id}`);
-    dispatch(logout());
+    // await axios.post(BE_ENDPOINT + `/auth/logout/${user.id}`);
+    await AsyncStorage.removeItem("user");
+    // dispatch(logout());
   } catch (e) {
     console.error("Logout error:", e);
   }
@@ -256,6 +257,7 @@ export const changePassword = async (
   accessToken
 ) => {
   try {
+    console.log("vao r");
     if (!user || !user.id) {
       dispatch(loginFailure("Không tìm thấy thông tin người dùng"));
       return;
@@ -278,13 +280,18 @@ export const changePassword = async (
       }
     );
 
+    if (!res.ok) {
+      const errorData = await res.json();
+      console.log("Lỗi từ API:", errorData.message);
+    }
     if (res.data && res.data.user) {
       // Dispatch action update user với thông tin mới
       dispatch(updatePasswordSuccess(res.data.user));
     }
   } catch (error) {
-    console.error("Change password error:", error);
-
+    console.error("Change password error:", await error.response.data.message);
+    const errorData = await error.json();
+    console.log("Lỗi từ API:", errorData.message);
     let errorMessage = "Đổi mật khẩu thất bại";
     if (error.response) {
       errorMessage =

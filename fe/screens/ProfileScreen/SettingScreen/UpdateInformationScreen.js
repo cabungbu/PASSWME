@@ -45,19 +45,21 @@ const UpdateInformation = () => {
       address: fullAddress ? fullAddress : user?.address,
     };
 
-    updateUserInformation(
-      newUser,
-      dispatch,
-      user,
-      refreshTokenRedux,
-      accessToken
-    );
     const isOrder = route.params?.isOrder;
-
     if (isOrder) {
+      console.log("ở đây");
+      navigation.setParams({ newUser });
       navigation.navigate("CheckOut", { newUser });
       return;
-    }
+    } else
+      updateUserInformation(
+        newUser,
+        dispatch,
+        user,
+        refreshTokenRedux,
+        accessToken
+      );
+
     // updateUserInformation(
     //   newUser,
     //   dispatch,
