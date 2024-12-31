@@ -7,7 +7,7 @@ const PreparingOrders = React.memo(
   ({ orders, onDelivering }) => {
     console.log("PreparingOrder");
     const getPendingOrders = (orders) => {
-      return orders.filter((order) => order.status === "preparing");
+      return Array.isArray(orders) ? orders.filter((order) => order.status === "preparing") : [];
     };
     const handleOrderDelivery = (order) => {
       onDelivering(order); // Gọi callback và truyền order lên cha

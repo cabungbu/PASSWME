@@ -53,6 +53,7 @@ export const registerUser = async (user, dispatch, navigation) => {
     // Validation checks (same as before)
     if (!user.email || !user.password || !user.phone || !user.username) {
       dispatch(registerFailure("Vui lòng nhập đầy đủ thông tin"));
+      console.log("Lỗi gì đó")
       return;
     }
 
@@ -70,6 +71,7 @@ export const registerUser = async (user, dispatch, navigation) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(user.email)) {
       dispatch(registerFailure("Email này không hợp lệ"));
+      console.log("Lỗi mail")
       return;
     }
 
@@ -88,8 +90,8 @@ export const registerUser = async (user, dispatch, navigation) => {
       navigation.navigate("BottomBar");
     }
   } catch (error) {
-    console.error("Register error:", error);
-
+    console.error("Register error:", error.response.data);
+    
     let errorMessage = "Đăng ký thất bại";
 
     if (error.response) {
@@ -183,9 +185,9 @@ export const updateUserInformation = async (
   refreshTokenRedux,
   accessToken
 ) => {
-  console.log("Đã chạy cập nhật");
   try {
     dispatch(updateUserStart());
+    console.log("Đã chạy cập nhật");
 
     // Validation checks
     if (!userData.email && !userData.phone && !userData.username) {
@@ -229,6 +231,7 @@ export const updateUserInformation = async (
     if (res.data) {
       dispatch(updateUserSuccess(res.data.user));
       await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
+      alert("Cập nhật thông tin người dùng thành công")
     }
   } catch (error) {
     console.error("Update user error:", error);
@@ -284,8 +287,14 @@ export const changePassword = async (
       // Dispatch action update user với thông tin mới
       dispatch(updatePasswordSuccess(res.data.user));
     }
+    if (res.data.error) {
+      alert(res.data.error);  // Hiển thị thông báo từ backend
+    }
+    if (res.data.message) {
+      alert(res.data.message);  // Hiển thị thông báo từ backend
+    }
   } catch (error) {
-    console.error("Change password error:", error);
+    alert(await error.response.data.message);
 
     let errorMessage = "Đổi mật khẩu thất bại";
     if (error.response) {

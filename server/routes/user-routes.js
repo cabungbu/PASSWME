@@ -12,6 +12,8 @@ const {
   checkboxProduct,
   setProductNotCheck,
   updateCoin,
+  getSearchHistory,
+  addSearchTerm
 } = require("../controller/userController");
 const {
   checkAllBoxTrue,
@@ -40,5 +42,11 @@ router.patch("/checkAllBoxFalse/:id", checkAllBoxFalse);
 router.patch("/updateQuantity/:id", updateQuantity);
 
 router.get("/updateCoin/:id", updateCoin);
+
+// Get search history
+router.get('/:userId/searchHistory', getSearchHistory);
+
+// Add new search term
+router.post('/:userId/addSearchHistory', addSearchTerm);
 
 module.exports = { routes: router };

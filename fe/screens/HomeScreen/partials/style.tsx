@@ -130,6 +130,29 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: "#E30414",
   },
+
+  suggestionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    backgroundColor: 'white',
+  },
+  suggestionsList: {
+    maxHeight: 300,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    marginTop: 150, // Adjust based on your banner height
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    flex: 1,
+  },
 });
 
 export default styles;

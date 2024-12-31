@@ -14,8 +14,12 @@ import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { COLOR } from "../../assets/constant/color";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import FeedbackStars from "../../components/FeedbackStars";
+import { scaleHeight } from "../../assets/constant/responsive";
+import { useNavigation } from "@react-navigation/native";
 
 export default function DataSection({ post }) {
+  const navigation = useNavigation();
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "2-digit", day: "2-digit" };
     const date = new Date(dateString);
@@ -26,7 +30,7 @@ export default function DataSection({ post }) {
       <View style={{ paddingHorizontal: 15, backgroundColor: "white" }}>
         <Text style={styles.title}>{post.title}</Text>
         <View style={styles.locationContainer}>
-          <FontAwesome6 name="location-dot" size={20} color="#A0A0A0"/>
+          <FontAwesome6 name="location-dot" size={20} color="#A0A0A0" />
           <Text style={styles.location}>
             {post.address ? post.address : "Chưa xác định"}
           </Text>
@@ -51,7 +55,7 @@ export default function DataSection({ post }) {
             style={{ display: "flex", flexDirection: "row", marginBottom: 10 }}
           >
             <Text style={styles.follower}>
-              {post.owner.numberOfFollowers} người theo dõi
+              {post.owner.followers?.length} người theo dõi
             </Text>
             <Text style={styles.ownerPost}>
               {post.owner.posts.length} sản phẩm
@@ -73,21 +77,48 @@ export default function DataSection({ post }) {
       <View style={styles.phanCachXam} />
 
       <View style={styles.dataDescription}>
-        <Text style={{ fontFamily: "medium", fontSize: 13, color: "#000" }}>
+        <Text
+          style={{
+            fontFamily: "medium",
+            fontSize: 15,
+            color: "#000",
+            marginBottom: scaleHeight(5),
+          }}
+        >
           Đánh giá sản phẩm
         </Text>
-        <Text style={{ fontFamily: "medium", fontSize: 13, color: "#000" }}>
-          Đánh giá sản phẩm
-        </Text>
-        <Text style={{ fontFamily: "medium", fontSize: 13, color: "#000" }}>
-          Đánh giá sản phẩm
-        </Text>
-        <Text style={{ fontFamily: "medium", fontSize: 13, color: "#000" }}>
-          Đánh giá sản phẩm
-        </Text>
-        <Text style={{ fontFamily: "medium", fontSize: 13, color: "#000" }}>
-          Đánh giá sản phẩm
-        </Text>
+        <View style={[styles.row, { justifyContent: "space-between" }]}>
+          <View style={[styles.row, { maxWidth: "50%" }]}>
+            <FeedbackStars rating={post.rating} />
+            {post.rating === 0 ? (
+              <Text style={[styles.ratingText, { color: "#828282" }]}>
+                Chưa có đánh giá
+              </Text>
+            ) : (
+              <Text style={[styles.ratingText, { color: COLOR.mainColor }]}>
+                {post.rating}/5{" "}
+                <Text style={{ color: "#828282" }}>
+                  ({post.feedbackCache?.length} đánh giá)
+                </Text>
+              </Text>
+            )}
+          </View>
+          <TouchableOpacity
+            style={[styles.row, { backgroundColor: "red" }]}
+            onPress={() => {
+              navigation.navigate("FeedbacksOfPost", {
+                feedbacks: post.feedbackCache,
+              });
+            }}
+          >
+            <Text style={styles.ratingText}>Xem tất cả</Text>
+            <Ionicons
+              name="chevron-forward-outline"
+              size={18}
+              color={COLOR.mainColor}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
     </>
   );

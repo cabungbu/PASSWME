@@ -19,8 +19,9 @@ export default function ServiceCard({ post }) {
   const [products, setProduct] = useState(post.products);
   const navigation = useNavigation();
 
+  console.log("product ne: " + JSON.stringify(post.products))
   const { minPrice, maxPrice } = useMemo(() => {
-    if (!products || products.length === 0) {
+    if (!products || post.products?.length === 0) {
       return { minPrice: 0, maxPrice: 0 };
     }
 
@@ -36,13 +37,13 @@ export default function ServiceCard({ post }) {
   };
 
   const renderPrice = () => {
-    if (!products || products.length === 0) {
+    if (!products || post.products?.length === 0) {
       return <Text>Liên hệ</Text>;
     }
 
-    if (products.length === 1) {
+    if (post.products?.length === 1) {
       return (
-        <Text style={styles.price}>{formatPrice(products[0].price)}đ</Text>
+        <Text style={styles.price}>{formatPrice(post.products[0].price)}đ</Text>
       );
     }
 

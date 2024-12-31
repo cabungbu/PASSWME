@@ -13,7 +13,7 @@ const PendingOrders = React.memo(
       fetch(BE_ENDPOINT + `/order/getUserOrderReceived/${user.id}`)
         .then((res) => res.json())
         .then((data) => {
-          setOrders(data.orders);
+          setOrders(Array.isArray(data.orders) ? data.orders : []);
         })
         .catch((error) => {
           console.error("Error fetching orders:", error);
@@ -25,7 +25,7 @@ const PendingOrders = React.memo(
     }, []);
 
     const getPendingOrders = (orders) => {
-      return orders.filter((order) => order.status === "pending");
+      return orders?.filter((order) => order.status === "pending");
     };
     const handleOrderDelete = (order) => {
       // In ra thông tin order để debug

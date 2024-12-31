@@ -146,5 +146,14 @@ const styles = StyleSheet.create({
     color: "#000",
     marginVertical: 10,
   },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  ratingText: {
+    fontFamily: "regular",
+    fontSize: 13,
+    color: "#000",
+  }
 });
 export default styles;

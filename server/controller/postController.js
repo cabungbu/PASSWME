@@ -10,7 +10,7 @@ const {
   deleteDoc,
   doc,
   writeBatch,
-  arrayUnion 
+  arrayUnion,
 } = require("firebase/firestore");
 const post = require("../model/post.js");
 const product = require("../model/productOfPost.js");
@@ -42,7 +42,7 @@ const addPost = async (req, res) => {
       address: data.address,
       soldQuantity: data.soldQuantity || 0,
       feedbacks: [],
-      //       rating: data.rating || 0,
+      rating: data.rating || 0,
     });
 
     // Khởi tạo batch write
@@ -134,23 +134,33 @@ const getAllPost = async (req, res) => {
       snapshot.docs.map(async (doc) => {
         const postData = doc.data();
 
-        // Fetch buyer data
+        // Fetch category data
         const categoryDoc = await getDoc(postData.category);
-        const catagoryData = categoryDoc.data();
+        const categoryData = categoryDoc.data();
 
-        // Fetch seller data
+        // Fetch owner data with only required fields
         const ownerDoc = await getDoc(postData.owner);
         const ownerData = ownerDoc.data();
 
-        // Return order với đầy đủ dữ liệu
+        // Return post with filtered owner data
         return {
           id: doc.id,
           ...postData,
-          category: { id: categoryDoc.id, ...catagoryData },
-          owner: { id: ownerDoc.id, ...ownerData },
+          category: { id: categoryDoc.id, ...categoryData },
+          owner: {
+            id: ownerDoc.id,
+            username: ownerData.username,
+            phone: ownerData.phone,
+            address: ownerData.address,
+            avatar: ownerData.avatar,
+            followers: ownerData.followers,
+            posts: ownerData.posts,
+            following: ownerData.following,
+          },
         };
       })
     );
+
     return res.status(200).json(posts);
   } catch (error) {
     console.error("Error fetching posts:", error);
@@ -168,7 +178,9 @@ const getPostById = async (req, res) => {
     const postDoc = await getDoc(postDocRef);
 
     if (!postDoc.exists()) {
-      return res.status(404).json({ message: "Không tìm thấy thông tin bài đăng" });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy thông tin bài đăng" });
     }
 
     // Lấy subcollection products
@@ -184,14 +196,13 @@ const getPostById = async (req, res) => {
       });
     });
 
-     // Fetch seller data
+    // Fetch seller data
     const categoryDoc = await getDoc(postDoc.data().category);
     const catagoryData = categoryDoc.data();
 
     // Fetch seller data
     const ownerDoc = await getDoc(postDoc.data().owner);
     const ownerData = ownerDoc.data();
-
 
     const feedbacksData = [];
     if (
@@ -324,6 +335,78 @@ const getPostByCategory = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+const searchPosts = async (req, res) => {
+  const firestoreDb = getFirestoreDb();
+  const searchQuery = req.query.query?.toLowerCase() || "";
+
+  try {
+    // Get all posts
+    const snapshot = await getDocs(collection(firestoreDb, "posts"));
+
+    // Filter posts where title matches search query
+    const matchingPosts = await Promise.all(
+      snapshot.docs
+        .filter((doc) => doc.data().title.toLowerCase().includes(searchQuery))
+        .map(async (doc) => {
+          const postData = doc.data();
+
+          // Fetch category data
+          const categoryDoc = await getDoc(postData.category);
+          const categoryData = categoryDoc.data();
+
+          // Fetch owner data with only required fields
+          const ownerDoc = await getDoc(postData.owner);
+          const ownerData = ownerDoc.data();
+
+          // Get products subcollection
+          const productsSnapshot = await getDocs(
+            collection(doc.ref, "products")
+          );
+          const products = productsSnapshot.docs.map((productDoc) => ({
+            id: productDoc.id,
+            ...productDoc.data(),
+          }));
+
+          // Return post with filtered owner data and products
+          return {
+            id: doc.id,
+            ...postData,
+            products: products,
+            category: {
+              id: categoryDoc.id,
+              ...categoryData,
+            },
+            owner: {
+              id: ownerDoc.id,
+              username: ownerData.username,
+              phone: ownerData.phone,
+              address: ownerData.address,
+              avatar: ownerData.avatar,
+              followers: ownerData.followers,
+              posts: ownerData.posts,
+              following: ownerData.following,
+            },
+          };
+        })
+    );
+
+    if (matchingPosts.length === 0) {
+      return res.status(200).json({
+        message: "No posts found matching the search query",
+        posts: [],
+      });
+    }
+
+    return res.status(200).json({
+      message: "Posts found successfully",
+      posts: matchingPosts,
+    });
+  } catch (error) {
+    console.error("Error searching posts:", error);
+    res.status(400).json({ error: error.message });
+  }
+};
 module.exports = {
   addPost,
   getAllPost,
@@ -331,4 +414,5 @@ module.exports = {
   updatePost,
   deletePost,
   getPostByCategory,
+  searchPosts,
 };

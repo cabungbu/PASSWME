@@ -170,8 +170,8 @@ export default function Profile() {
                 <Text></Text>
               )}
               <Text style={styles.followsText}>
-                {user?.numberOfFollowers} Người theo dõi {"     "}
-                <Text>{user?.numberOfFollowing} Người theo dõi</Text>
+                {user?.followers?.length} Người theo dõi {"     "}
+                <Text>{user?.following?.length} Người theo dõi</Text>
               </Text>
             </View>
           </View>

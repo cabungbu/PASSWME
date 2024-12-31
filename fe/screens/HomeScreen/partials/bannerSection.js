@@ -3,8 +3,10 @@ import { Image, TextInput, TouchableOpacity, View } from "react-native";
 import styles from "./style";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import ShoppingCartIcon from "../../../components/shoppingCartIcon";
+import { useNavigation } from "@react-navigation/native";
 
 export default function BannerSection() {
+  const navigation = useNavigation()
   return (
     <View style={styles.bannerSection}>
       <Image
@@ -15,7 +17,7 @@ export default function BannerSection() {
         resizeMode="contain"
       />
       <View style={styles.seachBarAndIcon}>
-        <View style={styles.inputContainer}>
+        <TouchableOpacity style={styles.inputContainer} onPress={() => navigation.navigate('SearchScreen')}>
           <AntDesign
             name="search1"
             size={20}
@@ -27,7 +29,7 @@ export default function BannerSection() {
             placeholder="Tìm kiếm"
             placeholderTextColor="#CCCCCC"
           />
-        </View>
+        </TouchableOpacity>
 
         <ShoppingCartIcon cartColor="white" />
       </View>

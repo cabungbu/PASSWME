@@ -11,8 +11,9 @@ class user {
     this.customerOrder = customerOrder || [];
     this.bought = [];
     this.shopcart = [];
-    this.numberOfFollowers = numberOfFollowers || 0;
-    this.numberOfFollowing = numberOfFollowing || 0;
+    this.followers = followers || 0;
+    this.following = following || 0;
+    this.searchHistory = [];
   }
   toPlainObject() {
     return {
@@ -27,8 +28,9 @@ class user {
       customerOrder: this.customerOrder,
       bought: this.bought,
       shopcart: this.shopcart,
-      numberOfFollowers: this.numberOfFollowers,
-      numberOfFollowing: this.numberOfFollowing,
+      followers: this.followers,
+      following: this.following,
+      searchHistory: this.searchHistory,
     };
   }
 }

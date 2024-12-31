@@ -39,10 +39,12 @@ const register = async (req, res) => {
       password: hashedPassword,
       phone: data.phone || "",
       coin: 0,
-      lastTimeCheckIn: new Date().toISOString,
+      lastTimeCheckIn: new Date().toISOString(),
       avatar:
         "https://firebasestorage.googleapis.com/v0/b/passwme-ec9f7.appspot.com/o/5ee082781b8c41406a2a50a0f32d6aa6.jpg?alt=media&token=6f5c44d6-60eb-487a-b3dd-4dce39316dbc",
       refreshToken: "", // Set refreshToken to an empty string initially
+      followers: [],
+      following: []
     };
 
     const userCollection = collection(firestoreDb, "users");
@@ -252,7 +254,7 @@ const resetPassword = async (req, res) => {
     const updatedUserData = await getDoc(userDoc);
 
     res.status(200).json({
-      message: "Password changed successfully.",
+      message: "Đổi mật khẩu thành công",
       user: {
         id: userId,
         ...updatedUserData.data(), // Spread toàn bộ dữ liệu người dùng

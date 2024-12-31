@@ -13,7 +13,7 @@ import PostCard from "../../../components/postCard";
 
 const RelativePost = React.memo(
   ({ posts }) => {
-    console.log("RelativePost");
+    console.log("RelativePost: ", posts.length)
     return (
       <View style={{ flex: 1 }}>
         {posts.length > 0 ? (

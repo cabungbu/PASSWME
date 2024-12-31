@@ -150,10 +150,18 @@ export default function PostDetailScreen({ route }) {
         </View>
       </View>
 
-      <ScrollView>
+      <View style={{ flex: 1 }}>
+      <ScrollView 
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        scrollEventThrottle={16}
+      >
         <ImageSection images={post.images} post={post} />
         <DataSection post={post} />
       </ScrollView>
+    </View>
+
 
       <BottomTabSection
         onBuyNow={() => {

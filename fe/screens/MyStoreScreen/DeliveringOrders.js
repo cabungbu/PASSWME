@@ -7,7 +7,7 @@ const DeliveringOrders = React.memo(
   ({ orders }) => {
     console.log("DeliveringOrders");
     const getPendingOrders = (orders) => {
-      return orders.filter((order) => order.status === "delivering");
+      return Array.isArray(orders) ? orders.filter((order) => order.status === "delivering") : [];
     };
 
     const handleOrderComplete = (order) => {
