@@ -19,6 +19,7 @@ const OrderDataNoShopCart = forwardRef((props, ref) => {
   const [message, setMessage] = useState(""); // Quản lý nội dung lời nhắn
 
   const data = props.post;
+  console.log(data);
 
   //   const items = data.flatMap((item) => ({
   //     postId: item.postId,

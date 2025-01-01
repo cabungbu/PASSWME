@@ -243,6 +243,7 @@ const PostingDetail = ({ route, navigation }) => {
       );
 
       navigation.navigate("PostedScreen", {
+        id: response.data.post.id,
         image: uploadedImageUrls[0],
         title: title,
         price:

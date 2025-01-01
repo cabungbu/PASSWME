@@ -18,7 +18,12 @@ const CheckBoxComponent = ({ post, isCheck, sellerId }) => {
   );
 
   const handelPress = () => {
-    if (post.postId === null || post.product.productId === null) return;
+    if (
+      post.postId === null ||
+      post.product.productId === null ||
+      post.product.quantity == 0
+    )
+      return;
 
     if (!isCheckState) {
       setIsCheck(true);
@@ -49,7 +54,11 @@ const CheckBoxComponent = ({ post, isCheck, sellerId }) => {
 
   return (
     <CheckBox
-      checked={isCheckingAll && post.postId != null ? true : isCheck}
+      checked={
+        isCheckingAll && post.postId && post.product.quantity > 0 != null
+          ? true
+          : isCheck
+      }
       iconType="material-community"
       checkedIcon="checkbox-marked"
       uncheckedIcon="checkbox-blank-outline"
