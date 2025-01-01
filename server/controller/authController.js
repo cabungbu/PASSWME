@@ -12,6 +12,7 @@ const {
 } = require("firebase/firestore");
 const { getAuth } = require("firebase-admin/auth");
 const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
 const user = require("../model/user.js");
 const jwt = require("jsonwebtoken");
 const register = async (req, res) => {
@@ -44,7 +45,7 @@ const register = async (req, res) => {
         "https://firebasestorage.googleapis.com/v0/b/passwme-ec9f7.appspot.com/o/5ee082781b8c41406a2a50a0f32d6aa6.jpg?alt=media&token=6f5c44d6-60eb-487a-b3dd-4dce39316dbc",
       refreshToken: "", // Set refreshToken to an empty string initially
       followers: [],
-      following: []
+      following: [],
     };
 
     const userCollection = collection(firestoreDb, "users");
@@ -269,6 +270,7 @@ const resetPassword = async (req, res) => {
 const logout = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   const id = req.params.id;
+
   try {
     // Truy cập collection users và document với id
     const userRef = doc(firestoreDb, "users", id);
@@ -288,11 +290,69 @@ const logout = async (req, res) => {
     });
   }
 };
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  const firestoreDb = getFirestoreDb();
 
+  try {
+    const usersCollection = collection(firestoreDb, "users");
+    const userQuery = query(usersCollection, where("email", "==", email));
+    const querySnapshot = await getDocs(userQuery);
+
+    if (querySnapshot.empty) {
+      return res.status(404).json({ error: "Không tìm thấy email này." });
+    }
+
+    // Tạo mật khẩu mới
+    const newPassword = Math.floor(Math.random() * 100000000)
+      .toString()
+      .padStart(8, "0");
+
+    // Tạo salt và hash mật khẩu mới
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt); // Sử dụng newPassword thay vì data.newPassword
+
+    // Cập nhật mật khẩu mới
+    const userDoc = querySnapshot.docs[0]; // Lấy tài liệu đầu tiên
+    await updateDoc(userDoc.ref, { password: hashedNewPassword }); // Cập nhật mật khẩu trong tài liệu
+
+    // Thiết lập transporter cho nodemailer
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "coffeeshopxh@gmail.com",
+        pass: "nbwz atbl grzu pnhs", // Nên sử dụng biến môi trường cho thông tin nhạy cảm
+      },
+    });
+
+    // Thiết lập nội dung mail
+    const mailOptions = {
+      from: "coffeeshopxh@gmail.com",
+      to: email,
+      subject: "Reset Password",
+      text: "Your new password: " + newPassword + ". You can change it later.",
+    };
+
+    // Gửi mail
+    transporter.sendMail(mailOptions, function (err, info) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+
+    res.status(200).json({ message: "Check your new password in email" });
+  } catch (err) {
+    console.error("Error in forgotPassword: ", err); // Log lỗi để dễ dàng gỡ lỗi
+    res.status(500).json({ message: err.message });
+  }
+};
 module.exports = {
   login,
   register,
   takeRefreshToken,
   logout,
   resetPassword,
+  forgotPassword,
 };

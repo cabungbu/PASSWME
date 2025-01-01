@@ -65,7 +65,14 @@ const LoginPage = () => {
                 navigation.navigate("Welcome");
               }}
             />
-            <Text style={[mainStyles.headerCenterText, {marginRight: scaleWidth(30)}]}>Đăng nhập</Text>
+            <Text
+              style={[
+                mainStyles.headerCenterText,
+                { marginRight: scaleWidth(30) },
+              ]}
+            >
+              Đăng nhập
+            </Text>
           </View>
         </>
       ) : (
@@ -170,14 +177,14 @@ const LoginPage = () => {
           <Text style={styles.or}>Hoặc</Text>
           <View style={styles.greyline} />
         </View>
-        <TouchableOpacity style={styles.ggfbcontainer}>
+        {/* <TouchableOpacity style={styles.ggfbcontainer}>
           <GoogleBrandIcon size={24} />
           <Text style={styles.ggfbtext}>Tiếp tục với Google</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.ggfbcontainer}>
           <FacebookBrandIcon size={24} />
           <Text style={styles.ggfbtext}>Tiếp tục với Facebook</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );

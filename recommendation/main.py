@@ -108,7 +108,15 @@ def get_home_recommendations():
     else:
         # Nếu không có lịch sử, trả về danh sách ngẫu nhiên
         random_posts = random.sample(all_posts, min(10, len(all_posts)))
-        return jsonify({'Recommendation': random_posts})
+        random_posts_serializable = [{
+            'id': post['id'],
+            'title': post['title'],
+            'images': post['images'],
+            'start': post['start']
+        } for post in random_posts]
+
+        return jsonify({'Recommendation': random_posts_serializable})
+      
     # Tạo DataFrame cho history
     history_df = pd.DataFrame({'title': [history]})
     history_df['title'] = history_df['title'].astype(str)

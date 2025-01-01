@@ -69,14 +69,17 @@ const getAllServicePosts = async (req, res) => {
       snapshot.docs.map(async (doc) => {
         const postData = doc.data();
 
-        const startTime = postData.start;
-        const now = new Date();
-        const hoursDifference = (now - startTime) / (1000 * 60 * 60);
-        if (hoursDifference > 48) {
-          // Nếu lớn hơn 48 giờ, xóa tài liệu
-          await deleteDoc(doc.ref);
-          return null; // Trả về null sau khi xóa
-        }
+        // const startTime =
+        //   postData.start instanceof Date
+        //     ? postData.start
+        //     : postData.start.toDate();
+        // const now = new Date();
+        // const hoursDifference = (now - startTime) / (1000 * 60 * 60);
+        // if (hoursDifference > 48) {
+        //   // Nếu lớn hơn 48 giờ, xóa tài liệu
+        //   await deleteDoc(doc.ref);
+        //   return null; // Trả về null sau khi xóa
+        // }
 
         if (!postData.postRef) {
           console.error("postRef is undefined for document:", doc.id);
