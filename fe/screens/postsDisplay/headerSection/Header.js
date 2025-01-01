@@ -40,6 +40,7 @@ const Header = React.memo(() => {
       <View style={styles.headerContainer}>
         <Ionicons
           name="chevron-back"
+          sx={{ marginLeft: scaleWidth(10) }}
           size={24}
           color="white"
           onPress={() => navigation.goBack()}
@@ -51,7 +52,7 @@ const Header = React.memo(() => {
             style={{ marginLeft: scaleWidth(10), fontFamily: "regular" }}
           />
         </View>
-        <TouchableOpacity style={{ flexDirection: "row" }}>
+        {/* <TouchableOpacity style={{ flexDirection: "row" }}>
           <Feather name="filter" size={24} color="white" />
           <View style={styles.numberOfNoti}>
             <Text
@@ -64,7 +65,7 @@ const Header = React.memo(() => {
               5
             </Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </SafeAreaView>
   );

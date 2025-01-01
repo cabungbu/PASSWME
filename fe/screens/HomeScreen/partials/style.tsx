@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import BannerSection from "./bannerSection";
+import { scaleHeight, scaleWidth } from "../../../assets/constant/responsive";
 
 const styles = StyleSheet.create({
   bannerSection: {
@@ -132,26 +133,42 @@ const styles = StyleSheet.create({
   },
 
   suggestionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    backgroundColor: 'white',
+    borderBottomColor: "#eee",
+    backgroundColor: "white",
   },
   suggestionsList: {
     maxHeight: 300,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginTop: 150, // Adjust based on your banner height
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     flex: 1,
+  },
+  container: {
+    paddingVertical: scaleHeight(2),
+  },
+  containerLast: {
+    width: "100%",
+    paddingLeft: scaleWidth(7),
+  },
+  Wrapper: {
+    paddingVertical: scaleHeight(10),
+  },
+  column: {
+    justifyContent: "space-evenly",
+  },
+  row: {
+    backgroundColor: "red",
   },
 });
 

@@ -137,5 +137,21 @@ const styles = StyleSheet.create({
     height: scaleHeight(10),
     backgroundColor: "#fff",
   },
+  container: {
+    paddingVertical: scaleHeight(2),
+  },
+  containerLast: {
+    width: "100%",
+    paddingLeft: scaleWidth(7),
+  },
+  Wrapper: {
+    paddingVertical: scaleHeight(10),
+  },
+  column: {
+    justifyContent: "space-evenly",
+  },
+  row: {
+    backgroundColor: "red",
+  },
 });
 export default styles;

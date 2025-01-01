@@ -13,7 +13,7 @@ import {
   StatusBar,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
+  FlatList,
 } from "react-native";
 import ImageSection from "./imageSection";
 import { BE_ENDPOINT } from "../../settings/localVars";
@@ -32,6 +32,7 @@ import BottomSheet, {
 import ProductBottom from "./productBottomSheet/ProductBottom";
 import { navigateToChat } from "../../services/navigateToChat";
 import { useSelector } from "react-redux";
+import Recomendation from "./productBottomSheet/Recomendation";
 export default function PostDetailScreen({ route }) {
   const user = useSelector((state) => state.auth.user);
   const { postId } = route.params;
@@ -151,26 +152,38 @@ export default function PostDetailScreen({ route }) {
       </View>
 
       <View style={{ flex: 1 }}>
-      <ScrollView 
-        style={{ flex: 1 }}
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-        scrollEventThrottle={16}
-      >
-        <ImageSection images={post.images} post={post} />
-        <DataSection post={post} />
-      </ScrollView>
-    </View>
+        <FlatList
+          data={[1]} // Single item array
+          renderItem={() => (
+            <>
+              <ImageSection images={post.images} post={post} />
+              <DataSection post={post} />
+              <Recomendation post={post} />
+            </>
+          )}
+          keyExtractor={() => "main"}
+        />
+        {/* <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+          scrollEventThrottle={16}
+        >
+          <ImageSection images={post.images} post={post} />
+          <DataSection post={post} />
+          <Recomendation post={post} />
+        </ScrollView> */}
+      </View>
 
-
-      <BottomTabSection
-        onBuyNow={() => {
-          handlePresentModalPress(), setIsBuy(true);
-        }}
-        onAddPress={handlePresentModalPress}
-        onChatPress={handleOpenChat}
-      />
-
+      {post?.owner.id != user.id && (
+        <BottomTabSection
+          onBuyNow={() => {
+            handlePresentModalPress(), setIsBuy(true);
+          }}
+          onAddPress={handlePresentModalPress}
+          onChatPress={handleOpenChat}
+        />
+      )}
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}

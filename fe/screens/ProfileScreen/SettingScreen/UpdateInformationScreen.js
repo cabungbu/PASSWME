@@ -45,14 +45,6 @@ const UpdateInformation = () => {
       address: fullAddress ? fullAddress : user?.address,
     };
     const isOrder = route.params?.isOrder;
-
-    if (isOrder) {
-      navigation.setParams({newUser})
-      navigation.navigate("CheckOut", { newUser });
-      return;
-    }
-
-
     // updateUserInformation(
     //   newUser,
     //   dispatch,
@@ -60,7 +52,6 @@ const UpdateInformation = () => {
     //   refreshTokenRedux,
     //   accessToken
     // );
-    const isOrder = route.params?.isOrder;
     const isOne = route.params?.isOne;
 
     if (isOrder) {
@@ -81,7 +72,6 @@ const UpdateInformation = () => {
         accessToken
       );
     }
-
   };
 
   return (

@@ -15,7 +15,7 @@ export default function Address({ newUser, isOne }) {
   const navigation = useNavigation();
   const changeAddress = () => {
     if (isOne) {
-      navigation.navigate("UpdateInformation", { isOrder: true, isOne: true });
+      return;
     } else navigation.navigate("UpdateInformation", { isOrder: true });
   };
 

@@ -11,9 +11,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { scaleWidth } from "../../assets/constant/responsive";
 import { ScrollView } from "react-native-gesture-handler";
 import Entypo from "@expo/vector-icons/Entypo";
+import { useNavigation } from "@react-navigation/native";
 import { COLOR } from "../../assets/constant/color";
 
 export default function OrderSuccess() {
+  const navigation = useNavigation();
   return (
     <>
       <StatusBar barStyle="dark-content" />
@@ -44,7 +46,10 @@ export default function OrderSuccess() {
               <Entypo name="home" size={24} color={COLOR.mainColor} />
               <Text style={styles.TextBtn}>Trang chủ</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate("OrderStatusScreen")}>
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => navigation.navigate("OrderStatusScreen")}
+            >
               <Ionicons name="bag-handle" size={24} color={COLOR.mainColor} />
               <Text style={styles.TextBtn}>Đơn mua</Text>
             </TouchableOpacity>

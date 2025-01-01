@@ -1,10 +1,11 @@
 import React, { useRef, useMemo, useCallback, useEffect } from "react";
-import { TouchableOpacity, View, Text } from "react-native";
+import { TouchableOpacity, View, FlatList, Text } from "react-native";
 import styles from "./style";
 import BannerSection from "./partials/bannerSection";
 import CategorySection from "./partials/categorySection";
 import ServicePostSection from "./partials/servicePostSection";
 import { scaleHeight } from "../../assets/constant/responsive";
+import Recomendation from "./partials/recomendSection";
 export default function Home() {
   // const navigation = useNavigation();
   // const user = useSelector((state) => state.auth.user);
@@ -14,9 +15,18 @@ export default function Home() {
 
   return (
     <View style={styles.container}>
-      <BannerSection />
-      <CategorySection />
-      <ServicePostSection />
+      <FlatList
+        data={[1]} // Single item array
+        renderItem={() => (
+          <>
+            <BannerSection />
+            <CategorySection />
+            <ServicePostSection />
+            <Recomendation />
+          </>
+        )}
+        keyExtractor={() => "main"}
+      />
     </View>
   );
 }
