@@ -34,6 +34,7 @@ export default function ServicePostSection() {
     }, [])
   );
 
+
   return (
     <View>
       <View style={styles.textSection}>
@@ -51,7 +52,7 @@ export default function ServicePostSection() {
       >
         {servicePost.map((item) => (
           <View key={item.id}>
-            <ServiceCard post={item.post} />
+            <ServiceCard post={item.post} start={item.start} />
           </View>
         ))}
       </ScrollView>

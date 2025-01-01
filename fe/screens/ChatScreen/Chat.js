@@ -24,17 +24,19 @@ const Chat = () => {
           const chatRoomsData = res.data || [];
           setChatRooms(chatRoomsData);
         } catch (error) {
-          console.error("Error fetching chat rooms:", error.response?.data?.message);
+          console.error(
+            "Error fetching chat rooms:",
+            error.response?.data?.message
+          );
           Alert.alert("Lỗi", "Không thể tải các chat rooms");
         } finally {
           setLoading(false);
         }
       };
-  
+
       fetchAllChatRooms();
     }, [user?.id]) // Chỉ gọi lại khi user.id thay đổi
   );
-  
 
   if (loading) {
     return (
@@ -44,9 +46,6 @@ const Chat = () => {
         style={{ margin: scaleHeight(20) }}
       />
     );
-  }
-  if (chatRooms.length === 0) {
-    return <Text>Không có bài đăng</Text>;
   }
 
   const updateChatRoomUnreadCount = (chatRoomId, newUnreadCount) => {
@@ -76,10 +75,12 @@ const Chat = () => {
                 senderId: newMessage.senderId,
                 type: newMessage.type,
                 sendTime: {
-                  seconds: Math.floor(new Date(newMessage.sendTime).getTime() / 1000),
-                  nanoseconds: 0
-                }
-              }
+                  seconds: Math.floor(
+                    new Date(newMessage.sendTime).getTime() / 1000
+                  ),
+                  nanoseconds: 0,
+                },
+              },
             }
           : chatRoom
       )
@@ -96,26 +97,30 @@ const Chat = () => {
       <View style={mainStyles.headerCenterContainer}>
         <Text style={mainStyles.headerCenterText}>Chat</Text>
       </View>
-      <View>
-        <FlatList
-          data={chatRooms}
-          renderItem={({ item }) => (
-            <ChatCard
-              key={item.id?.toString()}
-              chatRoom={item}
-              userId={user?.id}
-              updateUnreadCount={updateChatRoomUnreadCount}
-              updateLastMessage={updateLastMessage}
-            />
-          )}
-          keyExtractor={(item) => item.id?.toString()}
-          showsVerticalScrollIndicator={true}
-          // contentContainerStyle={styles.flatListContent}
-          onEndReachedThreshold={0.5}
-          bounces={true}
-          ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
-        />
-      </View>
+      {chatRooms.length === 0 ? (
+        <Text style={{fontFamily: 'regular', alignSelf: 'center', marginTop: 10}}>Bạn chưa có cuộc trò chuyện nào</Text>
+      ) : (
+        <View>
+          <FlatList
+            data={chatRooms}
+            renderItem={({ item }) => (
+              <ChatCard
+                key={item.id?.toString()}
+                chatRoom={item}
+                userId={user?.id}
+                updateUnreadCount={updateChatRoomUnreadCount}
+                updateLastMessage={updateLastMessage}
+              />
+            )}
+            keyExtractor={(item) => item.id?.toString()}
+            showsVerticalScrollIndicator={true}
+            // contentContainerStyle={styles.flatListContent}
+            onEndReachedThreshold={0.5}
+            bounces={true}
+            ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
+          />
+        </View>
+      )}
     </View>
   );
 };

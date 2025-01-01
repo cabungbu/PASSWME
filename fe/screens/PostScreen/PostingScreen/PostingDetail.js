@@ -14,9 +14,7 @@ import mainStyles from "../../../styles/mainStyles";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { firebaseConfig } from "../../../firebase_config";
-import { initializeApp } from "firebase/app";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { Video } from "expo-av";
 
 import { scaleHeight, scaleWidth } from "../../../assets/constant/responsive";
@@ -34,8 +32,8 @@ import { useSelector } from "react-redux";
 import AddressPicker from "../../ProfileScreen/SettingScreen/AddressPicker";
 import axios from "axios";
 import { BE_ENDPOINT } from "../../../settings/localVars";
+import { storage } from "../../../firebase_config";
 
-initializeApp(firebaseConfig);
 
 const PostingDetail = ({ route, navigation }) => {
   navigation = useNavigation();
@@ -187,7 +185,6 @@ const PostingDetail = ({ route, navigation }) => {
     }
 
     try {
-      const storage = getStorage();
       const uploadedImageUrls = [];
       let uploadedVideoUrl = null;
 

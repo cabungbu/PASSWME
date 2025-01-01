@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const getProvinces = async () => {
   try {
-    const response = await axios.get(`https://vapi.vnappmob.com/api/province/`);
+    const response = await axios.get(`https://vapi.vnappmob.com/api/v2/province/`);
     return response.data;
   } catch (error) {
     console.error("Error fetching provinces:", error);
@@ -13,7 +13,7 @@ export const getProvinces = async () => {
 export const getDistricts = async (province_id) => {
   try {
     const response = await axios.get(
-      `https://vapi.vnappmob.com/api/province/district/${province_id}`
+      `https://vapi.vnappmob.com/api/v2/province/district/${province_id}`
     );
     return response.data;
   } catch (error) {
@@ -25,7 +25,7 @@ export const getDistricts = async (province_id) => {
 export const getWards = async (district_id) => {
   try {
     const response = await axios.get(
-      `https://vapi.vnappmob.com/api/province/ward/${district_id}`
+      `https://vapi.vnappmob.com/api/v2/province/ward/${district_id}`
     );
     return response.data;
   } catch (error) {

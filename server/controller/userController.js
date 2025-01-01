@@ -34,6 +34,9 @@ const addUser = async (req, res) => {
       posts: data.posts || [],
       order: data.order || [],
       customerOrder: data.order || [],
+      followers: data.followers || [],
+      following: data.following || [],
+      searchHistory: data.searchHistory || [],
     });
     if (!data || Object.keys(data).length === 0) {
       return res.status(400).json({ error: "Data is required." });
@@ -743,6 +746,81 @@ const removeProductFromCart = async (req, res) => {
   }
 };
 
+const getSearchHistory = async (req, res) => {
+  const firestoreDb = getFirestoreDb();
+  try {
+    const userId = req.params.userId;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required." });
+    }
+
+    const userRef = doc(firestoreDb, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const userData = userSnap.data();
+    res.status(200).json({
+      searchHistory: userData.searchHistory || [],
+    });
+  } catch (error) {
+    console.error("Error getting search history:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Add new search term to history
+const addSearchTerm = async (req, res) => {
+  const firestoreDb = getFirestoreDb();
+  try {
+    const userId = req.params.userId;
+    const { searchTerm } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required." });
+    }
+
+    if (!searchTerm) {
+      return res.status(400).json({ error: "Search term is required." });
+    }
+
+    const userRef = doc(firestoreDb, "users", userId);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const userData = userSnap.data();
+    let searchHistory = userData.searchHistory || [];
+
+    // Remove the search term if it already exists to avoid duplicates
+    searchHistory = searchHistory.filter((term) => term !== searchTerm);
+
+    // Add new term at the beginning
+    searchHistory.unshift(searchTerm);
+
+    // Keep only the last 10 items
+    searchHistory = searchHistory.slice(0, 10);
+
+    // Update the user document
+    await updateDoc(userRef, {
+      searchHistory: searchHistory,
+    });
+
+    res.status(200).json({
+      message: "Search history updated successfully.",
+      searchHistory: searchHistory,
+    });
+  } catch (error) {
+    console.error("Error updating search history:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   addUser,
   getAllUsers,
@@ -756,4 +834,6 @@ module.exports = {
   checkboxProduct,
   setProductNotCheck,
   updateCoin,
+  getSearchHistory,
+  addSearchTerm
 };

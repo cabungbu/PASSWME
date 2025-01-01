@@ -44,6 +44,14 @@ const UpdateInformation = () => {
       username: username ? username : user?.username,
       address: fullAddress ? fullAddress : user?.address,
     };
+    const isOrder = route.params?.isOrder;
+
+    if (isOrder) {
+      navigation.setParams({newUser})
+      navigation.navigate("CheckOut", { newUser });
+      return;
+    }
+
 
     // updateUserInformation(
     //   newUser,
@@ -65,14 +73,15 @@ const UpdateInformation = () => {
     }
     if (!isOrder) {
       console.log("Isorder di");
-      // updateUserInformation(
-      //   newUser,
-      //   dispatch,
-      //   user,
-      //   refreshTokenRedux,
-      //   accessToken
-      // );
+      updateUserInformation(
+        newUser,
+        dispatch,
+        user,
+        refreshTokenRedux,
+        accessToken
+      );
     }
+
   };
 
   return (

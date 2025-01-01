@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   Alert,
   Animated,
@@ -14,13 +14,23 @@ import {
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { scaleHeight, scaleWidth } from "../assets/constant/responsive";
 import { useNavigation } from "@react-navigation/native";
+import CountdownDisplay from "./countDown";
 
-export default function ServiceCard({ post }) {
+export default function ServiceCard({ post, start }) {
   const [products, setProduct] = useState(post.products);
+  const [countdown, setCountdown] = useState("");
   const navigation = useNavigation();
 
+  if (!start || !start.seconds) {
+    console.error("Invalid post.start timestamp", start);
+    return null;
+  }
+
+  const targetDate = new Date(start.seconds * 1000 + 48 * 60 * 60 * 1000); // Tính thời gian đếm ngược
+
+  // Tính giá minPrice, maxPrice
   const { minPrice, maxPrice } = useMemo(() => {
-    if (!products || products.length === 0) {
+    if (!products || post.products?.length === 0) {
       return { minPrice: 0, maxPrice: 0 };
     }
 
@@ -36,13 +46,13 @@ export default function ServiceCard({ post }) {
   };
 
   const renderPrice = () => {
-    if (!products || products.length === 0) {
+    if (!products || post.products?.length === 0) {
       return <Text>Liên hệ</Text>;
     }
 
-    if (products.length === 1) {
+    if (post.products?.length === 1) {
       return (
-        <Text style={styles.price}>{formatPrice(products[0].price)}đ</Text>
+        <Text style={styles.price}>{formatPrice(post.products[0].price)}đ</Text>
       );
     }
 
@@ -87,13 +97,7 @@ export default function ServiceCard({ post }) {
             alignItems: "center",
           }}
         >
-          <MaterialCommunityIcons
-            name="clock-time-eight-outline"
-            size={16}
-            color="#737373"
-            style={{ marginRight: 2 }}
-          />
-          <Text style={styles.start}>{post.start}</Text>
+          <CountdownDisplay targetDate={targetDate} />
         </View>
       </View>
     </TouchableOpacity>

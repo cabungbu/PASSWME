@@ -7,7 +7,7 @@ const SoldOrders = React.memo(
   ({ orders }) => {
     console.log("Sold");
     const getPendingOrders = (orders) => {
-      return orders.filter((order) => order.status === "sold");
+      return Array.isArray(orders) ? orders.filter((order) => order.status === "sold") : [];
     };
 
     return (

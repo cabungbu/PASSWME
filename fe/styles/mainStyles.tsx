@@ -22,6 +22,7 @@ const mainStyles = StyleSheet.create({
       shadowOpacity: 1,
       shadowRadius: 5,
       elevation: 1,
+    zIndex: 2
   },
   headerText: {
     color: "black",

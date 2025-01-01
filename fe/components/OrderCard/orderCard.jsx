@@ -17,7 +17,11 @@ import { useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { COLOR } from "../../assets/constant/color";
 import styles from "./style";
+import { useSelector } from "react-redux";
+import { navigateToChat } from "../../services/navigateToChat";
 const OrderCard = React.memo(({ order, onDelete, onComplete }) => {
+  const user = useSelector((state) => state.auth.user);
+  const navigation = useNavigation();
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -59,8 +63,8 @@ const OrderCard = React.memo(({ order, onDelete, onComplete }) => {
             <Text style={[styles.name, { flex: 1, fontSize: 11 }]}>
               Đơn hàng đang được người bán kiểm tra và xác nhận
             </Text>
-            <TouchableOpacity style={styles.buttonContainer}>
-              <Text style={styles.logintext}>Liên hệ người bán</Text>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleOpenChat}>
+              <Text style={styles.logintext}>Liên hệ người bán</Text> 
             </TouchableOpacity>
           </View>
         );
@@ -93,6 +97,7 @@ const OrderCard = React.memo(({ order, onDelete, onComplete }) => {
         return "Trạng thái không xác định";
     }
   };
+
   const formatPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
@@ -104,6 +109,20 @@ const OrderCard = React.memo(({ order, onDelete, onComplete }) => {
       year: "numeric", // Hiển thị năm đầy đủ (ví dụ: "2024")
     });
   };
+
+   const handleOpenChat = async () => {
+      await navigateToChat({
+        navigation,
+        senderId: user.id,
+        recipientId: order.sellerId,
+        recipientName: order.sellerName,
+        recipientAvatar: order.sellerAvatar || "",
+        // updateLastMessage: (chatRoomId, lastMessage) => {
+        //   // Optional: Cập nhật last message nếu cần
+        // }
+      });
+    };
+
   const itemDetail = (item) => {
     return (
       <View style={styles.cardContainer}>

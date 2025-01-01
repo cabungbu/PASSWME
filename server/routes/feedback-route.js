@@ -1,22 +1,19 @@
 const express = require("express");
+const { 
+  addFeedback,
+  getPostFeedbacks,
+  getUserFeedbacks 
+} = require("../controller/feedbackController");
+
 const router = express.Router();
-const feedbackController = require("../controller/feedbackController");
 
-// Route để thêm danh mục
-router.post("/add", feedbackController.addFeedback);
+// Route để thêm phản hồi cho đơn hàng
+router.post("/addFeedback", addFeedback);
 
-// Route để lấy tất cả danh mục
-router.get("/", feedbackController.getAllFeedback);
+// Route để lấy phản hồi của bài đăng sản phẩm
+router.get("/getPostFeedbacks/:postId", getPostFeedbacks);
 
-// Route để lấy danh mục theo ID
-router.get("/:id", feedbackController.getFeedbackById);
-
-// Route để cập nhật danh mục
-router.put("/:id", feedbackController.updateFeedback);
-
-// Route để xóa danh mục
-router.get("/getFeedbackInPost/:id", feedbackController.getFeedbackByPost);
-
-// module.exports = router;
+// Route để lấy phản hồi của người dùng
+router.get("/getUserFeedbacks/:userId", getUserFeedbacks);
 
 module.exports = { routes: router };

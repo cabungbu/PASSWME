@@ -10,6 +10,8 @@ const {
   writeBatch,
   arrayUnion,
   arrayRemove,
+  query,
+  where,
 } = require("firebase/firestore");
 
 const OrderController = {
@@ -19,7 +21,8 @@ const OrderController = {
     const data = req.body;
 
     const newOrderData = {
-      buyer: doc(db, "users", data.buyerId),
+      // buyer: doc(db, "users", data.buyerId),
+      buyerAvatar: data.buyerAvatar,
       buyerId: data.buyerId,
       buyerName: data.buyerName,
       buyerPhone: data.buyerPhone,
@@ -362,7 +365,7 @@ const OrderController = {
           myOrders: arrayRemove(orderDocRef),
         });
       } else {
-        console.log("Không tìm thấy buyer.");
+        console.log("Không tìm thấy buyer");
       }
 
       // Xóa đơn hàng
@@ -406,6 +409,87 @@ const OrderController = {
         success: false,
         message: error.message || "Internal Server Error",
       });
+    }
+  },
+
+  getSoldOrders: async (req, res) => {
+    try {
+      const orderSnapshot = await getDocs(
+        query(
+          collection(getFirestoreDb(), "orders"),
+          where("status", "==", "sold")
+        )
+      );
+
+      const orders = orderSnapshot.docs.map((doc) => {
+        const {
+          buyerId,
+          sellerId,
+          orderPrice,
+          totalPrice,
+          orderDate,
+          completeDate,
+          status,
+          coin,
+          buyerName,
+          buyerPhone,
+          buyerAddress,
+          sellerName,
+          sellerPhone,
+          sellerAddress,
+          items,
+          feedbacks = [],
+          note = "",
+        } = doc.data();
+
+        return {
+          id: doc.id,
+          buyerId,
+          sellerId,
+          orderPrice,
+          totalPrice,
+          orderDate,
+          completeDate,
+          status,
+          coin,
+          buyerName,
+          buyerPhone,
+          buyerAddress,
+          sellerName,
+          sellerPhone,
+          sellerAddress,
+          items: items.map(
+            ({ title, price, quantity, name, image, postId, productId }) => ({
+              title,
+              price,
+              quantity,
+              name,
+              image,
+              postId,
+              productId,
+            })
+          ),
+          feedbacks: feedbacks.map(
+            ({ rating, comment, images, createdAt }) => ({
+              rating,
+              comment,
+              images,
+              createdAt,
+            })
+          ),
+          note,
+        };
+      });
+
+      res.status(200).json({ orders });
+    } catch (error) {
+      console.error("Error getting sold orders:", error);
+      res
+        .status(500)
+        .json({
+          success: false,
+          message: error.message || "Internal Server Error",
+        });
     }
   },
 

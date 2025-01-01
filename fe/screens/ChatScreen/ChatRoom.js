@@ -25,6 +25,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
+import { storage } from "../../firebase_config";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const ChatRoom = () => {
   const navigation = useNavigation();
@@ -37,7 +39,7 @@ const ChatRoom = () => {
     senderId,
     ortherUserId,
     updateLastMessage,
-    isNewChat 
+    isNewChat,
   } = route.params;
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
@@ -92,51 +94,53 @@ const ChatRoom = () => {
     try {
       let actualChatRoomId = chatRoomId;
       if (isNewChat && !actualChatRoomId) {
-        const createResponse = await axios.post(`${BE_ENDPOINT}/chatRoom/create`, {
-          senderId: senderId,
-          recipientId: ortherUserId
-        });
-        
+        const createResponse = await axios.post(
+          `${BE_ENDPOINT}/chatRoom/create`,
+          {
+            senderId: senderId,
+            recipientId: ortherUserId,
+          }
+        );
+
         actualChatRoomId = createResponse.data.chatRoomId;
       }
-      
+
       let messageData;
       let lastMessageContent;
 
       if (image) {
+        // const storage = getStorage();
+        const filename = `image_${Date.now()}_${Math.random()
+          .toString(36)
+          .substring(7)}.jpg`;
+        const storageRef = ref(storage, `chat_images/${filename}`);
+
+        const response = await fetch(image);
+        const blob = await response.blob();
+
+        await uploadBytes(storageRef, blob);
+
         messageData = {
           chatRoomId: actualChatRoomId,
           senderId: senderId,
           recipientId: ortherUserId,
-          content: image,
+          content: await getDownloadURL(storageRef),
           type: "image",
           sendTime: new Date().toISOString(),
         };
 
-        lastMessageContent = `${senderId === ortherUserId ? ortherUserName : "Bạn"} đã gửi hình ảnh`;
-
-        // route.params?.updateLastMessage?.(actualChatRoomId , {
-        //   content: lastMessageContent,
-        //   senderId: senderId,
-        //   type: "image",
-        //   sendTime: new Date().toISOString(),
-        // });
+        lastMessageContent = `${
+          senderId === ortherUserId ? ortherUserName : "Bạn"
+        } đã gửi hình ảnh`;
       } else {
         messageData = {
-          chatRoomId: actualChatRoomId ,
+          chatRoomId: actualChatRoomId,
           senderId: senderId,
           recipientId: ortherUserId,
           content: newMessage,
           type: "text",
           sendTime: new Date().toISOString(),
         };
-
-        // route.params?.updateLastMessage?.(actualChatRoomId , {
-        //   content: newMessage,
-        //   senderId: senderId,
-        //   type: "text",
-        //   sendTime: new Date().toISOString(),
-        // });
       }
 
       const res = await axios.post(
@@ -156,7 +160,7 @@ const ChatRoom = () => {
       ]);
 
       updateLastMessage?.(actualChatRoomId, {
-        content: messageData.type === 'image' ? lastMessageContent : newMessage,
+        content: messageData.type === "image" ? lastMessageContent : newMessage,
         senderId: senderId,
         type: messageData.type,
         sendTime: new Date().toISOString(),
@@ -210,7 +214,6 @@ const ChatRoom = () => {
     });
 
     if (!result.canceled) setImage(result.assets[0].uri);
-    console.log(result.assets[0].uri);
   };
 
   const scrollToBottom = () => {
@@ -222,7 +225,6 @@ const ChatRoom = () => {
   useEffect(() => {
     if (messages.length > 0) {
       scrollToBottom();
-      
     }
   }, [messages, image]);
 

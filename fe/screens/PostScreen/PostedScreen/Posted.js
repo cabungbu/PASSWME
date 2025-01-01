@@ -144,11 +144,9 @@ const Posted = ({ route }) => {
           fontSize={15}
           // color={COLOR.mainColor}
           title="Quản lý tin"
-          onPress={() =>
-            navigation.navigate("MyStoreScreen", {
-              screen: "MyStoreScreen",
-            })
-          }
+          onPress={() => navigation.navigate("title2")}
+
+
         />
         <CustomButton
           width={scaleWidth(170)}

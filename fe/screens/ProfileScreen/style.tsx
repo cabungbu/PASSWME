@@ -25,6 +25,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "bold",
   },
+  followsText: {
+    marginTop: scaleHeight(10),
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontFamily: "regular",
+  },
   numberOfNoti: {
     width: 20,
     height: 20,

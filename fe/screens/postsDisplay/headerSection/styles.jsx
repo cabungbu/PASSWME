@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: scaleWidth(300),
-    height: scaleHeight(40),
+    height: scaleHeight(50),
     backgroundColor: "#F8F8F8",
     alignItems: "center",
     borderRadius: 20,

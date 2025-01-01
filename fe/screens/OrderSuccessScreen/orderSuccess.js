@@ -37,11 +37,14 @@ export default function OrderSuccess() {
           </View>
 
           <View style={styles.namngang}>
-            <TouchableOpacity style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => navigation.navigate("HomeScreen")}
+            >
               <Entypo name="home" size={24} color={COLOR.mainColor} />
               <Text style={styles.TextBtn}>Trang chủ</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate("OrderStatusScreen")}>
               <Ionicons name="bag-handle" size={24} color={COLOR.mainColor} />
               <Text style={styles.TextBtn}>Đơn mua</Text>
             </TouchableOpacity>

@@ -7,7 +7,8 @@ class order {
       from,
       to,
       status,
-      orderDate
+      orderDate,
+      feedback
     }) {
       this.buyerId = buyerId;
       this.sellerId = sellerId;
@@ -17,6 +18,7 @@ class order {
       this.to = to;
       this.status = status;
       this.orderDate = orderDate;
+      this.feedback = null;
     }
   
     toPlainObject() {
@@ -29,6 +31,7 @@ class order {
         to: this.to,
         status: this.status,
         orderDate: this.orderDate,
+        feedback: this.feedback
       };
     }
   }

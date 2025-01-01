@@ -18,6 +18,7 @@ import AllCategoryIcon from "../../../assets/icons/AllCategoryIcon";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { setCoin } from "../../../redux/authSlice";
+import PWMCoinIcon from "../../../assets/icons/PWMCoinIcon";
 
 export default function CategorySection() {
   const navigation = useNavigation();
@@ -95,11 +96,7 @@ export default function CategorySection() {
             alignItems: "center",
           }}
         >
-          <SvgUri
-            width={24}
-            height={24}
-            uri="https://firebasestorage.googleapis.com/v0/b/passwme-ec9f7.appspot.com/o/tabler_coin.svg?alt=media&token=602b1ca1-16d2-4674-9f51-e53c769cbef3"
-          />
+          <PWMCoinIcon size={24}/>
           <Text style={styles.coin}>{user.coin ? user.coin : 0}</Text>
         </View>
         <Text style={styles.coinText}>Nhấn để nhận xu mỗi ngày</Text>

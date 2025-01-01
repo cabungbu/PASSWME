@@ -88,7 +88,7 @@ export default function MyStore() {
     </View>
   );
 
-  const DeliveredOrdersTab = () => (
+  const DeliveringOrdersTab = () => (
     <View style={{ flex: 1 }}>
       <DeliveringOrders
         orders={orders}
@@ -112,7 +112,7 @@ export default function MyStore() {
     closed: ClosedPostsTab,
     pending: PendingOrdersTab,
     preparing: PreparingOrdersTab,
-    delivering: DeliveredOrdersTab,
+    delivering: DeliveringOrdersTab,
     sold: SoldItemsTab,
   });
 

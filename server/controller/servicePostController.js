@@ -33,7 +33,7 @@ const addServicePost = async (req, res) => {
     const batch = writeBatch(firestoreDb);
     const newServicePost = {
       postRef: doc(firestoreDb, "posts", data.postId),
-      start: Timestamp.fromDate(new Date()),
+      start: new Date(),
       status: true,
     };
     await setDoc(postDocRef, newServicePost);
@@ -82,6 +82,7 @@ const getAllServicePosts = async (req, res) => {
 
         return {
           id: doc.id,
+          start: doc.data().start,
           post: { id: postDoc.id, ...postDoc.data(), products: products },
         };
       })
