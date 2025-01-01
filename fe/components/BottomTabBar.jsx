@@ -51,6 +51,7 @@ import OrderSuccess from "../screens/OrderSuccessScreen/orderSuccess";
 import GiveAFeedback from "../screens/ProfileScreen/MyRatingsScreen/GiveAFeedback";
 import SearchScreen from "../screens/HomeScreen/SearchScreen";
 import FeedbacksOfPost from "../screens/PostDetailScreen/FeedbacksOfPost";
+import PushPostService from "../screens/pushPostService/PushPostService";
 const Stack = createNativeStackNavigator();
 
 function HomeStack() {
@@ -68,7 +69,7 @@ function HomeStack() {
 const MyStoreStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MyStoreScreen" component={MyStore} /> 
+      <Stack.Screen name="MyStoreScreen" component={MyStore} />
     </Stack.Navigator>
   );
 };
@@ -334,6 +335,7 @@ export default function MainContainer() {
           <Stack.Screen name="GiveAFeedbackScreen" component={GiveAFeedback} />
           <Stack.Screen name="SearchScreen" component={SearchScreen} />
           <Stack.Screen name="FeedbacksOfPost" component={FeedbacksOfPost} />
+          <Stack.Screen name="PushPostService" component={PushPostService} />
         </>
       )}
     </Stack.Navigator>

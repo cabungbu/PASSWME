@@ -24,7 +24,10 @@ export default function ServicePostSection() {
         setServicePost(data);
       })
       .catch((error) => {
-        cconsole.error("Error fetching service posts:", error.response?.data?.message);
+        cconsole.error(
+          "Error fetching service posts:",
+          error.response?.data?.message
+        );
       });
   }, []);
   return (
@@ -44,7 +47,7 @@ export default function ServicePostSection() {
       >
         {servicePost.map((item) => (
           <View key={item.id}>
-            <ServiceCard post={item.post} />
+            <ServiceCard post={item.post} start={item.start} />
           </View>
         ))}
       </ScrollView>

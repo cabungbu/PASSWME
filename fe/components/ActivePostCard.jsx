@@ -6,13 +6,17 @@ import CustomButton from "./customButton";
 
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
 
 export default function ActiveListingCard({ post }) {
-  const handleClick = () => {};
+  const navigate = useNavigation();
+  const handleClick = () => {
+    navigate.navigate("PushPostService", { post });
+  };
   const [products, setProduct] = useState(post.products);
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    const options = { year: "numeric", month: "2-digit", day: "2-digit" };
     const date = new Date(dateString);
     return date.toLocaleDateString(undefined, options); // Trả về định dạng DD/MM/YYYY
   };
@@ -34,26 +38,26 @@ export default function ActiveListingCard({ post }) {
   };
 
   const renderPrice = () => {
-      if (!products || products.length === 0) {
-        return <Text>Liên hệ</Text>;
-      }
-  
-      if (products.length === 1) {
-        return (
-          <Text style={styles.price}>{formatPrice(products[0].price)}đ</Text>
-        );
-      }
-  
-      if (minPrice === maxPrice) {
-        return <Text style={styles.price}>{formatPrice(minPrice)}đ</Text>;
-      }
-  
+    if (!products || products.length === 0) {
+      return <Text>Liên hệ</Text>;
+    }
+
+    if (products.length === 1) {
       return (
-        <Text style={styles.price}>
-          {formatPrice(minPrice)}đ - {formatPrice(maxPrice)}đ
-        </Text>
+        <Text style={styles.price}>{formatPrice(products[0].price)}đ</Text>
       );
-    };
+    }
+
+    if (minPrice === maxPrice) {
+      return <Text style={styles.price}>{formatPrice(minPrice)}đ</Text>;
+    }
+
+    return (
+      <Text style={styles.price}>
+        {formatPrice(minPrice)}đ - {formatPrice(maxPrice)}đ
+      </Text>
+    );
+  };
 
   return (
     <View style={styles.container_card}>
@@ -102,7 +106,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     justifyContent: "space-between",
     paddingVertical: scaleHeight(10),
-    paddingHorizontal: scaleWidth(15)
+    paddingHorizontal: scaleWidth(15),
   },
   horizontalSpacerContainer: {
     // flex: 1,
@@ -116,11 +120,11 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: "black"
+    borderColor: "black",
   },
   information: {
     fontSize: 13,
     fontFamily: "medium",
-    color: "black"
-  }
+    color: "black",
+  },
 });
