@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     marginVertical: scaleHeight(1),
   },
   proposeNewArticle: {
-    width: '100%',
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -52,18 +52,70 @@ const styles = StyleSheet.create({
     borderColor: "#a0a0a0",
   },
   move: {
-    width: '100%',
+    width: "100%",
     // height: scaleHeight(100),
     borderTopWidth: 1,
     borderColor: COLOR.mainColor,
-    flexDirection: 'row',
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: scaleHeight(20),
     paddingHorizontal: scaleWidth(30),
-    position: 'absolute',
-    bottom: 0
-  }
+    position: "absolute",
+    bottom: 0,
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark overlay
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    paddingTop: scaleWidth(20),
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width: "80%", // Optional: Set a width for the modal
+  },
+  modalText: {
+    textAlign: "center",
+    fontFamily: "medium",
+  },
+  line: {
+    borderWidth: 1,
+    borderColor: "#f4f1f1",
+    width: "100%",
+    marginTop: scaleWidth(20),
+  },
+  view: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  cancel: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: scaleWidth(20),
+    borderRightColor: "#f4f1f1",
+    borderRightWidth: 2,
+  },
+  yes: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: scaleWidth(20),
+  },
 });
 
 export default styles;

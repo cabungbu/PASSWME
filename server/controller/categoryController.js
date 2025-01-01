@@ -88,7 +88,9 @@ const CategoryController = {
       const categoryDoc = await getDoc(categoryDocRef);
 
       if (!categoryDoc.exists()) {
-        return res.status(404).json({ error: "Không tìm thấy thông tin danh mục này" });
+        return res
+          .status(404)
+          .json({ error: "Không tìm thấy thông tin danh mục này" });
       }
 
       let validPosts = [];
@@ -98,17 +100,11 @@ const CategoryController = {
         // Batch read posts
         const postDocs = await fetchBatchReferences(postRefs);
 
-        // Batch read owners
-        const ownerRefs = postDocs
-          .filter((postDoc) => postDoc?.exists())
-          .map((postDoc) => postDoc.data().owner);
-        const ownerDocs = await fetchBatchReferences(ownerRefs);
-
-        // Batch read categories
-        const categoryRefs = postDocs
-          .filter((postDoc) => postDoc?.exists())
-          .map((postDoc) => postDoc.data().category);
-        const categoryDocs = await fetchBatchReferences(categoryRefs);
+        // // Batch read owners
+        // const ownerRefs = postDocs
+        //   .filter((postDoc) => postDoc?.exists())
+        //   .map((postDoc) => postDoc.data().owner);
+        // const ownerDocs = await fetchBatchReferences(ownerRefs);
 
         // Batch read products for each post
         const postsWithDetails = await Promise.all(
@@ -131,15 +127,15 @@ const CategoryController = {
                 id: postDoc.id,
                 ...rest,
                 products: products,
-                owner: ownerDocs[index]?.exists()
-                  ? {
-                      id: ownerDocs[index].id,
-                      address: ownerDocs[index].data().address,
-                    }
-                  : null,
-                category: categoryDocs[index]?.exists()
-                  ? { id: categoryDocs[index].id }
-                  : null,
+                // owner: ownerDocs[index]?.exists()
+                //   ? {
+                //       id: ownerDocs[index].id,
+                //       address: ownerDocs[index].data().address,
+                //     }
+                //   : null,
+                // category: categoryDocs[index]?.exists()
+                //   ? { id: categoryDocs[index].id }
+                //   : null,
               };
             })
         );

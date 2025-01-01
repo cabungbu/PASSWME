@@ -80,7 +80,7 @@ export const checkIfShopcartUpdate = async (
     );
     const shopCartData = res.data;
 
-    if (currentShopcart.length < shopCartData.length) {
+    if (currentShopcart.length != shopCartData.length) {
       console.log(currentShopcart.length);
       getUserShopcart(userId, dispatch);
       return;

@@ -48,6 +48,8 @@ import { getUserShopcart } from "../redux/shopCartService";
 import CheckOut from "../screens/CheckOutScreen/CheckOut";
 import CheckOut2 from "../screens/CheckOutScreen/CheckOut2";
 import OrderSuccess from "../screens/OrderSuccessScreen/orderSuccess";
+import PaymentScreen from "../screens/PaymentScreen/PaymentScreen";
+import PaymentCheckScreen from "../screens/PaymentScreen/CheckPaymentStatus";
 const Stack = createNativeStackNavigator();
 
 function HomeStack() {
@@ -65,7 +67,7 @@ function HomeStack() {
 const MyStoreStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MyStoreScreen" component={MyStore} /> 
+      <Stack.Screen name="MyStoreScreen" component={MyStore} />
     </Stack.Navigator>
   );
 };
@@ -328,6 +330,11 @@ export default function MainContainer() {
           <Stack.Screen name="CheckOut" component={CheckOut} />
           <Stack.Screen name="CheckOut2" component={CheckOut2} />
           <Stack.Screen name="OrderSuccess" component={OrderSuccess} />
+          <Stack.Screen name="Payment" component={PaymentScreen} />
+          <Stack.Screen
+            name="PaymentCheckScreen"
+            component={PaymentCheckScreen}
+          />
         </>
       )}
     </Stack.Navigator>

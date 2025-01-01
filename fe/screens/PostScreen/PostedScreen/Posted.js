@@ -1,5 +1,5 @@
 import { View, Text, StatusBar, Image } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import mainStyles from "../../../styles/mainStyles";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -13,7 +13,12 @@ import { useNavigation } from "@react-navigation/native";
 
 const Posted = ({ route }) => {
   const navigation = useNavigation();
-  const { image, title, price } = route.params;
+  const { id, image, title, price } = route.params;
+  const [visible, setVisible] = useState(false);
+
+  const onClose = () => {
+    setVisible(false);
+  };
 
   const today = new Date();
   const expirationDate = new Date(today);
@@ -24,6 +29,21 @@ const Posted = ({ route }) => {
 
   const formatPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  const handleClick = async () => {
+    console.log("vao");
+    Alert.alert(
+      "Đẩy tin đề xuất hiệu lực 48h",
+      "Dịch vụ được thanh toán bằng Momo, bạn có chắc muốn thanh toán?",
+      [
+        {
+          text: "Có",
+          onPress: () => navigation.navigate("Payment", { postId: id }),
+        },
+        { text: "Không", style: "cancel" },
+      ]
+    );
   };
 
   return (
@@ -110,6 +130,7 @@ const Posted = ({ route }) => {
             fontSize={15}
             color={COLOR.successColor}
             title="Chọn"
+            onPress={() => handleClick()}
           />
         </View>
       </View>
@@ -123,9 +144,11 @@ const Posted = ({ route }) => {
           fontSize={15}
           // color={COLOR.mainColor}
           title="Quản lý tin"
-          onPress={() => navigation.navigate("MyStoreScreen", { 
-            screen: "MyStoreScreen" 
-          })}
+          onPress={() =>
+            navigation.navigate("MyStoreScreen", {
+              screen: "MyStoreScreen",
+            })
+          }
         />
         <CustomButton
           width={scaleWidth(170)}
@@ -136,9 +159,45 @@ const Posted = ({ route }) => {
           fontSize={15}
           // color={COLOR.mainColor}
           title="Về trang chủ"
-          onPress={()=>navigation.navigate("HomeScreen")}
+          onPress={() => navigation.navigate("HomeScreen")}
         />
       </View>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={visible}
+        onRequestClose={onClose}
+      >
+        <View style={styles.overlay}>
+          <View style={styles.modalView}>
+            <Text
+              style={[
+                styles.modalText,
+                { fontFamily: "regular", color: "#737373", fontSize: 13 },
+              ]}
+            >
+              Bạn chắc chắn muốn xóa?
+            </Text>
+            <View style={styles.line} />
+            <View style={styles.view}>
+              <TouchableOpacity style={styles.cancel} onPress={onClose}>
+                <Text style={styles.modalText}>Hủy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.yes}
+                onPress={() => {
+                  onClose(); // Close the modal after confirming
+                }}
+              >
+                <Text style={[styles.modalText, { color: COLOR.mainColor }]}>
+                  Xóa
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

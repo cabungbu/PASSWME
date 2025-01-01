@@ -45,19 +45,6 @@ const UpdateInformation = () => {
       address: fullAddress ? fullAddress : user?.address,
     };
 
-    updateUserInformation(
-      newUser,
-      dispatch,
-      user,
-      refreshTokenRedux,
-      accessToken
-    );
-    const isOrder = route.params?.isOrder;
-
-    if (isOrder) {
-      navigation.navigate("CheckOut", { newUser });
-      return;
-    }
     // updateUserInformation(
     //   newUser,
     //   dispatch,
@@ -65,6 +52,27 @@ const UpdateInformation = () => {
     //   refreshTokenRedux,
     //   accessToken
     // );
+    const isOrder = route.params?.isOrder;
+    const isOne = route.params?.isOne;
+
+    if (isOrder) {
+      console.log("Issone" + isOne);
+      if (isOne) {
+        navigation.navigate("CheckOut2", { newUser });
+      } else navigation.navigate("CheckOut", { newUser });
+
+      return;
+    }
+    if (!isOrder) {
+      console.log("Isorder di");
+      // updateUserInformation(
+      //   newUser,
+      //   dispatch,
+      //   user,
+      //   refreshTokenRedux,
+      //   accessToken
+      // );
+    }
   };
 
   return (
