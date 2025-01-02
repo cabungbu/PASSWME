@@ -48,7 +48,6 @@ const PostCard = React.memo(({ post }) => {
 
 
   const { minPrice, maxPrice } = useMemo(() => {
-    console.log("check ",post.products)
     if (!products || products.length === 0) {
       return { minPrice: 0, maxPrice: 0 };
     }

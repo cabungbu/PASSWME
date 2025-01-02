@@ -50,7 +50,7 @@ router.get('/:userId/searchHistory', getSearchHistory);
 
 // Add new search term
 router.post('/:userId/addSearchHistory', addSearchTerm);
-router.post('/follow/:id', followUser);
-router.post('/unfollow/:id', unfollowUser);
+router.post('/follow/:followerId/:id', followUser);
+router.post('/unfollow/:followerId/:id', unfollowUser);
 
 module.exports = { routes: router };

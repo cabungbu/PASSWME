@@ -22,9 +22,14 @@ const styles = StyleSheet.create({
     height: scaleHeight(160),
     resizeMode: "cover",
   },
-  buttonContainer: {
-    alignSelf: "flex-end",
+  row: {
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: scaleHeight(10),
+    borderBottomColor: "#e0e0e0",
+    borderBottomWidth: 1 ,
+    height: scaleHeight(150)
   },
   headerText: {
     color: COLOR.mainColor,
@@ -75,6 +80,26 @@ const styles = StyleSheet.create({
     fontFamily: "regular",
     fontSize: 13,
     color: "black",
+    width: "50%",
+  },
+
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  closeModelButton: {},
+  imageModel: {
+    width: "90%",
+    height: "70%",
+    resizeMode: "contain",
+  },
+  inforDetail: {
+    backgroundColor: "white",
+    width: "80%",
+    borderRadius: 15,
+    padding: scaleWidth(15),
   },
 });
 
