@@ -28,8 +28,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: scaleHeight(10),
     borderBottomColor: "#e0e0e0",
-    borderBottomWidth: 1 ,
-    height: scaleHeight(150)
+    borderBottomWidth: 1,
+    height: scaleHeight(150),
   },
   headerText: {
     color: COLOR.mainColor,
@@ -100,6 +100,39 @@ const styles = StyleSheet.create({
     width: "80%",
     borderRadius: 15,
     padding: scaleWidth(15),
+  },
+  modalContainer1: {
+    width: 300,
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 15,
+    fontFamily: "bold",
+    marginBottom: 10,
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#77cbf9",
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: "black",
+  },
+  closeButton2: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#77cbf9",
+    borderRadius: 5,
+  },
+  inputne: {
+    borderWidth: 1,
+    paddingVertical: 10,
+    width: "100%",
+    paddingHorizontal: 5,
   },
 });
 

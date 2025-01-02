@@ -37,9 +37,9 @@ export default function ImageSection({ images, post }) {
             height: "100%",
           }}
           resizeMode="cover"
-          onError={(e) => {
-            console.error("Image load error:", e.nativeEvent);
-          }}
+          // onError={(e) => {
+          //   console.error("Image load error:", e.nativeEvent);
+          // }}
         />
       </View>
     );

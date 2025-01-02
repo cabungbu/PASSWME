@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, Image } from "react-native";
+import { View, Text, StatusBar, Image, Modal } from "react-native";
 import React, { useState } from "react";
 import mainStyles from "../../../styles/mainStyles";
 
@@ -145,8 +145,6 @@ const Posted = ({ route }) => {
           // color={COLOR.mainColor}
           title="Quản lý tin"
           onPress={() => navigation.navigate("title2")}
-
-
         />
         <CustomButton
           width={scaleWidth(170)}

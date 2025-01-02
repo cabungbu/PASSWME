@@ -259,13 +259,13 @@ export default function Profile() {
       <View style={styles.otherUtilitiesContainer}>
         <Text style={styles.subtitleText}>Các tiện ích khác</Text>
         <View style={styles.utilityItem}>
-          <UtilityIconTextPair
+          {/* <UtilityIconTextPair
             width={"49%"}
             height={scaleHeight(70)}
             title="PWM Xu"
             IconComponent={PWMCoinIcon}
             iconSize={25}
-          />
+          /> */}
           <TouchableOpacity
             style={{ width: "49%" }}
             onPress={() => {
@@ -281,20 +281,21 @@ export default function Profile() {
             />
           </TouchableOpacity>
 
-          <UtilityIconTextPair
+          {/* <UtilityIconTextPair
             width={"49%"}
             height={scaleHeight(70)}
             title="Mua lại"
             IconComponent={ShoppingBagPlusIcon}
             iconSize={30}
-          />
+          /> */}
           <TouchableOpacity
+            style={{ width: "49%" }}
             onPress={() => {
               navigation.navigate("RecentlyViewed");
             }}
           >
             <UtilityIconTextPair
-              width={"49%"}
+              width={"100%"}
               height={scaleHeight(70)}
               title="Đã xem gần đây"
               IconComponent={ClockIcon}

@@ -31,7 +31,7 @@ const ShoppingCartIcon = ({ cartColor, size }) => {
       <Feather name="shopping-cart" size={size} color={cartColor} />
       <View style={styles.numberOfNoti}>
         <Text style={{ fontFamily: "medium", fontSize: 10, color: "white" }}>
-          5
+          {shopCart.length}
         </Text>
       </View>
     </TouchableOpacity>

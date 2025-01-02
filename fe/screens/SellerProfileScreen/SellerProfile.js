@@ -9,6 +9,7 @@ import {
   StatusBar,
   Dimensions,
   Modal,
+  TextInput,
 } from "react-native";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -60,17 +61,40 @@ const SellerProfile = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isInforViewerVisible, setIsInforViewerVisible] = useState(false);
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [content, setContent] = useState("");
+
+  const sendReport = async () => {
+    const res = await fetch(BE_ENDPOINT + "/user/sendReport", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: user.email,
+        name: user.username,
+        content: content,
+      }),
+    });
+
+    const data = await res.json();
+    alert(data.message);
+    setModalVisible(false);
+    setContent("");
+  };
+
   const calculatetimeToNow = (completionDate) => {
     const completion = new Date(completionDate);
     const now = new Date();
     const timeToNow = now - completion;
-  
+
     if (timeToNow <= 0) return "Hôm nay";
-  
+
     const days = Math.floor(timeToNow / (24 * 60 * 60 * 1000));
     const months = Math.floor(days / 30);
     const years = Math.floor(days / 365);
-  
+
     if (years > 0) {
       const remainingDays = days % 365;
       const remainingMonths = Math.floor(remainingDays / 30);
@@ -105,7 +129,7 @@ const SellerProfile = () => {
               style={styles.closeModelButton}
               onPress={() => {
                 setIsInforViewerVisible(false);
-                setMenuVisible((prev) => !prev);  
+                setMenuVisible((prev) => !prev);
               }}
             >
               <Feather name="x" size={30} color={COLOR.mainColor} />
@@ -113,15 +137,21 @@ const SellerProfile = () => {
           </View>
           <View style={styles.row}>
             <Text style={styles.textInfor}>Đã tham gia</Text>
-            <Text style={[styles.textInfor, {color: COLOR.mainColor}]}>{calculatetimeToNow(seller.createAt)}</Text>
+            <Text style={[styles.textInfor, { color: COLOR.mainColor }]}>
+              {calculatetimeToNow(seller.createAt)}
+            </Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.textInfor}>Số điện thoại</Text>
-            <Text style={[styles.textInfor, {color: COLOR.mainColor}]}>{seller.address}</Text>
+            <Text style={[styles.textInfor, { color: COLOR.mainColor }]}>
+              {seller.address}
+            </Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.textInfor}>Địa chỉ</Text>
-            <Text style={[styles.textInfor, {color: COLOR.mainColor}]}>5 Tuần</Text>
+            <Text style={[styles.textInfor, { color: COLOR.mainColor }]}>
+              5 Tuần
+            </Text>
           </View>
         </View>
       </View>
@@ -255,7 +285,7 @@ const SellerProfile = () => {
                 <Text style={styles.information}>Xem thông tin chi tiết</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={handleClosePost}
+                onPress={() => setModalVisible(true)}
                 style={styles.menuOption}
               >
                 <Text style={styles.information}>Tố cáo</Text>
@@ -269,6 +299,46 @@ const SellerProfile = () => {
             </View>
           )}
         </View>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContainer1}>
+              <Text style={styles.modalTitle}>Gửi khiếu nại cho Passwme</Text>
+              <TextInput
+                style={styles.inputne}
+                value={content}
+                onChangeText={(text) => setContent(text)}
+              />
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  width: "100%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <TouchableOpacity
+                  style={styles.closeButton2}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.closeButtonText}>Đóng</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => sendReport()}
+                >
+                  <Text style={styles.closeButtonText}> Gửi khiếu nại</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
       <View
         style={{
