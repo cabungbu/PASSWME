@@ -1,5 +1,5 @@
 import React from "react";
-import { onPress, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { scaleWidth } from "../assets/constant/responsive";
@@ -13,7 +13,7 @@ const UtilityIconTextPair = ({
   IconComponent,
 }) => {
   return (
-    <TouchableOpacity
+    <View
       style={[
         styles.utilityIconTextPair,
         {
@@ -22,7 +22,6 @@ const UtilityIconTextPair = ({
           marginVertical,
         },
       ]}
-      onPress={onPress}
     >
       {IconComponent && <IconComponent size={iconSize} />}
       <Text style={[styles.buttonText]}>{title}</Text>
@@ -32,7 +31,7 @@ const UtilityIconTextPair = ({
         color="#a0a0a0"
         style={{}}
       />
-    </TouchableOpacity>
+    </View>
   );
 };
 

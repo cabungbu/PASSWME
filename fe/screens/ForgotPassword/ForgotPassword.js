@@ -12,6 +12,7 @@ import {
   StatusBar,
   Platform,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { loginUser } from "../../redux/authService";
@@ -23,18 +24,41 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Icon } from "react-native-elements";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
-import FacebookBrandIcon from "../../assets/icons/FacebookBrandIcon";
-import GoogleBrandIcon from "../../assets/icons/GoogleBrandIcon";
 import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
 import Information_TextInput from "../../components/Information_TextInput";
 import mainStyles from "../../styles/mainStyles";
+import { BE_ENDPOINT } from "../../settings/localVars";
 
-const LoginPage = () => {
+const ForgotPassword = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const error = useSelector((state) => state.auth.error);
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState(null);
+  const [isLoad, setIsLoad] = useState(false);
+  const handelFotgotPassword = async () => {
+    // setIsLoad(true);
+    console.log("vao");
+    try {
+      setIsLoad(true);
+      const res = await fetch(BE_ENDPOINT + "/auth/forgotPassword", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+        }),
+      });
+
+      const data = await res.json();
+      alert(data.message);
+      setIsLoad(false);
+      return await res.json();
+    } catch (e) {
+      console.log("Loi o quen mat khau" + e.message);
+    }
+  };
   const handleLogin = () => {
     const newUser = {
       email: username,
@@ -62,7 +86,7 @@ const LoginPage = () => {
               size={scaleWidth(30)}
               color="white"
               onPress={() => {
-                navigation.navigate("Welcome");
+                navigation.goBack();
               }}
             />
             <Text
@@ -71,7 +95,7 @@ const LoginPage = () => {
                 { marginRight: scaleWidth(30) },
               ]}
             >
-              Đăng nhập
+              Quên mật khẩu
             </Text>
           </View>
         </>
@@ -83,10 +107,10 @@ const LoginPage = () => {
             size={24}
             color="white"
             onPress={() => {
-              navigation.navigate("Welcome");
+              navigation.goBack();
             }}
           />
-          <Text style={styles.headerText}>Đăng nhập</Text>
+          <Text style={styles.headerText}>Quên mật khẩu</Text>
         </View>
       )}
 
@@ -128,20 +152,9 @@ const LoginPage = () => {
           iconSize={24}
           error={error}
           borderColor={error ? "red" : "#ccc"}
-          placeholder="Email"
-          onChangeText={(text) => setUsername(text)}
+          placeholder="Nhập email quên mật khẩu"
+          onChangeText={(text) => setEmail(text)}
         />
-        <Information_TextInput
-          IconComponent={Feather}
-          iconName="lock"
-          iconSize={24}
-          error={error}
-          borderColor={error ? "red" : "#ccc"}
-          placeholder="Mật khẩu"
-          Password={true}
-          onChangeText={(text) => setPassword(text)}
-        />
-
         <View
           style={{
             display: "flex",
@@ -154,31 +167,24 @@ const LoginPage = () => {
           <TouchableOpacity onPress={moveToRegister}>
             <Text style={styles.register}>Đăng ký</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("ForgotPassword")}
-          >
-            <Text style={styles.forgot}>Quên mật khẩu</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text style={styles.forgot}>Đăng nhập</Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.login} onPress={() => handleLogin()}>
-          <Text style={styles.logintext}>Đăng nhập</Text>
-        </TouchableOpacity>
+        {isLoad ? (
+          <TouchableOpacity style={styles.login}>
+            <ActivityIndicator />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.login}
+            onPress={() => handelFotgotPassword()}
+          >
+            <Text style={styles.logintext}>Xác nhận</Text>
+          </TouchableOpacity>
+        )}
 
-        <View
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "80%",
-            flexDirection: "row",
-            marginVertical: 10,
-          }}
-        >
-          <View style={styles.greyline} />
-          <Text style={styles.or}>Hoặc</Text>
-          <View style={styles.greyline} />
-        </View>
         {/* <TouchableOpacity style={styles.ggfbcontainer}>
           <GoogleBrandIcon size={24} />
           <Text style={styles.ggfbtext}>Tiếp tục với Google</Text>
@@ -192,4 +198,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default ForgotPassword;

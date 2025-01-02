@@ -6,7 +6,9 @@ import {
   StatusBar,
   View,
   Text,
+  Modal,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
@@ -39,6 +41,7 @@ import ShoppingCartIcon from "../../components/shoppingCartIcon";
 import { storage } from "../../firebase_config";
 import { updateAvatar } from "../../redux/authSlice";
 import { changeAvatar } from "../../redux/authService";
+import { BE_ENDPOINT } from "../../settings/localVars";
 
 export default function Profile() {
   const user = useSelector((state) => state.auth.user);
@@ -47,11 +50,32 @@ export default function Profile() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [image, setImage] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [content, setContent] = useState("");
 
   const handleLogout = () => {
     // const id = { id: user.id };
     navigation.navigate("Welcome");
     // logoutUserService(id, dispatch, navigation);
+  };
+  const sendReport = async () => {
+    const res = await fetch(BE_ENDPOINT + "/user/sendReport", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: user.email,
+        name: user.username,
+        content: content,
+      }),
+    });
+
+    const data = await res.json();
+    alert(data.message);
+    setModalVisible(false);
+    setContent("");
   };
 
   const pickImage = async () => {
@@ -62,22 +86,22 @@ export default function Profile() {
         aspect: [5, 5],
         quality: 0.8,
       });
-  
+
       if (!result.canceled) {
         const imageUri = result.assets[0].uri;
         setImage(imageUri);
-  
+
         const filename = `avatar_${user.id}_${Date.now()}.jpg`;
         const storageRef = ref(storage, `avatars/${filename}`);
-  
+
         const response = await fetch(imageUri);
         const blob = await response.blob();
         await uploadBytes(storageRef, blob);
-  
+
         const avatarData = {
           avatar: await getDownloadURL(storageRef),
         };
-        
+
         await changeAvatar(
           avatarData,
           dispatch,
@@ -85,7 +109,6 @@ export default function Profile() {
           refreshTokenRedux,
           accessToken
         );
-  
       }
     } catch (error) {
       console.error("Error picking/uploading image:", error);
@@ -243,13 +266,21 @@ export default function Profile() {
             IconComponent={PWMCoinIcon}
             iconSize={25}
           />
-          <UtilityIconTextPair
-            width={"49%"}
-            height={scaleHeight(70)}
-            title="Khiếu nại"
-            IconComponent={ComplainIcon}
-            iconSize={30}
-          />
+          <TouchableOpacity
+            style={{ width: "49%" }}
+            onPress={() => {
+              setModalVisible(true);
+            }}
+          >
+            <UtilityIconTextPair
+              width={"100%"}
+              height={scaleHeight(70)}
+              title="Khiếu nại"
+              IconComponent={ComplainIcon}
+              iconSize={30}
+            />
+          </TouchableOpacity>
+
           <UtilityIconTextPair
             width={"49%"}
             height={scaleHeight(70)}
@@ -266,11 +297,53 @@ export default function Profile() {
           />
         </View>
       </View>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Gửi khiếu nại cho Passwme</Text>
+            <TextInput
+              style={styles.inputne}
+              value={content}
+              onChangeText={(text) => setContent(text)}
+            />
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                width: "100%",
+                justifyContent: "space-between",
+              }}
+            >
+              <TouchableOpacity
+                style={styles.closeButton2}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Đóng</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => sendReport()}
+              >
+                <Text style={styles.closeButtonText}> Gửi khiếu nại</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <View style={styles.otherUtilitiesContainer}>
         <Text style={styles.subtitleText}>Hỗ trợ</Text>
         <TouchableOpacity
           style={[styles.supportIconTextPair, { borderBottomWidth: 1 }]}
-          onPress={()=>navigation.navigate("TermAndConditionScreen")}
+          onPress={() => navigation.navigate("TermAndConditionScreen")}
         >
           <Feather name="help-circle" size={24} color="black" />
           <Text style={styles.supportText}>Điều khoản, điều kiện</Text>

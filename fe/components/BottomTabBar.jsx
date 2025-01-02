@@ -57,6 +57,7 @@ import SellerProfile from "../screens/SellerProfileScreen/SellerProfile";
 import PushPostService from "../screens/pushPostService/PushPostService";
 import PaymentScreen from "../screens/PaymentScreen/PaymentScreen";
 import PaymentCheckScreen from "../screens/PaymentScreen/CheckPaymentStatus";
+import ForgotPassword from "../screens/ForgotPassword/ForgotPassword";
 
 const Stack = createNativeStackNavigator();
 
@@ -342,7 +343,10 @@ export default function MainContainer() {
           <Stack.Screen name="GiveAFeedbackScreen" component={GiveAFeedback} />
           <Stack.Screen name="SearchScreen" component={SearchScreen} />
           <Stack.Screen name="FeedbacksOfPost" component={FeedbacksOfPost} />
-          <Stack.Screen name="TermAndConditionScreen" component={TermAndCondition} />
+          <Stack.Screen
+            name="TermAndConditionScreen"
+            component={TermAndCondition}
+          />
           <Stack.Screen name="SellerProfileScreen" component={SellerProfile} />
           <Stack.Screen name="PushPostService" component={PushPostService} />
 
@@ -351,7 +355,7 @@ export default function MainContainer() {
             name="PaymentCheckScreen"
             component={PaymentCheckScreen}
           />
-
+          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         </>
       )}
     </Stack.Navigator>

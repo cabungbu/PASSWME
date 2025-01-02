@@ -104,6 +104,45 @@ const styles = StyleSheet.create({
     fontFamily: "semiBold",
     color: "black",
   },
+  modalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContainer: {
+    width: 300,
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 15,
+    fontFamily: "bold",
+    marginBottom: 10,
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#77cbf9",
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: "black",
+  },
+  closeButton2: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#77cbf9",
+    borderRadius: 5,
+  },
+  inputne: {
+    borderWidth: 1,
+    paddingVertical: 10,
+    width: "100%",
+    paddingHorizontal: 5,
+  },
 });
 
 export default styles;

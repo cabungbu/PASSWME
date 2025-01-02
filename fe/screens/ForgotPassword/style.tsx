@@ -21,14 +21,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     position: "relative",
   },
+  headerText: {
+    color: "#fff",
+    fontFamily: "semiBold",
+  },
   iconHeaderIOS: {
     position: "absolute",
     left: 20,
     top: 50,
-  },
-  headerText: {
-    color: "#fff",
-    fontFamily: "semiBold",
   },
   inputContainer: {
     backgroundColor: "#F2F2F2",

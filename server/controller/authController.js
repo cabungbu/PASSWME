@@ -342,7 +342,12 @@ const forgotPassword = async (req, res) => {
       }
     });
 
-    res.status(200).json({ message: "Check your new password in email" });
+    res
+      .status(200)
+      .json({
+        message:
+          "Mật khẩu mới đã được gửi về email của bạn, hãy đăng nhập lại.",
+      });
   } catch (err) {
     console.error("Error in forgotPassword: ", err); // Log lỗi để dễ dàng gỡ lỗi
     res.status(500).json({ message: err.message });

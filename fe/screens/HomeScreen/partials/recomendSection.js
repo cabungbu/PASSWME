@@ -27,7 +27,6 @@ export default function Recomendation() {
         const data = await response.json();
         setPost(data.Recommendation);
       } catch (error) {
-        console.error("Error fetching recomdation:", error);
       } finally {
         setLoading(false);
       }
@@ -55,7 +54,7 @@ export default function Recomendation() {
         GỢI Ý CHO BẠN
       </Text>
       <View style={{ flex: 1 }}>
-        {posts.length > 0 ? (
+        {posts != null && posts?.length > 0 ? (
           <FlatList
             key="relative_post"
             data={posts}

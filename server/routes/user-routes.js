@@ -15,7 +15,7 @@ const {
   getSearchHistory,
   addSearchTerm,
   followUser,
-  unfollowUser
+  unfollowUser,
 } = require("../controller/userController");
 const {
   checkAllBoxTrue,
@@ -23,6 +23,7 @@ const {
   updateQuantity,
   deleteCheckedItems,
 } = require("../controller/shopCartController");
+const { sendReportToMail } = require("../controller/reportController");
 const { verifyToken } = require("../controller/middlewareController");
 const router = express.Router();
 
@@ -46,11 +47,12 @@ router.patch("/updateQuantity/:id", updateQuantity);
 router.get("/updateCoin/:id", updateCoin);
 
 // Get search history
-router.get('/:userId/searchHistory', getSearchHistory);
+router.get("/:userId/searchHistory", getSearchHistory);
 
 // Add new search term
-router.post('/:userId/addSearchHistory', addSearchTerm);
-router.post('/follow/:id', followUser);
-router.post('/unfollow/:id', unfollowUser);
+router.post("/:userId/addSearchHistory", addSearchTerm);
+router.post("/follow/:id", followUser);
+router.post("/unfollow/:id", unfollowUser);
+router.post("/sendReport", sendReportToMail);
 
 module.exports = { routes: router };
