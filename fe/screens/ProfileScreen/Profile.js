@@ -288,13 +288,19 @@ export default function Profile() {
             IconComponent={ShoppingBagPlusIcon}
             iconSize={30}
           />
-          <UtilityIconTextPair
-            width={"49%"}
-            height={scaleHeight(70)}
-            title="Đã xem gần đây"
-            IconComponent={ClockIcon}
-            iconSize={25}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("RecentlyViewed");
+            }}
+          >
+            <UtilityIconTextPair
+              width={"49%"}
+              height={scaleHeight(70)}
+              title="Đã xem gần đây"
+              IconComponent={ClockIcon}
+              iconSize={25}
+            />
+          </TouchableOpacity>
         </View>
       </View>
 

@@ -59,6 +59,8 @@ import PaymentScreen from "../screens/PaymentScreen/PaymentScreen";
 import PaymentCheckScreen from "../screens/PaymentScreen/CheckPaymentStatus";
 import ForgotPassword from "../screens/ForgotPassword/ForgotPassword";
 
+import RecentlyViewed from "../screens/ProfileScreen/RecentlyViewed";
+
 const Stack = createNativeStackNavigator();
 
 function HomeStack() {
@@ -355,7 +357,10 @@ export default function MainContainer() {
             name="PaymentCheckScreen"
             component={PaymentCheckScreen}
           />
+
           <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+
+          <Stack.Screen name="RecentlyViewed" component={RecentlyViewed} />
         </>
       )}
     </Stack.Navigator>
