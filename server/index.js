@@ -11,6 +11,7 @@ const orderRoutes = require("./routes/order-route.js");
 const feedbackRoutes = require("./routes/feedback-route.js");
 const servicePostRoutes = require("./routes/servicePost-routes.js");
 const chatRoomRoutes = require("./routes/chatRoom-route.js");
+const quickReplyRoute = require("./routes/quickReply-route.js");
 
 const app = express();
 app.use(bodyParser.json());
@@ -29,7 +30,8 @@ app.use("/category", categoryRoutes.routes);
 app.use("/order", orderRoutes.routes);
 app.use("/feedback", feedbackRoutes.routes);
 app.use("/chatRoom", chatRoomRoutes.routes);
-app.use("/servicePost", servicePostRoutes.routes);
+app.use("/servicePost", servicePostRoutes.routes); 
+app.use("/quickReply", quickReplyRoute.routes);
 
 const PORT = process.env.PORT;
 

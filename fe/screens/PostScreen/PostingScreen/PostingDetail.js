@@ -34,28 +34,46 @@ import axios from "axios";
 import { BE_ENDPOINT } from "../../../settings/localVars";
 import { storage } from "../../../firebase_config";
 
-
 const PostingDetail = ({ route, navigation }) => {
   navigation = useNavigation();
   const user = useSelector((state) => state.auth.user);
 
-  const { categoryId, categoryName } = route.params;
-  const [images, setImages] = useState(Array(6).fill(null));
-  const [video, setVideo] = useState(null);
-  const [products, setProducts] = useState([
-    {
-      name: "",
-      price: 0,
-      quantity: 0,
-      image: "",
-    },
-  ]);
-  const [condition, setCondition] = useState("used");
-  const [price, setPrice] = useState();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const { categoryId, categoryName, isEditing, postData } = route.params;
+  
+  const [images, setImages] = useState(
+    isEditing
+      ? [...postData.images, ...Array(6 - postData.images.length).fill(null)]
+      : Array(6).fill(null)
+  );
+  const [video, setVideo] = useState(isEditing ? postData.video : null);
+  const [products, setProducts] = useState(
+    isEditing
+      ? postData.products.map((product) => ({
+          name: product.name,
+          price: product.price,
+          quantity: product.quantity,
+          image: product.image,
+        }))
+      : [
+          {
+            name: "",
+            price: 0,
+            quantity: 0,
+            image: "",
+          },
+        ]
+  );
+  const [condition, setCondition] = useState(
+    isEditing ? postData.condition : "used"
+  );
+  const [title, setTitle] = useState(isEditing ? postData.title : "");
+  const [description, setDescription] = useState(
+    isEditing ? postData.description : ""
+  );
   const [updateAddress, setUpdateAddress] = useState(false);
-  const [fullAddress, setFullAddress] = useState("");
+  const [fullAddress, setFullAddress] = useState(
+    isEditing ? postData.address : ""
+  );
 
   const addProduct = () => {
     setProducts([
@@ -159,7 +177,104 @@ const PostingDetail = ({ route, navigation }) => {
     );
   };
 
-  const handlePost = async () => {
+  // const handlePost = async () => {
+  //   if (
+  //     !title ||
+  //     !description ||
+  //     products.length === 0 ||
+  //     images.every((img) => img === null)
+  //   ) {
+  //     alert("Vui lòng điền đầy đủ thông tin bắt buộc");
+  //     return;
+  //   }
+
+  //   for (const product of products) {
+  //     if (
+  //       !product.name ||
+  //       product.price < 0 ||
+  //       product.quantity <= 0 ||
+  //       !product.image
+  //     ) {
+  //       alert(
+  //         "Vui lòng đảm bảo tất cả các sản phẩm đều có tên, giá, số lượng và hình ảnh hợp lệ."
+  //       );
+  //       return;
+  //     }
+  //   }
+
+  //   try {
+  //     const uploadedImageUrls = [];
+  //     let uploadedVideoUrl = null;
+
+  //     // Upload images and get their download URLs
+  //     for (const image of images) {
+  //       if (image) {
+  //         const filename = `image_${Date.now()}_${Math.random()
+  //           .toString(36)
+  //           .substring(7)}.jpg`;
+  //         const storageRef = ref(storage, `images/${filename}`);
+
+  //         const response = await fetch(image);
+  //         const blob = await response.blob();
+
+  //         await uploadBytes(storageRef, blob);
+  //         // Get the download URL after upload
+  //         const downloadURL = await getDownloadURL(storageRef);
+  //         uploadedImageUrls.push(downloadURL);
+  //       }
+  //     }
+
+  //     // Upload video if exists
+  //     if (video) {
+  //       const videoFilename = `video_${Date.now()}_${Math.random()
+  //         .toString(36)
+  //         .substring(7)}.mp4`;
+  //       const videoRef = ref(storage, `videos/${videoFilename}`);
+
+  //       const response = await fetch(video);
+  //       const videoBlob = await response.blob();
+
+  //       await uploadBytes(videoRef, videoBlob);
+  //       // Get the download URL for video
+  //       uploadedVideoUrl = await getDownloadURL(videoRef);
+  //     }
+
+  //     const postData = {
+  //       title: title,
+  //       category: categoryId,
+  //       images: uploadedImageUrls, // Use the Firebase Storage URLs instead of local URIs
+  //       video: uploadedVideoUrl, // Use the Firebase Storage URL for video
+  //       status: "active",
+  //       description: description,
+  //       service: "",
+  //       start: new Date().toISOString(),
+  //       owner: user.id,
+  //       condition: condition,
+  //       address: fullAddress ? fullAddress : user?.address,
+  //       soldQuantity: 0,
+  //       products: products,
+  //     };
+
+  //     const response = await axios.post(
+  //       BE_ENDPOINT + "/post/addPost",
+  //       postData
+  //     );
+
+  //     navigation.navigate("PostedScreen", {
+  //       image: uploadedImageUrls[0],
+  //       title: title,
+  //       price:
+  //         minPrice === maxPrice
+  //           ? formatPrice(minPrice)
+  //           : `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}`,
+  //     });
+  //   } catch (error) {
+  //     console.error("Error uploading files or posting data:", error);
+  //     alert("Đã xảy ra lỗi khi đăng bài.");
+  //   }
+  // };
+
+  const handleSubmit = async () => {
     if (
       !title ||
       !description ||
@@ -188,9 +303,15 @@ const PostingDetail = ({ route, navigation }) => {
       const uploadedImageUrls = [];
       let uploadedVideoUrl = null;
 
-      // Upload images and get their download URLs
+      // Handle image uploads
       for (const image of images) {
         if (image) {
+          // If the image is already a URL (existing image), keep it
+          if (image.startsWith("http")) {
+            uploadedImageUrls.push(image);
+            continue;
+          }
+
           const filename = `image_${Date.now()}_${Math.random()
             .toString(36)
             .substring(7)}.jpg`;
@@ -200,32 +321,34 @@ const PostingDetail = ({ route, navigation }) => {
           const blob = await response.blob();
 
           await uploadBytes(storageRef, blob);
-          // Get the download URL after upload
           const downloadURL = await getDownloadURL(storageRef);
           uploadedImageUrls.push(downloadURL);
         }
       }
 
-      // Upload video if exists
+      // Handle video upload
       if (video) {
-        const videoFilename = `video_${Date.now()}_${Math.random()
-          .toString(36)
-          .substring(7)}.mp4`;
-        const videoRef = ref(storage, `videos/${videoFilename}`);
+        if (!video.startsWith("http")) {
+          const videoFilename = `video_${Date.now()}_${Math.random()
+            .toString(36)
+            .substring(7)}.mp4`;
+          const videoRef = ref(storage, `videos/${videoFilename}`);
 
-        const response = await fetch(video);
-        const videoBlob = await response.blob();
+          const response = await fetch(video);
+          const videoBlob = await response.blob();
 
-        await uploadBytes(videoRef, videoBlob);
-        // Get the download URL for video
-        uploadedVideoUrl = await getDownloadURL(videoRef);
+          await uploadBytes(videoRef, videoBlob);
+          uploadedVideoUrl = await getDownloadURL(videoRef);
+        } else {
+          uploadedVideoUrl = video;
+        }
       }
 
-      const postData = {
+      const postPayload = {
         title: title,
         category: categoryId,
-        images: uploadedImageUrls, // Use the Firebase Storage URLs instead of local URIs
-        video: uploadedVideoUrl, // Use the Firebase Storage URL for video
+        images: uploadedImageUrls,
+        video: uploadedVideoUrl,
         status: "active",
         description: description,
         service: "",
@@ -233,26 +356,42 @@ const PostingDetail = ({ route, navigation }) => {
         owner: user.id,
         condition: condition,
         address: fullAddress ? fullAddress : user?.address,
-        soldQuantity: 0,
+        soldQuantity: isEditing ? postData.soldQuantity : 0,
         products: products,
       };
 
-      const response = await axios.post(
-        BE_ENDPOINT + "/post/addPost",
-        postData
-      );
-
-      navigation.navigate("PostedScreen", {
-        image: uploadedImageUrls[0],
-        title: title,
-        price:
-          minPrice === maxPrice
-            ? formatPrice(minPrice)
-            : `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}`,
-      });
+      if (isEditing) {
+        // Update existing post
+        await axios.patch(
+          `${BE_ENDPOINT}/post/updatePost/${postData.id}`,
+          postPayload
+        );
+        alert("Cập nhật bài đăng thành công")
+        navigation.goBack()
+      } else {
+        // Create new post
+        await axios.post(`${BE_ENDPOINT}/post/addPost`, postPayload);
+        navigation.navigate("PostedScreen", {
+          image: uploadedImageUrls[0],
+          title: title,
+          price:
+            minPrice === maxPrice
+              ? formatPrice(minPrice)
+              : `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}`,
+        });
+      }
     } catch (error) {
-      console.error("Error uploading files or posting data:", error);
-      alert("Đã xảy ra lỗi khi đăng bài.");
+      console.error("Error details:", {
+        message: error.message,
+        response: error.response,
+        postId: postData?.id
+      });
+
+      alert(
+        isEditing
+          ? "Đã xảy ra lỗi khi cập nhật bài đăng."
+          : "Đã xảy ra lỗi khi đăng bài."
+      );
     }
   };
 
@@ -278,7 +417,7 @@ const PostingDetail = ({ route, navigation }) => {
         <Text
           style={[mainStyles.headerCenterText, { marginRight: scaleWidth(30) }]}
         >
-          Đăng tin
+          {isEditing ? "Chỉnh sửa tin" : "Đăng tin"}
         </Text>
       </View>
       <ScrollView style={styles.content}>
@@ -389,6 +528,10 @@ const PostingDetail = ({ route, navigation }) => {
             {products.map((product, index) => (
               <View key={index} style={styles.row}>
                 <PostProduct
+                  initialName={products[index].name}
+                  initialPrice={products[index].price.toString()} 
+                  initialQuantity={products[index].quantity.toString()}
+                  initialImage={products[index].image} 
                   onChangeName={(text) => handleChangeText(text, index, "name")}
                   onChangePrice={(text) =>
                     handleChangeText(text, index, "price")
@@ -397,9 +540,6 @@ const PostingDetail = ({ route, navigation }) => {
                     handleChangeText(text, index, "quantity")
                   }
                   onChangeImage={(uri) => {
-                    // console.log(
-                    //   `Updating product image at index ${index} to: ${uri}`
-                    // );
                     const updatedProducts = [...products];
                     updatedProducts[index].image = uri;
                     setProducts(updatedProducts);
@@ -489,6 +629,7 @@ const PostingDetail = ({ route, navigation }) => {
               placeholder={"Tiêu đề tin đăng *"}
               maxLength={50}
               onChangeText={(text) => setTitle(text)}
+              value={title}
             />
           </View>
           <Text>{title.length}/50</Text>
@@ -504,6 +645,7 @@ const PostingDetail = ({ route, navigation }) => {
               }
               maxLength={1500}
               onChangeText={(text) => setDescription(text)}
+              value={description}
             />
           </View>
           <Text>{description.length}/1500</Text>
@@ -549,8 +691,8 @@ const PostingDetail = ({ route, navigation }) => {
             fontSize={13}
             fontFamily="medium"
             color="white"
-            title="Đăng tin"
-            onPress={handlePost}
+            title={isEditing ? "Cập nhật" : "Đăng tin"}
+            onPress={handleSubmit}
           />
         </View>
       </ScrollView>

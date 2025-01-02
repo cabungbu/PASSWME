@@ -1,5 +1,5 @@
 import { View, Text, Image, StyleSheet } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextInput } from "react-native-gesture-handler";
 import * as ImagePicker from "expo-image-picker";
 import ImageAddIcon from "../assets/icons/ImageAddIcon";
@@ -7,12 +7,27 @@ import Feather from "@expo/vector-icons/Feather";
 import { scaleHeight, scaleWidth } from "../assets/constant/responsive";
 
 const PostProduct = ({
-  onChangeName,
-  onChangePrice,
-  onChangeQuantity,
-  onChangeImage,
+  initialName = "",  // Giá trị mặc định nếu không có
+  initialPrice = "", 
+  initialQuantity = "",
+  initialImage = "",
+  onChangeName, 
+  onChangePrice, 
+  onChangeQuantity, 
+  onChangeImage 
 }) => {
-  const [image, setImage] = useState(null);
+  const [name, setName] = useState(initialName);
+  const [price, setPrice] = useState(initialPrice);
+  const [quantity, setQuantity] = useState(initialQuantity);
+  const [image, setImage] = useState(initialImage)
+
+  useEffect(() => {
+    setName(initialName);
+    setPrice(initialPrice);
+    setQuantity(initialQuantity);
+    setImage(initialImage);
+  }, [initialName, initialPrice, initialQuantity, initialImage]);
+
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -70,6 +85,7 @@ const PostProduct = ({
         <TextInput
           style={[styles.textInput, { flex: 1 }]}
           keyboardType="numeric"
+          value={price}
           placeholder="Giá"
           onChangeText={(text) => {
             onChangePrice(text);
@@ -82,6 +98,7 @@ const PostProduct = ({
           onChangeText={(text) => {
             onChangeQuantity(text);
           }}
+          value={quantity}
         />
       </View>
       <View style={{ flex: 1 }}>
@@ -92,6 +109,7 @@ const PostProduct = ({
           onChangeText={(text) => {
             onChangeName(text);
           }}
+          value={name}
         />
       </View>
     </View>

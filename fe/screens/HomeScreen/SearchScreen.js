@@ -1,20 +1,28 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, TextInput, FlatList, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  View,
+  TextInput,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  StatusBar,
+} from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import styles from './SearchScreenStyle';
+import styles from "./SearchScreenStyle";
 import { useSelector } from "react-redux";
-import { BE_ENDPOINT } from '../../settings/localVars';
-import PostCard from '../../components/postCard';
+import { BE_ENDPOINT } from "../../settings/localVars";
+import PostCard from "../../components/postCard";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import { useWindowDimensions } from 'react-native';
-import RelativePost from '../postsDisplay/relativePost/RelativePost';
-import RenderTabBar from '../../components/RenderTabBar';
-import LastestPost from '../postsDisplay/relativePost/LastestPost';
-import IncreasePost from '../postsDisplay/relativePost/IncreasePost';
-import DecreasePost from '../postsDisplay/relativePost/DecreasePost';
+import { useWindowDimensions } from "react-native";
+import RelativePost from "../postsDisplay/relativePost/RelativePost";
+import RenderTabBar from "../../components/RenderTabBar";
+import LastestPost from "../postsDisplay/relativePost/LastestPost";
+import IncreasePost from "../postsDisplay/relativePost/IncreasePost";
+import DecreasePost from "../postsDisplay/relativePost/DecreasePost";
 
 export default function SearchScreen({ navigation }) {
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [searchHistory, setSearchHistory] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -26,10 +34,10 @@ export default function SearchScreen({ navigation }) {
   // Tab view state
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: 'relative', title: 'Liên quan' },
-    { key: 'lastest', title: 'Mới nhất' },
-    { key: 'increase', title: 'Giá tăng dần' },
-    { key: 'decrease', title: 'Giá giảm dần' },
+    { key: "relative", title: "Liên quan" },
+    { key: "lastest", title: "Mới nhất" },
+    { key: "increase", title: "Giá tăng dần" },
+    { key: "decrease", title: "Giá giảm dần" },
   ]);
 
   useEffect(() => {
@@ -38,26 +46,28 @@ export default function SearchScreen({ navigation }) {
 
   const fetchSearchHistory = async () => {
     try {
-      const response = await fetch(`${BE_ENDPOINT}/user/${user.id}/searchHistory`);
+      const response = await fetch(
+        `${BE_ENDPOINT}/user/${user.id}/searchHistory`
+      );
       const data = await response.json();
       setSearchHistory(data.searchHistory);
     } catch (error) {
-      console.error('Error fetching search history:', error);
+      console.error("Error fetching search history:", error);
     }
   };
 
   const addToSearchHistory = async (term) => {
     try {
       await fetch(`${BE_ENDPOINT}/user/${user.id}/addSearchHistory`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ searchTerm: term }),
       });
       fetchSearchHistory();
     } catch (error) {
-      console.error('Error adding search term:', error);
+      console.error("Error adding search term:", error);
     }
   };
 
@@ -69,7 +79,7 @@ export default function SearchScreen({ navigation }) {
       setSearchResults(data);
       setShowResults(true);
     } catch (error) {
-      console.error('Error searching posts:', error);
+      console.error("Error searching posts:", error);
     } finally {
       setLoading(false);
     }
@@ -95,7 +105,6 @@ export default function SearchScreen({ navigation }) {
     return <RelativePost posts={searchResults.posts} />;
   }, [searchResults.posts]);
 
-  
   const LastestScene = useCallback(() => {
     return <LastestPost posts={searchResults.posts} />;
   }, [searchResults.posts]);
@@ -115,7 +124,6 @@ export default function SearchScreen({ navigation }) {
     decrease: DecreaseScene,
   });
 
-  
   const renderTabBar = RenderTabBar({
     scroll: false,
     fontSize: 12,
@@ -131,19 +139,34 @@ export default function SearchScreen({ navigation }) {
         handleSearch(item);
       }}
     >
-      <AntDesign name="clockcircleo" size={20} color="#666" style={styles.searchIcon} />
+      <AntDesign
+        name="clockcircleo"
+        size={20}
+        color="#666"
+        style={styles.searchIcon}
+      />
       <Text style={styles.searchText}>{item}</Text>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
+      <StatusBar
+        translucent={true}
+        backgroundColor="white"
+        barStyle="dark-content"
+      />
       <View style={styles.searchHeader}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <AntDesign name="arrowleft" size={24} color="black" />
         </TouchableOpacity>
         <View style={styles.searchInputContainer}>
-          <AntDesign name="search1" size={20} color="black" style={styles.searchIcon} />
+          <AntDesign
+            name="search1"
+            size={20}
+            color="black"
+            style={styles.searchIcon}
+          />
           <TextInput
             style={styles.searchInput}
             placeholder="Tìm kiếm"
@@ -153,10 +176,12 @@ export default function SearchScreen({ navigation }) {
             autoFocus
           />
         </View>
-        <TouchableOpacity onPress={() => {
-          setSearchText('');
-          setShowResults(false);
-        }}>
+        <TouchableOpacity
+          onPress={() => {
+            setSearchText("");
+            setShowResults(false);
+          }}
+        >
           <Text style={styles.cancelText}>Huỷ</Text>
         </TouchableOpacity>
       </View>

@@ -41,7 +41,14 @@ export default function DataSection({ post }) {
         </View>
       </View>
       <View style={styles.phanCachXam} />
-      <TouchableOpacity style={styles.ownerContainer}>
+      <TouchableOpacity
+        style={styles.ownerContainer}
+        onPress={() => {
+          navigation.navigate("SellerProfileScreen", {
+            seller: post.owner,
+          });
+        }}
+      >
         <Image
           style={{ width: 50, height: 50, marginRight: 15, borderRadius: 100 }}
           source={{ uri: post.owner.avatar }}
@@ -104,7 +111,7 @@ export default function DataSection({ post }) {
             )}
           </View>
           <TouchableOpacity
-            style={[styles.row, { backgroundColor: "red" }]}
+            style={styles.row}
             onPress={() => {
               navigation.navigate("FeedbacksOfPost", {
                 feedbacks: post.feedbackCache,

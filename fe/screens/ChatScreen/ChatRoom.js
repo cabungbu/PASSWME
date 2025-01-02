@@ -27,6 +27,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import { storage } from "../../firebase_config";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import QuickReplyOptions from "../../components/QuickReplyOptions";
 
 const ChatRoom = () => {
   const navigation = useNavigation();
@@ -47,7 +48,7 @@ const ChatRoom = () => {
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [isImageViewerVisible, setIsImageViewerVisible] = useState(false);
-
+  // const [isNewChatLocal, setIsNewChatLocal] = useState(isNewChat);
   const markMessagesAsRead = async () => {
     // if ()
     try {
@@ -65,6 +66,11 @@ const ChatRoom = () => {
       );
     }
   };
+  useEffect(() => {
+    if (messages.length > 0) {
+      markMessagesAsRead();
+    }
+  }, [messages.length]);
 
   useEffect(() => {
     const fetchAllMessages = async () => {
@@ -73,10 +79,22 @@ const ChatRoom = () => {
         const res = await axios.get(
           BE_ENDPOINT + `/chatRoom/${chatRoomId}/messages`
         );
-        const messagesData = res.data || [];
-        setMessages(messagesData);
+        if (res.data && res.data.length > 0) {
+          // Sắp xếp tin nhắn theo thời gian
+          const sortedMessages = res.data.sort((a, b) => {
+            const timeA = new Date(a.sendTime).getTime();
+            const timeB = new Date(b.sendTime).getTime();
+            if (timeA === timeB) {
+              if (a.isQuickReply) return 1;
+              if (b.isQuickReply) return -1;
+              return 0;
+            }
+            return timeA - timeB;
+          });
+          setMessages(sortedMessages);
+        }
         // Đánh dấu tin nhắn là đã đọc ngay khi tải xong
-        if (messagesData.length > 0) {
+        if (res.data.length > 0) {
           markMessagesAsRead();
         }
       } catch (error) {
@@ -101,15 +119,19 @@ const ChatRoom = () => {
             recipientId: ortherUserId,
           }
         );
-
         actualChatRoomId = createResponse.data.chatRoomId;
+        navigation.setParams({
+          ...route.params,
+          chatRoomId: actualChatRoomId,
+          isNewChat: false,
+        });
       }
 
+      const currentTime = new Date().toISOString();
       let messageData;
       let lastMessageContent;
 
       if (image) {
-        // const storage = getStorage();
         const filename = `image_${Date.now()}_${Math.random()
           .toString(36)
           .substring(7)}.jpg`;
@@ -126,7 +148,7 @@ const ChatRoom = () => {
           recipientId: ortherUserId,
           content: await getDownloadURL(storageRef),
           type: "image",
-          sendTime: new Date().toISOString(),
+          sendTime: currentTime,
         };
 
         lastMessageContent = `${
@@ -139,39 +161,57 @@ const ChatRoom = () => {
           recipientId: ortherUserId,
           content: newMessage,
           type: "text",
-          sendTime: new Date().toISOString(),
+          sendTime: currentTime,
         };
       }
 
-      const res = await axios.post(
-        `${BE_ENDPOINT}/chatRoom/addMessage`,
-        messageData
-      );
-      console.log("Server response:", res.data);
+      // Chỉ cập nhật messages state một lần trước khi gửi API
+      if (messages.length === 0) {
+        // Nếu là tin nhắn đầu tiên, không cập nhật state ngay mà đợi fetch lại
+        setNewMessage("");
+        setImage(null);
 
-      setMessages([
-        ...messages,
-        {
-          content: messageData.content,
-          senderId: senderId,
-          sendTime: new Date().toISOString(),
-          type: messageData.type,
-        },
-      ]);
+        // Gửi tin nhắn lên server
+        await axios.post(`${BE_ENDPOINT}/chatRoom/addMessage`, messageData);
 
+        // Fetch lại toàn bộ tin nhắn để lấy cả tin nhắn tự động
+        const messagesRes = await axios.get(
+          BE_ENDPOINT + `/chatRoom/${actualChatRoomId}/messages`
+        );
+        if (messagesRes.data && messagesRes.data.length > 0) {
+          const sortedMessages = messagesRes.data.sort((a, b) => {
+            const timeA = new Date(a.sendTime).getTime();
+            const timeB = new Date(b.sendTime).getTime();
+            if (timeA === timeB) {
+              if (a.isQuickReply) return 1;
+              if (b.isQuickReply) return -1;
+              return 0;
+            }
+            return timeA - timeB;
+          });
+          setMessages(sortedMessages);
+        }
+      } else {
+        // Nếu không phải tin đầu tiên, cập nhật state trước khi gửi API
+        setMessages((prev) => [...prev, messageData]);
+        setNewMessage("");
+        setImage(null);
+
+        // Gửi tin nhắn lên server
+        await axios.post(`${BE_ENDPOINT}/chatRoom/addMessage`, messageData);
+      }
+
+      // Cập nhật last message
       updateLastMessage?.(actualChatRoomId, {
         content: messageData.type === "image" ? lastMessageContent : newMessage,
         senderId: senderId,
         type: messageData.type,
-        sendTime: new Date().toISOString(),
+        sendTime: currentTime,
+        isRead: true,
       });
-
-      setImage(null);
-      setNewMessage("");
     } catch (error) {
-      console.error("Error sending message - Full error:", error);
-      console.error("Error response:", error.response?.data);
-      console.error("Error message:", error.message);
+      console.error("Error sending message:", error);
+      Alert.alert("Error", "Không thể gửi tin nhắn");
     }
   };
 
@@ -224,7 +264,9 @@ const ChatRoom = () => {
 
   useEffect(() => {
     if (messages.length > 0) {
-      scrollToBottom();
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
     }
   }, [messages, image]);
 
@@ -253,63 +295,121 @@ const ChatRoom = () => {
     </Modal>
   );
 
-  const renderMessage = ({ item }) => {
+  const renderMessage = ({ item, index }) => {
     let formattedTime;
-
-    if (item.sendTime && item.sendTime.seconds) {
-      // Nếu sendTime là một đối tượng Timestamp
-      formattedTime = formatDate(item.sendTime.seconds);
-    } else if (typeof item.sendTime === "string") {
-      // Nếu sendTime là chuỗi
-      const timestamp = new Date(item.sendTime).getTime() / 1000;
-      formattedTime = formatDate(timestamp);
+    if (item.sendTime) {
+      if (item.sendTime.seconds) {
+        formattedTime = formatDate(item.sendTime.seconds);
+      } else if (typeof item.sendTime === "string") {
+        const timestamp = new Date(item.sendTime).getTime() / 1000;
+        formattedTime = formatDate(timestamp);
+      }
     } else {
       formattedTime = "Unknown time";
     }
 
     const isSender = item.senderId === senderId;
+    if (item.type === "quickReplies") {
+      return (
+        <QuickReplyOptions
+          options={item.content}
+          onSelect={handleQuickReplySelect}
+        />
+      );
+    }
 
-    return (
-      <View
-        style={isSender ? styles.senderContainer : styles.receiverContainer}
-      >
-        {item.type === "image" ? (
-          <TouchableOpacity
-            onPress={() => {
-              setSelectedImage(item.content);
-              setIsImageViewerVisible(true);
-            }}
-          >
-            <Image
-              source={{ uri: item.content }}
-              style={{
-                width: scaleWidth(150),
-                height: scaleHeight(180),
-                borderRadius: 10,
-                resizeMode: "cover",
+    if (item.type === "text" || item.type === "image") {
+      return (
+        <View
+          style={isSender ? styles.senderContainer : styles.receiverContainer}
+        >
+          {item.type === "image" ? (
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedImage(item.content);
+                setIsImageViewerVisible(true);
               }}
-            />
-          </TouchableOpacity>
-        ) : (
-          <View
+            >
+              <Image
+                source={{ uri: item.content }}
+                style={{
+                  width: scaleWidth(150),
+                  height: scaleHeight(180),
+                  borderRadius: 10,
+                  resizeMode: "cover",
+                }}
+              />
+            </TouchableOpacity>
+          ) : (
+            <View
+              style={[
+                styles.messageContainer,
+                { backgroundColor: isSender ? COLOR.sentColor : "black" },
+              ]}
+            >
+              <Text style={styles.messageText}>{item.content}</Text>
+            </View>
+          )}
+          <Text
             style={[
-              styles.messageContainer,
-              { backgroundColor: isSender ? COLOR.sentColor : "black" },
+              styles.messageTime,
+              { alignSelf: isSender ? "flex-start" : "flex-end" },
             ]}
           >
-            <Text style={styles.messageText}>{item.content}</Text>
-          </View>
-        )}
-        <Text
-          style={[
-            styles.messageTime,
-            { alignSelf: isSender ? "flex-start" : "flex-end" },
-          ]}
-        >
-          {formattedTime}
-        </Text>
-      </View>
-    );
+            {formattedTime}
+          </Text>
+        </View>
+      );
+    }
+  };
+
+  const handleQuickReplySelect = async (option) => {
+    try {
+      const currentTime = new Date().toISOString();
+      const delayedTime = new Date(Date.now() + 1000).toISOString();
+
+      const questionMessage = {
+        chatRoomId: chatRoomId,
+        senderId: senderId,
+        recipientId: ortherUserId,
+        content: option.question,
+        type: "text",
+        isQuickReply: option.id,
+        sendTime: currentTime,
+      };
+      
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          content: option.question,
+          senderId: senderId,
+          sendTime: currentTime,
+          type: "text",
+        },
+      ]);
+
+      await axios.post(`${BE_ENDPOINT}/chatRoom/addMessage`, questionMessage);
+
+      // Add answer to local state immediately after response
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          content: option.answer,
+          senderId: ortherUserId,
+          sendTime: delayedTime,
+          type: "text",
+        },
+      ]);
+
+      updateLastMessage?.(chatRoomId, {
+        content: option.answer,
+        senderId: ortherUserId,
+        type: "text",
+        sendTime: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Error sending quick reply:", error);
+    }
   };
 
   return (

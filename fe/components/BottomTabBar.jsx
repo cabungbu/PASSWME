@@ -51,6 +51,8 @@ import OrderSuccess from "../screens/OrderSuccessScreen/orderSuccess";
 import GiveAFeedback from "../screens/ProfileScreen/MyRatingsScreen/GiveAFeedback";
 import SearchScreen from "../screens/HomeScreen/SearchScreen";
 import FeedbacksOfPost from "../screens/PostDetailScreen/FeedbacksOfPost";
+import TermAndCondition from "../screens/ProfileScreen/TermAndCondition";
+import SellerProfile from "../screens/SellerProfileScreen/SellerProfile";
 const Stack = createNativeStackNavigator();
 
 function HomeStack() {
@@ -334,6 +336,8 @@ export default function MainContainer() {
           <Stack.Screen name="GiveAFeedbackScreen" component={GiveAFeedback} />
           <Stack.Screen name="SearchScreen" component={SearchScreen} />
           <Stack.Screen name="FeedbacksOfPost" component={FeedbacksOfPost} />
+          <Stack.Screen name="TermAndConditionScreen" component={TermAndCondition} />
+          <Stack.Screen name="SellerProfileScreen" component={SellerProfile} />
         </>
       )}
     </Stack.Navigator>

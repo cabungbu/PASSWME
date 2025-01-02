@@ -63,8 +63,11 @@ const OrderCard = React.memo(({ order, onDelete, onComplete }) => {
             <Text style={[styles.name, { flex: 1, fontSize: 11 }]}>
               Đơn hàng đang được người bán kiểm tra và xác nhận
             </Text>
-            <TouchableOpacity style={styles.buttonContainer} onPress={handleOpenChat}>
-              <Text style={styles.logintext}>Liên hệ người bán</Text> 
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={handleOpenChat}
+            >
+              <Text style={styles.logintext}>Liên hệ người bán</Text>
             </TouchableOpacity>
           </View>
         );
@@ -110,18 +113,18 @@ const OrderCard = React.memo(({ order, onDelete, onComplete }) => {
     });
   };
 
-   const handleOpenChat = async () => {
-      await navigateToChat({
-        navigation,
-        senderId: user.id,
-        recipientId: order.sellerId,
-        recipientName: order.sellerName,
-        recipientAvatar: order.sellerAvatar || "",
-        // updateLastMessage: (chatRoomId, lastMessage) => {
-        //   // Optional: Cập nhật last message nếu cần
-        // }
-      });
-    };
+  const handleOpenChat = async () => {
+    await navigateToChat({
+      navigation,
+      senderId: user.id,
+      recipientId: order.sellerId,
+      recipientName: order.sellerName,
+      recipientAvatar: order.sellerAvatar || "",
+      // updateLastMessage: (chatRoomId, lastMessage) => {
+      //   // Optional: Cập nhật last message nếu cần
+      // }
+    });
+  };
 
   const itemDetail = (item) => {
     return (

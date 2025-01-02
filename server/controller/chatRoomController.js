@@ -16,157 +16,6 @@ const {
 } = require("firebase/firestore");
 const ChatRoom = require("../model/chatRoom");
 
-// const createOrGetChatRoom = async (req, res) => {
-//   const firestoreDb = getFirestoreDb();
-//   const data = req.body;
-
-//   try {
-//     // Tìm chatRoom đã tồn tại giữa hai người dùng
-//     const chatRoomsRef = collection(firestoreDb, "chatRooms");
-//     const q = query(
-//       chatRoomsRef,
-//       where("participants", "array-contains", data.senderId)
-//     );
-//     const snapshot = await getDocs(q);
-
-//     // Kiểm tra xem đã có chatRoom chưa
-//     const existingChatRoom = snapshot.docs.find((doc) => {
-//       const participants = doc.data().participants;
-//       return participants.includes(data.recipientId);
-//     });
-
-//     // Lấy thông tin người dùng
-//     const senderRef = doc(firestoreDb, "users", data.senderId);
-//     const recipientRef = doc(firestoreDb, "users", data.recipientId);
-
-//     const [senderDoc, recipientDoc] = await Promise.all([
-//       getDoc(senderRef),
-//       getDoc(recipientRef),
-//     ]);
-
-//     if (!senderDoc.exists() || !recipientDoc.exists()) {
-//       return res.status(404).json({ error: "Người dùng không tồn tại" });
-//     }
-
-//     let chatRoomRef;
-//     let chatRoomId;
-
-//     if (existingChatRoom) {
-//       // Nếu chatRoom đã tồn tại, lấy ID
-//       chatRoomRef = existingChatRoom.ref;
-//       chatRoomId = existingChatRoom.id;
-//     } else {
-//       // Tạo chatRoom mới nếu chưa tồn tại
-//       const newChatRoom = new ChatRoom({
-//         participants: [data.senderId, data.recipientId],
-//         lastMessage: null,
-//         unreadCount: {
-//           [data.senderId]: 0,
-//           [data.recipientId]: 0,
-//         },
-//       });
-
-//       // Thêm chatRoom vào collection chatRooms
-//       chatRoomRef = await addDoc(chatRoomsRef, newChatRoom.toPlainObject());
-//       chatRoomId = chatRoomRef.id;
-
-//       // Thêm chatRoom vào subcollection của người dùng
-//       const senderChatRoomRef = doc(
-//         firestoreDb,
-//         "users",
-//         data.senderId,
-//         "chatRooms",
-//         chatRoomId
-//       );
-//       const recipientChatRoomRef = doc(
-//         firestoreDb,
-//         "users",
-//         data.recipientId,
-//         "chatRooms",
-//         chatRoomId
-//       );
-
-//       await Promise.all([
-//         setDoc(senderChatRoomRef, {
-//           chatRoomId: chatRoomId,
-//           recipientId: data.recipientId,
-//           lastMessage: null,
-//           createdAt: serverTimestamp(),
-//         }),
-//         setDoc(recipientChatRoomRef, {
-//           chatRoomId: chatRoomId,
-//           senderId: data.senderId,
-//           lastMessage: null,
-//           createdAt: serverTimestamp(),
-//         }),
-//       ]);
-//     }
-
-//     // Thêm tin nhắn đầu tiên vào subcollection messages
-//     const messagesRef = collection(chatRoomRef, "messages");
-//     const messageRef = await addDoc(messagesRef, {
-//       content: data.content,
-//       sendTime: serverTimestamp(),
-//       senderId: data.senderId,
-//       type: data.type,
-//     });
-
-//     // Cập nhật lastMessage và unreadCount
-//     await updateDoc(chatRoomRef, {
-//       lastMessage: {
-//         content: data.content,
-//         sendTime: serverTimestamp(),
-//         senderId: data.senderId,
-//         type: data.type,
-//       },
-//       [`unreadCount.${data.recipientId}`]: increment(1),
-//     });
-
-//     // Cập nhật lastMessage cho subcollection của người dùng
-//     const senderChatRoomRef = doc(
-//       firestoreDb,
-//       "users",
-//       data.senderId,
-//       "chatRooms",
-//       chatRoomId
-//     );
-//     const recipientChatRoomRef = doc(
-//       firestoreDb,
-//       "users",
-//       data.recipientId,
-//       "chatRooms",
-//       chatRoomId
-//     );
-
-//     await Promise.all([
-//       updateDoc(senderChatRoomRef, {
-//         lastMessage: {
-//           content: data.content,
-//           sendTime: serverTimestamp(),
-//           senderId: data.senderId,
-//           type: data.type,
-//         },
-//       }),
-//       updateDoc(recipientChatRoomRef, {
-//         lastMessage: {
-//           content: data.content,
-//           sendTime: serverTimestamp(),
-//           senderId: data.senderId,
-//           type: data.type,
-//         },
-//       }),
-//     ]);
-
-//     return res.status(201).json({
-//       id: chatRoomId,
-//       messageId: messageRef.id,
-//     });
-//   } catch (error) {
-//     console.error("Lỗi tạo chatRoom:", error);
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
 // Hàm thêm tin nhắn mới vào chatRoom
 
 const checkExistingChatRoom = async (req, res) => {
@@ -176,12 +25,12 @@ const checkExistingChatRoom = async (req, res) => {
   try {
     // Validate input
     if (!data.senderId || !data.recipientId) {
-      return res.status(400).json({ 
-        error: "Missing required fields", 
+      return res.status(400).json({
+        error: "Missing required fields",
         details: {
           senderId: !!data.senderId,
-          recipientId: !!data.recipientId
-        }
+          recipientId: !!data.recipientId,
+        },
       });
     }
 
@@ -191,7 +40,7 @@ const checkExistingChatRoom = async (req, res) => {
 
     const [senderDoc, recipientDoc] = await Promise.all([
       getDoc(senderRef),
-      getDoc(recipientRef)
+      getDoc(recipientRef),
     ]);
 
     if (!senderDoc.exists() || !recipientDoc.exists()) {
@@ -215,21 +64,20 @@ const checkExistingChatRoom = async (req, res) => {
     if (existingChatRoom) {
       return res.status(200).json({
         chatRoomId: existingChatRoom.id,
-        chatRoomData: existingChatRoom.data()
+        chatRoomData: existingChatRoom.data(),
       });
     }
 
     // Nếu không tìm thấy chatRoom
     return res.status(200).json({
       exists: false,
-      chatRoomId: null
+      chatRoomId: null,
     });
-
   } catch (error) {
     console.error("Lỗi kiểm tra chatRoom:", error);
     return res.status(500).json({
       error: "Không thể kiểm tra chat room",
-      details: error.message
+      details: error.message,
     });
   }
 };
@@ -243,7 +91,10 @@ const createChatRoom = async (req, res) => {
     const senderRef = doc(firestoreDb, "users", data.senderId);
     const recipientRef = doc(firestoreDb, "users", data.recipientId);
 
-    const [senderDoc, recipientDoc] = await Promise.all([getDoc(senderRef), getDoc(recipientRef)]);
+    const [senderDoc, recipientDoc] = await Promise.all([
+      getDoc(senderRef),
+      getDoc(recipientRef),
+    ]);
 
     if (!senderDoc.exists() || !recipientDoc.exists()) {
       return res.status(404).json({ error: "Người dùng không tồn tại" });
@@ -264,8 +115,20 @@ const createChatRoom = async (req, res) => {
     const chatRoomId = chatRoomRef.id;
 
     // Thêm chatRoom vào subcollection của người dùng
-    const senderChatRoomRef = doc(firestoreDb, "users", data.senderId, "chatRooms", chatRoomId);
-    const recipientChatRoomRef = doc(firestoreDb, "users", data.recipientId, "chatRooms", chatRoomId);
+    const senderChatRoomRef = doc(
+      firestoreDb,
+      "users",
+      data.senderId,
+      "chatRooms",
+      chatRoomId
+    );
+    const recipientChatRoomRef = doc(
+      firestoreDb,
+      "users",
+      data.recipientId,
+      "chatRooms",
+      chatRoomId
+    );
 
     await Promise.all([
       setDoc(senderChatRoomRef, {
@@ -285,33 +148,21 @@ const createChatRoom = async (req, res) => {
     return res.status(201).json({ chatRoomId });
   } catch (error) {
     console.error("Lỗi tạo chatRoom:", error);
-    return res.status(500).json({ error: "Không thể tạo chat room", details: error.message });
+    return res
+      .status(500)
+      .json({ error: "Không thể tạo chat room", details: error.message });
   }
 };
 
 const addMessageToChatRoom = async (req, res) => {
   const firestoreDb = getFirestoreDb();
-  const { chatRoomId, senderId, recipientId, content, type } = req.body;
+  const { chatRoomId, senderId, recipientId, content, type, isQuickReply } =
+    req.body;
 
   try {
-    // Validation check
-    if (!chatRoomId || !senderId || !recipientId || !content || !type) {
-      return res.status(400).json({
-        error: "Missing required fields.",
-        details: {
-          chatRoomId: !!chatRoomId,
-          senderId: !!senderId,
-          recipientId: !!recipientId,
-          content: !!content,
-          type: !!type,
-        },
-      });
-    }
-
-    // Sử dụng batch để gom nhóm các thao tác write
     const batch = writeBatch(firestoreDb);
-    
-    // Tạo message data với serverTimestamp
+
+    // Add original message
     const messageData = {
       content,
       sendTime: serverTimestamp(),
@@ -319,39 +170,95 @@ const addMessageToChatRoom = async (req, res) => {
       type,
     };
 
-    // Tham chiếu các documents cần update
     const chatRoomRef = doc(firestoreDb, "chatRooms", chatRoomId);
     const messagesRef = collection(chatRoomRef, "messages");
     const newMessageRef = doc(messagesRef);
-    const senderChatRoomRef = doc(firestoreDb, "users", senderId, "chatRooms", chatRoomId);
-    const recipientChatRoomRef = doc(firestoreDb, "users", recipientId, "chatRooms", chatRoomId);
 
-    // Thêm message mới
-    batch.set(newMessageRef, messageData);
+    // Check if this is first message from buyer to seller
+    const chatRoomDoc = await getDoc(chatRoomRef);
+    const chatRoomData = chatRoomDoc.data();
+    const isFirstMessage =
+      !chatRoomData.lastMessage && senderId !== recipientId;
 
-    // Update chatRoom
-    batch.update(chatRoomRef, {
-      lastMessage: messageData,
-      [`unreadCount.${recipientId}`]: increment(1),
-    });
+    if (isFirstMessage) {
+      batch.set(newMessageRef, messageData);
+      const welcomeMessageRef = doc(messagesRef);
+      const quickReplyMessageRef = doc(messagesRef);
 
-    // Update user's chatRooms
-    const userChatRoomUpdate = {
-      lastMessage: messageData,
-    };
+      // Get seller info
+      const sellerRef = doc(firestoreDb, "users", recipientId);
+      const sellerDoc = await getDoc(sellerRef);
+      const sellerData = sellerDoc.data();
 
-    batch.update(senderChatRoomRef, userChatRoomUpdate);
-    batch.update(recipientChatRoomRef, userChatRoomUpdate);
+      // Get quick replies
+      const quickRepliesRef = collection(firestoreDb, "quickReplies");
+      const quickRepliesSnapshot = await getDocs(quickRepliesRef);
+      const quickReplies = quickRepliesSnapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .sort((a, b) => (a.value || 0) - (b.value || 0));
 
-    // Thực hiện tất cả updates trong một transaction
+      // Create welcome message with quick replies
+      const welcomeMessage = {
+        content: `Xin chào! Cảm ơn bạn đã liên hệ với ${sellerData.username}. Chúng tôi sẽ phản hồi trong thời gian sớm nhất.`,
+        sendTime: serverTimestamp(),
+        senderId: recipientId,
+        type: "text",
+      };
+
+      // Add quick reply options message
+      const quickReplyMessage = {
+        content: quickReplies,
+        sendTime: serverTimestamp(),
+        senderId: recipientId,
+        type: "quickReplies",
+      };
+
+      batch.set(welcomeMessageRef, welcomeMessage);
+      batch.set(quickReplyMessageRef, quickReplyMessage);
+      batch.update(chatRoomRef, {
+        lastMessage: welcomeMessage,
+        [`unreadCount.${senderId}`]: increment(1),
+      });
+    } else if (isQuickReply) {
+      // If this is a quick reply selection, get and send the corresponding answer
+      const quickRepliesRef = collection(firestoreDb, "quickReplies");
+      const quickReplyDoc = await getDoc(doc(quickRepliesRef, isQuickReply));
+
+      if (quickReplyDoc.exists()) {
+        const answerMessage = {
+          content: quickReplyDoc.data().answer,
+          sendTime: serverTimestamp(),
+          senderId: recipientId,
+          type: "text",
+        };
+
+        const answerMessageRef = doc(messagesRef);
+        batch.set(answerMessageRef, answerMessage);
+        batch.set(newMessageRef, messageData);
+
+        batch.update(chatRoomRef, {
+          lastMessage: answerMessage,
+          [`unreadCount.${senderId}`]: increment(1),
+        });
+      }
+    } else {
+      // Normal message handling
+      batch.set(newMessageRef, messageData);
+      batch.update(chatRoomRef, {
+        lastMessage: messageData,
+        [`unreadCount.${recipientId}`]: increment(1),
+      });
+    }
+
     await batch.commit();
 
-    // Trả về kết quả sớm
     return res.status(201).json({
       messageId: newMessageRef.id,
-      message: "Tin nhắn đã được gửi thành công"
+      message: "Tin nhắn đã được gửi thành công",
     });
-
   } catch (error) {
     console.error("Lỗi thêm tin nhắn:", error);
     return res.status(500).json({
@@ -599,7 +506,6 @@ const updateChatRoomMessage = async (req, res) => {
 };
 
 module.exports = {
-  // createOrGetChatRoom,
   checkExistingChatRoom,
   createChatRoom,
   getChatRooms,
