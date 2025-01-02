@@ -50,9 +50,10 @@ router.get("/updateCoin/:id", updateCoin);
 router.get("/:userId/searchHistory", getSearchHistory);
 
 // Add new search term
+
 router.post("/:userId/addSearchHistory", addSearchTerm);
-router.post("/follow/:id", followUser);
-router.post("/unfollow/:id", unfollowUser);
+router.post("/follow/:followerId/:id", followUser);
+router.post("/unfollow/:followerId/:id", unfollowUser);
 router.post("/sendReport", sendReportToMail);
 
 module.exports = { routes: router };

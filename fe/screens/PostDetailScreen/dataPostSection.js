@@ -25,6 +25,7 @@ export default function DataSection({ post }) {
     const date = new Date(dateString);
     return date.toLocaleDateString(undefined, options);
   };
+  
   return (
     <>
       <View style={{ paddingHorizontal: 15, backgroundColor: "white" }}>

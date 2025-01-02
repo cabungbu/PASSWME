@@ -860,10 +860,9 @@ const addSearchTerm = async (req, res) => {
 const followUser = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   try {
-    // Get the follower (current user) ID from the authenticated request
-    const followerId = req.user.id; // Assuming you have auth middleware setting req.user
-    // Get the user to follow from URL params
-    const userToFollowId = req.params.id;
+    // Lấy ID người theo dõi từ tham số URL
+    const followerId = req.params.followerId; // ID của người theo dõi
+    const userToFollowId = req.params.id; // ID người dùng muốn theo dõi
 
     if (followerId === userToFollowId) {
       return res.status(400).json({ error: "Users cannot follow themselves." });
@@ -876,21 +875,21 @@ const followUser = async (req, res) => {
       return res.status(404).json({ error: "User to follow not found." });
     }
 
-    // Get current followers array or initialize if it doesn't exist
+    // Lấy danh sách người theo dõi hiện tại hoặc khởi tạo nếu không tồn tại
     const currentData = userToFollowDoc.data();
     const followers = currentData.followers || [];
 
-    // Check if already following
+    // Kiểm tra nếu đã theo dõi
     if (followers.includes(followerId)) {
       return res.status(400).json({ error: "Already following this user." });
     }
 
-    // Add follower
+    // Thêm người theo dõi
     await updateDoc(userToFollowRef, {
       followers: [...followers, followerId],
     });
 
-    // Get updated user data
+    // Lấy dữ liệu người dùng đã cập nhật
     const updatedDoc = await getDoc(userToFollowRef);
 
     res.status(200).json({
@@ -909,10 +908,16 @@ const followUser = async (req, res) => {
 const unfollowUser = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   try {
-    // Get the unfollower (current user) ID from the authenticated request
-    const unfollowerId = req.user.id; // Assuming you have auth middleware setting req.user
-    // Get the user to unfollow from URL params
-    const userToUnfollowId = req.params.id;
+    // Lấy ID người không theo dõi từ yêu cầu
+    const unfollowerId = req.params.followerId; // ID của người không theo dõi
+    const userToUnfollowId = req.params.id; // ID người dùng muốn không theo dõi
+
+    // Kiểm tra xem người dùng có thể không theo dõi chính mình không
+    if (unfollowerId === userToUnfollowId) {
+      return res
+        .status(400)
+        .json({ error: "Users cannot unfollow themselves." });
+    }
 
     const userToUnfollowRef = doc(firestoreDb, "users", userToUnfollowId);
     const userToUnfollowDoc = await getDoc(userToUnfollowRef);
@@ -921,21 +926,21 @@ const unfollowUser = async (req, res) => {
       return res.status(404).json({ error: "User to unfollow not found." });
     }
 
-    // Get current followers array
+    // Lấy danh sách người theo dõi hiện tại
     const currentData = userToUnfollowDoc.data();
     const followers = currentData.followers || [];
 
-    // Check if not following
+    // Kiểm tra nếu không theo dõi
     if (!followers.includes(unfollowerId)) {
       return res.status(400).json({ error: "Not following this user." });
     }
 
-    // Remove follower
+    // Xóa người không theo dõi
     await updateDoc(userToUnfollowRef, {
       followers: followers.filter((id) => id !== unfollowerId),
     });
 
-    // Get updated user data
+    // Lấy dữ liệu người dùng đã cập nhật
     const updatedDoc = await getDoc(userToUnfollowRef);
 
     res.status(200).json({
@@ -967,5 +972,5 @@ module.exports = {
   getSearchHistory,
   addSearchTerm,
   followUser,
-  unfollowUser
+  unfollowUser,
 };

@@ -8,6 +8,7 @@ import {
   View,
   StatusBar,
   Dimensions,
+  Modal,
 } from "react-native";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,6 +24,7 @@ import { TabView, SceneMap } from "react-native-tab-view";
 import RelativePost from "../postsDisplay/relativePost/RelativePost";
 import { BE_ENDPOINT } from "../../settings/localVars";
 import { navigateToChat } from "../../services/navigateToChat";
+import { color } from "react-native-elements/dist/helpers";
 
 const ActiveScreen = ({ posts }) => {
   const activePosts = posts.filter((post) => post.status === "active");
@@ -55,12 +57,83 @@ const SellerProfile = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [isMenuVisible, setMenuVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isInforViewerVisible, setIsInforViewerVisible] = useState(false);
+
+  const calculatetimeToNow = (completionDate) => {
+    const completion = new Date(completionDate);
+    const now = new Date();
+    const timeToNow = now - completion;
+  
+    if (timeToNow <= 0) return "Hôm nay";
+  
+    const days = Math.floor(timeToNow / (24 * 60 * 60 * 1000));
+    const months = Math.floor(days / 30);
+    const years = Math.floor(days / 365);
+  
+    if (years > 0) {
+      const remainingDays = days % 365;
+      const remainingMonths = Math.floor(remainingDays / 30);
+      return `${years} năm ${remainingMonths} tháng`;
+    } else if (months > 0) {
+      const remainingDays = days % 30;
+      return `${months} tháng ${remainingDays} ngày`;
+    } else {
+      return `${days} ngày`;
+    }
+  };
+
+  const ViewDetailInfor = () => (
+    <Modal
+      transparent={true}
+      visible={isInforViewerVisible}
+      onRequestClose={() => {
+        setIsInforViewerVisible(false);
+      }}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.inforDetail}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={styles.subtitleText}>Chi tiết người bán</Text>
+            <TouchableOpacity
+              style={styles.closeModelButton}
+              onPress={() => {
+                setIsInforViewerVisible(false);
+                setMenuVisible((prev) => !prev);
+              }}
+            >
+              <Feather name="x" size={30} color={COLOR.mainColor} />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.textInfor}>Đã tham gia</Text>
+            <Text style={[styles.textInfor, {color: COLOR.mainColor}]}>{calculatetimeToNow(seller.createAt)}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.textInfor}>Số điện thoại</Text>
+            <Text style={[styles.textInfor, {color: COLOR.mainColor}]}>{seller.address}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.textInfor}>Địa chỉ</Text>
+            <Text style={[styles.textInfor, {color: COLOR.mainColor}]}>5 Tuần</Text>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
 
   useEffect(() => {
     if (sellerData?.followers && user?.id) {
       setIsFollowing(sellerData.followers.includes(user.id));
     }
-  }, [sellerData?.followers, user?.id]);
+  }, [sellerData?.followers, user?.id, isFollowing]);
+
   useEffect(() => {
     const fetchAllUserPosts = async () => {
       try {
@@ -80,46 +153,29 @@ const SellerProfile = () => {
 
     fetchAllUserPosts();
   }, [seller?.id]);
+
   const handleFollowToggle = async () => {
     try {
-      const response = await fetch(
-        `${BE_ENDPOINT}/user/${isFollowing ? "unfollow" : "follow"}/${
-          seller.id
-        }`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      const action = isFollowing ? "unfollow" : "follow";
+      const response = await axios.post(
+        `${BE_ENDPOINT}/user/${action}/${user.id}/${seller.id}`
       );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to toggle follow status");
-      }
-
-      const data = await response.json();
-      if (data) {
+      if (response.data) {
         setIsFollowing(!isFollowing);
-        // Refresh seller data
-        const refreshResponse = await fetch(
-          `${BE_ENDPOINT}/user/getUserById/${seller.id}`
-        );
-        const refreshedData = await refreshResponse.json();
-        setSellerData(refreshedData);
+        setSellerData(response.data.user);
+        navigation.setParams({
+          ...route.params,
+          seller: response.data.user,
+        });
       }
     } catch (error) {
-      console.error("Error toggling follow:", error.message);
+      console.error("Error toggling follow:", error);
       Alert.alert(
         "Lỗi",
         isFollowing ? "Không thể hủy theo dõi" : "Không thể theo dõi"
       );
     }
-  };
-
-  const handleEdit = async () => {
-    setMenuVisible((prev) => !prev);
   };
 
   const handleClosePost = async () => {
@@ -192,7 +248,10 @@ const SellerProfile = () => {
           />
           {isMenuVisible && (
             <View style={styles.menuContainer}>
-              <TouchableOpacity onPress={handleEdit} style={styles.menuOption}>
+              <TouchableOpacity
+                onPress={() => setIsInforViewerVisible(true)}
+                style={styles.menuOption}
+              >
                 <Text style={styles.information}>Xem thông tin chi tiết</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -254,7 +313,7 @@ const SellerProfile = () => {
             backgroundColor={COLOR.successColor}
             color="white"
             title={isFollowing ? "Đang theo dõi" : "Theo dõi"}
-            onPress={handleFollowToggle}
+            onPress={() => handleFollowToggle()}
           />
           <CustomButton
             width={scaleWidth(100)}
@@ -280,6 +339,7 @@ const SellerProfile = () => {
         initialLayout={{ width: Dimensions.get("window").width }}
         renderTabBar={renderTabBar}
       />
+      <ViewDetailInfor />
     </View>
   );
 };

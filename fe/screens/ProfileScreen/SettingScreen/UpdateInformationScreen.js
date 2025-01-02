@@ -45,13 +45,6 @@ const UpdateInformation = () => {
       address: fullAddress ? fullAddress : user?.address,
     };
     const isOrder = route.params?.isOrder;
-    // updateUserInformation(
-    //   newUser,
-    //   dispatch,
-    //   user,
-    //   refreshTokenRedux,
-    //   accessToken
-    // );
     const isOne = route.params?.isOne;
 
     if (isOrder) {
