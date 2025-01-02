@@ -62,22 +62,22 @@ export default function Profile() {
         aspect: [5, 5],
         quality: 0.8,
       });
-  
+
       if (!result.canceled) {
         const imageUri = result.assets[0].uri;
         setImage(imageUri);
-  
+
         const filename = `avatar_${user.id}_${Date.now()}.jpg`;
         const storageRef = ref(storage, `avatars/${filename}`);
-  
+
         const response = await fetch(imageUri);
         const blob = await response.blob();
         await uploadBytes(storageRef, blob);
-  
+
         const avatarData = {
           avatar: await getDownloadURL(storageRef),
         };
-        
+
         await changeAvatar(
           avatarData,
           dispatch,
@@ -85,7 +85,6 @@ export default function Profile() {
           refreshTokenRedux,
           accessToken
         );
-  
       }
     } catch (error) {
       console.error("Error picking/uploading image:", error);
@@ -257,20 +256,26 @@ export default function Profile() {
             IconComponent={ShoppingBagPlusIcon}
             iconSize={30}
           />
-          <UtilityIconTextPair
-            width={"49%"}
-            height={scaleHeight(70)}
-            title="Đã xem gần đây"
-            IconComponent={ClockIcon}
-            iconSize={25}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("RecentlyViewed");
+            }}
+          >
+            <UtilityIconTextPair
+              width={"49%"}
+              height={scaleHeight(70)}
+              title="Đã xem gần đây"
+              IconComponent={ClockIcon}
+              iconSize={25}
+            />
+          </TouchableOpacity>
         </View>
       </View>
       <View style={styles.otherUtilitiesContainer}>
         <Text style={styles.subtitleText}>Hỗ trợ</Text>
         <TouchableOpacity
           style={[styles.supportIconTextPair, { borderBottomWidth: 1 }]}
-          onPress={()=>navigation.navigate("TermAndConditionScreen")}
+          onPress={() => navigation.navigate("TermAndConditionScreen")}
         >
           <Feather name="help-circle" size={24} color="black" />
           <Text style={styles.supportText}>Điều khoản, điều kiện</Text>

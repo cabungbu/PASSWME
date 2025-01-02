@@ -99,6 +99,51 @@ const getUserById = async (req, res) => {
 
     const userData = userSnapshot.data();
 
+    const RecentlyViewedPosts = await Promise.all(
+      (userData.recentlyViewed || []).map(async (postRef) => {
+        try {
+          const postDoc = await getDoc(postRef);
+          if (!postDoc.exists()) return null;
+          const postData = postDoc.data();
+
+          // Thêm phần lấy products subcollection
+          const productsRef = collection(firestoreDb, postRef.path, "products");
+          const productsSnapshot = await getDocs(productsRef);
+          const products = productsSnapshot.docs.map((productDoc) => ({
+            id: productDoc.id,
+            name: productDoc.data().name,
+            price: productDoc.data().price,
+            quantity: productDoc.data().quantity,
+            image: productDoc.data().image,
+          }));
+
+          // Lấy category info
+          const categoryRef = postData.category;
+          const categoryDoc = await getDoc(categoryRef);
+          const categoryName = categoryDoc.exists()
+            ? categoryDoc.data().nameOfCategory
+            : null;
+
+          return {
+            id: postDoc.id,
+            title: postData.title,
+            description: postData.description,
+            condition: postData.condition,
+            status: postData.status,
+            start: postData.start,
+            images: postData.images,
+            address: postData.address,
+            products: products,
+            categoryName: categoryName,
+            categoryId: categoryRef.id,
+          };
+        } catch (error) {
+          console.error(`Error fetching recently viewed post: ${error}`);
+          return null;
+        }
+      })
+    );
+
     if (!userData.posts || !Array.isArray(userData.posts)) {
       return res.status(200).json({
         id: userSnapshot.id,
@@ -161,6 +206,8 @@ const getUserById = async (req, res) => {
       email: userData.email,
       phone: userData.phone,
       searchHistory: userData.searchHistory,
+      RecentlyViewed: RecentlyViewedPosts.filter((post) => post !== null),
+      followers: userData.followers,
       following: userData.following,
       shopcart: userData.shopcart,
       posts: validPosts,

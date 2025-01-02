@@ -57,6 +57,7 @@ import SellerProfile from "../screens/SellerProfileScreen/SellerProfile";
 import PushPostService from "../screens/pushPostService/PushPostService";
 import PaymentScreen from "../screens/PaymentScreen/PaymentScreen";
 import PaymentCheckScreen from "../screens/PaymentScreen/CheckPaymentStatus";
+import RecentlyViewed from "../screens/ProfileScreen/RecentlyViewed";
 
 const Stack = createNativeStackNavigator();
 
@@ -351,6 +352,7 @@ export default function MainContainer() {
             name="PaymentCheckScreen"
             component={PaymentCheckScreen}
           />
+          <Stack.Screen name="RecentlyViewed" component={RecentlyViewed} />
 
         </>
       )}

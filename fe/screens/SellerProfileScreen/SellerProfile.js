@@ -105,7 +105,7 @@ const SellerProfile = () => {
               style={styles.closeModelButton}
               onPress={() => {
                 setIsInforViewerVisible(false);
-                setMenuVisible((prev) => !prev);
+                setMenuVisible((prev) => !prev);  
               }}
             >
               <Feather name="x" size={30} color={COLOR.mainColor} />
