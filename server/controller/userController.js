@@ -111,12 +111,44 @@ const getUserById = async (req, res) => {
       userData.posts.map(async (postRef) => {
         try {
           const postDoc = await getDoc(postRef);
-          if (postDoc.exists()) {
-            return { id: postDoc.id, ...postDoc.data() };
-          }
-          return null;
+          if (!postDoc.exists()) return null;
+
+          const postData = postDoc.data();
+
+          // Fetch products subcollection for each post
+          const productsRef = collection(firestoreDb, postRef.path, "products");
+          const productsSnapshot = await getDocs(productsRef);
+
+          const products = productsSnapshot.docs.map((productDoc) => ({
+            id: productDoc.id,
+            name: productDoc.data().name,
+            price: productDoc.data().price,
+            quantity: productDoc.data().quantity,
+            image: productDoc.data().image,
+          }));
+
+          const categoryRef = postData.category; // Assuming category is a reference
+          const categoryDoc = await getDoc(categoryRef);
+          const categoryName = categoryDoc.exists()
+            ? categoryDoc.data().nameOfCategory
+            : null;
+
+          return {
+            id: postDoc.id,
+            title: postData.title,
+            description: postData.description,
+            condition: postData.condition,
+            status: postData.status,
+            start: postData.start,
+            rating: postData.rating,
+            soldQuantity: postData.soldQuantity,
+            images: postData.images,
+            products: products,
+            categoryName: categoryName,
+            categoryId: categoryRef.id,
+          };
         } catch (error) {
-          console.error(`Error fetching post: ${error}`);
+          console.error(`Error fetching post or products: ${error}`);
           return null;
         }
       })
@@ -126,7 +158,11 @@ const getUserById = async (req, res) => {
 
     res.status(200).json({
       id: userSnapshot.id,
-      ...userData,
+      email: userData.email,
+      phone: userData.phone,
+      searchHistory: userData.searchHistory,
+      following: userData.following,
+      shopcart: userData.shopcart,
       posts: validPosts,
     });
   } catch (error) {
@@ -821,6 +857,100 @@ const addSearchTerm = async (req, res) => {
   }
 };
 
+const followUser = async (req, res) => {
+  const firestoreDb = getFirestoreDb();
+  try {
+    // Get the follower (current user) ID from the authenticated request
+    const followerId = req.user.id; // Assuming you have auth middleware setting req.user
+    // Get the user to follow from URL params
+    const userToFollowId = req.params.id;
+
+    if (followerId === userToFollowId) {
+      return res.status(400).json({ error: "Users cannot follow themselves." });
+    }
+
+    const userToFollowRef = doc(firestoreDb, "users", userToFollowId);
+    const userToFollowDoc = await getDoc(userToFollowRef);
+
+    if (!userToFollowDoc.exists()) {
+      return res.status(404).json({ error: "User to follow not found." });
+    }
+
+    // Get current followers array or initialize if it doesn't exist
+    const currentData = userToFollowDoc.data();
+    const followers = currentData.followers || [];
+
+    // Check if already following
+    if (followers.includes(followerId)) {
+      return res.status(400).json({ error: "Already following this user." });
+    }
+
+    // Add follower
+    await updateDoc(userToFollowRef, {
+      followers: [...followers, followerId],
+    });
+
+    // Get updated user data
+    const updatedDoc = await getDoc(userToFollowRef);
+
+    res.status(200).json({
+      message: "Successfully followed user.",
+      user: {
+        id: updatedDoc.id,
+        ...updatedDoc.data(),
+      },
+    });
+  } catch (error) {
+    console.error("Error following user:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const unfollowUser = async (req, res) => {
+  const firestoreDb = getFirestoreDb();
+  try {
+    // Get the unfollower (current user) ID from the authenticated request
+    const unfollowerId = req.user.id; // Assuming you have auth middleware setting req.user
+    // Get the user to unfollow from URL params
+    const userToUnfollowId = req.params.id;
+
+    const userToUnfollowRef = doc(firestoreDb, "users", userToUnfollowId);
+    const userToUnfollowDoc = await getDoc(userToUnfollowRef);
+
+    if (!userToUnfollowDoc.exists()) {
+      return res.status(404).json({ error: "User to unfollow not found." });
+    }
+
+    // Get current followers array
+    const currentData = userToUnfollowDoc.data();
+    const followers = currentData.followers || [];
+
+    // Check if not following
+    if (!followers.includes(unfollowerId)) {
+      return res.status(400).json({ error: "Not following this user." });
+    }
+
+    // Remove follower
+    await updateDoc(userToUnfollowRef, {
+      followers: followers.filter((id) => id !== unfollowerId),
+    });
+
+    // Get updated user data
+    const updatedDoc = await getDoc(userToUnfollowRef);
+
+    res.status(200).json({
+      message: "Successfully unfollowed user.",
+      user: {
+        id: updatedDoc.id,
+        ...updatedDoc.data(),
+      },
+    });
+  } catch (error) {
+    console.error("Error unfollowing user:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   addUser,
   getAllUsers,
@@ -835,5 +965,7 @@ module.exports = {
   setProductNotCheck,
   updateCoin,
   getSearchHistory,
-  addSearchTerm
+  addSearchTerm,
+  followUser,
+  unfollowUser
 };

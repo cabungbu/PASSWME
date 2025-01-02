@@ -270,6 +270,7 @@ export default function Profile() {
         <Text style={styles.subtitleText}>Hỗ trợ</Text>
         <TouchableOpacity
           style={[styles.supportIconTextPair, { borderBottomWidth: 1 }]}
+          onPress={()=>navigation.navigate("TermAndConditionScreen")}
         >
           <Feather name="help-circle" size={24} color="black" />
           <Text style={styles.supportText}>Điều khoản, điều kiện</Text>

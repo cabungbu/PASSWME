@@ -138,7 +138,7 @@ const Buyer_FeedbackGivenCard = ({ feedbacks }) => {
       <FlatList
         data={feedbacks}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) => item.id?.toString() || index.toString()}
         contentContainerStyle={styles.container}
       />
       <ImageViewerModal />

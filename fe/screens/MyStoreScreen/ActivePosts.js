@@ -29,7 +29,7 @@ export default function ActiveListings() {
           BE_ENDPOINT + `/user/getUserById/${user.id}`
         );
         const postsData = res.data.posts || [];
-        setPosts(postsData);
+        setPosts(postsData.filter(post => post.status === "active"));
       } catch (error) {
         console.error("Error fetching posts:", error.response?.data?.message);
         Alert.alert("Lỗi", "Không thể tải bài đăng");
@@ -60,7 +60,7 @@ export default function ActiveListings() {
       <FlatList
         data={posts}
         renderItem={({ item }) => (
-          <ActiveListingCard key={item.id?.toString()} post={item} />
+          <ActiveListingCard key={item.id?.toString()} post={item} isActive={true}/>
         )}
         keyExtractor={(item) => item.id?.toString()}
         showsVerticalScrollIndicator={true}

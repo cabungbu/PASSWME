@@ -13,7 +13,9 @@ const {
   setProductNotCheck,
   updateCoin,
   getSearchHistory,
-  addSearchTerm
+  addSearchTerm,
+  followUser,
+  unfollowUser
 } = require("../controller/userController");
 const {
   checkAllBoxTrue,
@@ -48,5 +50,7 @@ router.get('/:userId/searchHistory', getSearchHistory);
 
 // Add new search term
 router.post('/:userId/addSearchHistory', addSearchTerm);
+router.post('/follow/:id', followUser);
+router.post('/unfollow/:id', unfollowUser);
 
 module.exports = { routes: router };

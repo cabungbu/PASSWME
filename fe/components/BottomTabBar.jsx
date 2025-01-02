@@ -52,6 +52,8 @@ import OrderSuccess from "../screens/OrderSuccessScreen/orderSuccess";
 import GiveAFeedback from "../screens/ProfileScreen/MyRatingsScreen/GiveAFeedback";
 import SearchScreen from "../screens/HomeScreen/SearchScreen";
 import FeedbacksOfPost from "../screens/PostDetailScreen/FeedbacksOfPost";
+import TermAndCondition from "../screens/ProfileScreen/TermAndCondition";
+import SellerProfile from "../screens/SellerProfileScreen/SellerProfile";
 import PushPostService from "../screens/pushPostService/PushPostService";
 import PaymentScreen from "../screens/PaymentScreen/PaymentScreen";
 import PaymentCheckScreen from "../screens/PaymentScreen/CheckPaymentStatus";
@@ -340,6 +342,8 @@ export default function MainContainer() {
           <Stack.Screen name="GiveAFeedbackScreen" component={GiveAFeedback} />
           <Stack.Screen name="SearchScreen" component={SearchScreen} />
           <Stack.Screen name="FeedbacksOfPost" component={FeedbacksOfPost} />
+          <Stack.Screen name="TermAndConditionScreen" component={TermAndCondition} />
+          <Stack.Screen name="SellerProfileScreen" component={SellerProfile} />
           <Stack.Screen name="PushPostService" component={PushPostService} />
 
           <Stack.Screen name="Payment" component={PaymentScreen} />

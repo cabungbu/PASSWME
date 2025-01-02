@@ -51,6 +51,7 @@ export default function MyStore() {
   useEffect(() => {
     fetchOrder();
   }, []);
+  
   const ActivePostsTab = () => (
     <View style={{ flex: 1 }}>
       <ActivePosts />

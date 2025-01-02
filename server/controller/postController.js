@@ -235,43 +235,130 @@ const getPostById = async (req, res) => {
 const updatePost = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   const postId = req.params.id;
-  const updateData = req.body;
+  const data = req.body;
 
   try {
-    const postDocRef = doc(firestoreDb, "posts", postId);
-    const postSnapshot = await getDoc(postDocRef);
+    // Get reference to the post document
+    const postRef = doc(firestoreDb, "posts", postId);
+    const postDoc = await getDoc(postRef);
 
-    if (!postSnapshot.exists()) {
+    if (!postDoc.exists()) {
       return res.status(404).json({ error: "Post not found" });
     }
 
-    const currentData = postSnapshot.data();
-    const mergedData = {
-      ...currentData,
-      ...updateData,
-      updatedAt: new Date().toISOString(),
+    const existingData = postDoc.data();
+
+    // Initialize batch write
+    const batch = writeBatch(firestoreDb);
+
+    // Prepare updated post data, explicitly handling each field
+    const updatedPost = {
+      title: data.title || existingData.title,
+      category: doc(
+        firestoreDb,
+        "categories",
+        data.category || existingData.category.id
+      ),
+      images: data.images || existingData.images,
+      video: data.video === null ? null : data.video || existingData.video,
+      status: data.status || existingData.status,
+      description: data.description || existingData.description,
+      service: data.service || existingData.service,
+      start: existingData.start, // Keep original start date
+      owner: doc(firestoreDb, "users", data.owner || existingData.owner.id),
+      condition: data.condition || existingData.condition,
+      address: data.address || existingData.address,
+      soldQuantity: data.soldQuantity ?? existingData.soldQuantity,
+      rating: existingData.rating || 0,
+      feedbacks: existingData.feedbacks || [],
     };
 
-    const batch = writeBatch(firestoreDb);
-    batch.update(postDocRef, mergedData);
+    // Update the main post document
+    batch.update(postRef, updatedPost);
 
-    const categoryDocRef = doc(
-      firestoreDb,
-      "categories",
-      currentData.category,
-      "posts",
-      postId
-    );
-    batch.update(categoryDocRef, mergedData);
+    // Handle products subcollection update if provided
+    if (data.products && Array.isArray(data.products)) {
+      // Delete existing products
+      const existingProducts = await getDocs(collection(postRef, "products"));
+      existingProducts.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
 
+      // Add new products
+      const productCollection = collection(postRef, "products");
+      const productPromises = data.products.map(async (productData) => {
+        const newProduct = new product(
+          productData.name,
+          Number(productData.price), // Convert price to number
+          Number(productData.quantity), // Convert quantity to number
+          productData.image
+        );
+        const newProductId = doc(productCollection).id;
+        batch.set(
+          doc(productCollection, newProductId),
+          newProduct.toPlainObject()
+        );
+      });
+      await Promise.all(productPromises);
+    }
+
+    // Commit all changes
     await batch.commit();
 
+    // Fetch updated data for response
+    const updatedPostDoc = await getDoc(postRef);
+    const updatedProducts = await getDocs(collection(postRef, "products"));
+
+    const productsData = [];
+    updatedProducts.forEach((doc) => {
+      productsData.push({ id: doc.id, ...doc.data() });
+    });
+
     res.status(200).json({
-      message: "Post updated successfully.",
-      updatedData: mergedData,
+      message: "Post updated successfully",
+      post: {
+        id: postId,
+        ...updatedPostDoc.data(),
+        products: productsData,
+      },
     });
   } catch (error) {
     console.error("Error updating post:", error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const updatePostStatus = async (req, res) => {
+  const firestoreDb = getFirestoreDb();
+  const postId = req.params.id;
+  const newStatus = req.body.status;
+
+  try {
+    // Get reference to the post document
+    const postRef = doc(firestoreDb, "posts", postId);
+    const postDoc = await getDoc(postRef);
+
+    if (!postDoc.exists()) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    const batch = writeBatch(firestoreDb);
+
+    batch.update(postRef, { status: newStatus });
+
+    await batch.commit();
+    const updatedPostDoc = await getDoc(postRef);
+
+    res.status(200).json({
+      message: "Post status updated successfully",
+      post: {
+        id: postId,
+        title: updatedPostDoc.data().title,
+        status: updatedPostDoc.data().status,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating post status:", error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -415,4 +502,5 @@ module.exports = {
   deletePost,
   getPostByCategory,
   searchPosts,
+  updatePostStatus
 };

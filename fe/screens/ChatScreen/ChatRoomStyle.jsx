@@ -117,6 +117,8 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
 
+
+
 });
 
 export default styles;
