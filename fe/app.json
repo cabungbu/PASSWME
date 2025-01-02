@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "fe",
+    "scheme": "passwme",
     "slug": "fe",
     "version": "1.0.0",
     "newArchEnabled": true,

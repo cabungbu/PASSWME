@@ -21,9 +21,8 @@ export default function CheckOut2({ route }) {
   const [loading, setLoading] = useState(false); // To show loading indicator
   const [error, setError] = useState(null);
   const [newUser, setNewUser] = useState(null);
-  const [postData, setPostData] = useState(null);
   const user = useSelector((state) => state.auth?.user);
-  // const [orderData, setOrderData] = useState(null);
+  const [orderData, setOrderData] = useState(null);
 
   const orderDataRef = useRef(null); // Create a ref to access OrderData
   const dispatch = useDispatch();
@@ -57,7 +56,6 @@ export default function CheckOut2({ route }) {
   };
 
   useEffect(() => {
-    // Kiểm tra nếu có dữ liệu mới từ màn hình 2
     if (route.params?.newUser) {
       const updatedUser = route.params.newUser;
       setNewUser(updatedUser); // Cập nhật dữ liệu mới vào state newUser
@@ -66,7 +64,7 @@ export default function CheckOut2({ route }) {
       const updatedPost = route.params.post;
       setPostData(updatedPost); // Cập nhật dữ liệu mới vào state postData
     }
-  }, [route.params?.newUser, route.params?.post]);
+  }, [route.params?.newUser]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -86,8 +84,8 @@ export default function CheckOut2({ route }) {
         />
       </View>
       <ScrollView style={styles.scrollView}>
-        <Address newUser={newUser} />
-        <OrderDataNoShopCart post={route.params.post} ref={orderDataRef} />
+        <Address newUser={newUser} isOne={true} />
+        <OrderDataNoShopCart post={orderData} ref={orderDataRef} />
       </ScrollView>
       <Footer
         onSendData={() =>

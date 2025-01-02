@@ -13,6 +13,17 @@ const {
   Timestamp,
 } = require("firebase/firestore");
 
+const getPostById = async (req, res) => {
+  const firestoreDb = getFirestoreDb();
+  const postId = req.params.id;
+  const postDocRef = doc(firestoreDb, "servicePosts", postId);
+  const postDoc = await getDoc(postDocRef);
+
+  if (!postDoc.exists()) {
+    return res.status(200).json({ message: "Chưa dùng dịch vụ đẩy tin" });
+  } else return res.status(201).json({ message: "Đã dùng dịch vụ đẩy tin" });
+};
+
 const addServicePost = async (req, res) => {
   const firestoreDb = getFirestoreDb();
   const data = req.body;
@@ -22,7 +33,7 @@ const addServicePost = async (req, res) => {
     const batch = writeBatch(firestoreDb);
     const newServicePost = {
       postRef: doc(firestoreDb, "posts", data.postId),
-      start: Timestamp.fromDate(new Date()),
+      start: new Date(),
       status: true,
     };
     await setDoc(postDocRef, newServicePost);
@@ -71,6 +82,7 @@ const getAllServicePosts = async (req, res) => {
 
         return {
           id: doc.id,
+          start: doc.data().start,
           post: { id: postDoc.id, ...postDoc.data(), products: products },
         };
       })
@@ -115,4 +127,5 @@ module.exports = {
   getAllServicePosts,
   updateServicePostStatus,
   deleteServicePost,
+  getPostById,
 };

@@ -191,13 +191,18 @@ const getUserShopCart = async (req, res) => {
       shopCartSnapshot.docs.map(async (shopCartItem) => {
         const shopData = shopCartItem.data();
 
+        if (!shopData.listItem || shopData.listItem.length === 0) {
+          await runTransaction(firestoreDb, async (transaction) => {
+            transaction.delete(shopCartItem.ref);
+          });
+          return null; // Skip item này
+        }
         const userShopRef = doc(firestoreDb, "users", shopCartItem.id);
         const userShopDoc = await getDoc(userShopRef);
         let username = "Người dùng không xác định";
         if (userShopDoc.exists()) {
           username = userShopDoc.data().username;
         }
-
         const listItem = await Promise.all(
           shopData.listItem.map(async (item) => {
             const postRef = doc(firestoreDb, "posts", item.postId);

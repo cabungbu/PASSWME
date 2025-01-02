@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   Alert,
   Animated,
@@ -14,12 +14,21 @@ import {
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { scaleHeight, scaleWidth } from "../assets/constant/responsive";
 import { useNavigation } from "@react-navigation/native";
+import CountdownDisplay from "./countDown";
 
-export default function ServiceCard({ post }) {
+export default function ServiceCard({ post, start }) {
   const [products, setProduct] = useState(post.products);
+  const [countdown, setCountdown] = useState("");
   const navigation = useNavigation();
 
-  console.log("product ne: " + JSON.stringify(post.products))
+  if (!start || !start.seconds) {
+    console.error("Invalid post.start timestamp", start);
+    return null;
+  }
+
+  const targetDate = new Date(start.seconds * 1000 + 48 * 60 * 60 * 1000); // Tính thời gian đếm ngược
+
+  // Tính giá minPrice, maxPrice
   const { minPrice, maxPrice } = useMemo(() => {
     if (!products || post.products?.length === 0) {
       return { minPrice: 0, maxPrice: 0 };
@@ -88,13 +97,7 @@ export default function ServiceCard({ post }) {
             alignItems: "center",
           }}
         >
-          <MaterialCommunityIcons
-            name="clock-time-eight-outline"
-            size={16}
-            color="#737373"
-            style={{ marginRight: 2 }}
-          />
-          <Text style={styles.start}>{post.start}</Text>
+          <CountdownDisplay targetDate={targetDate} />
         </View>
       </View>
     </TouchableOpacity>

@@ -7,14 +7,16 @@ import { scaleHeight, scaleWidth } from "../../assets/constant/responsive";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 
-export default function Address({ newUser }) {
+export default function Address({ newUser, isOne }) {
   let user = useSelector((state) => state.auth?.user);
   if (newUser) {
     user = newUser;
   }
   const navigation = useNavigation();
   const changeAddress = () => {
-    navigation.navigate("UpdateInformation", { isOrder: true });
+    if (isOne) {
+      navigation.navigate("UpdateInformation", { isOrder: true, isOne: true });
+    } else navigation.navigate("UpdateInformation", { isOrder: true });
   };
 
   return (

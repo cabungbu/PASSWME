@@ -25,6 +25,11 @@ const styles = StyleSheet.create({
     top: 50,
   },
 
+  headerText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontFamily: "semiBold",
+  },
   content: {
     display: "flex",
     alignItems: "center",

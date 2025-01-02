@@ -29,13 +29,6 @@ def getAllPost():
     for doc in docs:
         post_data = doc.to_dict()
         post_data['id'] = doc.id  
-        owner_ref = post_data.get('owner')  # Lấy reference đến owner
-        
-        if owner_ref:
-            owner_doc = owner_ref.get()  # Lấy dữ liệu từ reference
-            if owner_doc.exists:
-                post_data['owner'] = owner_doc.to_dict()  # Thay thế owner với dữ liệu thực tế
-
         all_posts.append(post_data)
 
     return all_posts
@@ -43,8 +36,8 @@ def getAllPost():
 def combineFeatures(row):
     return str(row['title']) + " " + str(row['description'])
 
-#api: http://localhost:3030/recommendation/?id=123
-@app.route('/recommendation', methods=['GET'])
+#api: http://localhost:3030/recommendation/?id=F4gfOb7qNjCNNaNSEFGY
+@app.route('/recommendation/', methods=['GET'])
 def get_recommendations():
     # Lấy tất cả bài viết và chuyển đổi thành DataFrame
     posts = getAllPost()
@@ -71,7 +64,7 @@ def get_recommendations():
     
    
     # Lấy 10 sản phẩm gợi ý
-    number = 5
+    number = 10
     result = []
     for i in range(1, min(number + 1, len(sortedSimilarProduct))):
         # Tạo một dictionary chứa các thông tin của sản phẩm

@@ -12,6 +12,7 @@ const feedbackRoutes = require("./routes/feedback-route.js");
 const servicePostRoutes = require("./routes/servicePost-routes.js");
 const chatRoomRoutes = require("./routes/chatRoom-route.js");
 const quickReplyRoute = require("./routes/quickReply-route.js");
+const paymentMoMoRoutes = require("./routes/payment-route.js");
 
 const app = express();
 app.use(bodyParser.json());
@@ -23,6 +24,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use("/user", userRoutes.routes);
 app.use("/post", postRoutes.routes);
 app.use("/auth", authRoutes.routes);
@@ -32,6 +34,8 @@ app.use("/feedback", feedbackRoutes.routes);
 app.use("/chatRoom", chatRoomRoutes.routes);
 app.use("/servicePost", servicePostRoutes.routes); 
 app.use("/quickReply", quickReplyRoute.routes);
+app.use("/servicePost", servicePostRoutes.routes);
+app.use("/payment/momo", paymentMoMoRoutes.routes);
 
 const PORT = process.env.PORT;
 

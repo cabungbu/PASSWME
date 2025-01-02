@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 
 import { scaleHeight, scaleWidth } from "../assets/constant/responsive";
@@ -13,15 +14,38 @@ import CustomButton from "./customButton";
 
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { COLOR } from "../assets/constant/color";
 import { useNavigation } from "@react-navigation/native";
+import { COLOR } from "../assets/constant/color";
 import axios from "axios";
 import { BE_ENDPOINT } from "../settings/localVars";
 
 export default function ActiveListingCard({ post, isActive }) {
   const navigation = useNavigation();
   const [isMenuVisible, setMenuVisible] = useState(false);
-  const handleClick = () => {};
+  const [isUse, setIsUse] = useState("Đẩy tin đề xuất");
+  const handleClick = async () => {
+    console.log("vao");
+
+    const check = await fetch(BE_ENDPOINT + "/servicePost/get/" + post.id);
+
+    console.log("hihi" + check);
+    if (check.status === 200) {
+      Alert.alert(
+        "Đẩy tin đề xuất hiệu lực 48h",
+        "Dịch vụ được thanh toán bằng Momo, bạn có chắc muốn thanh toán?",
+        [
+          {
+            text: "Có",
+            onPress: () => navigation.navigate("Payment", { postId: post.id }),
+          },
+          { text: "Không", style: "cancel" },
+        ]
+      );
+    } else {
+      alert("Tin này đang dùng dịch vụ đẩy tin");
+      setIsUse("Đang được đẩy tin");
+    }
+  };
   const [products, setProduct] = useState(post.products);
 
   const handleEdit = async () => {

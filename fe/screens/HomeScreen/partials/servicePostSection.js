@@ -13,20 +13,28 @@ import EvilIcons from "@expo/vector-icons/EvilIcons";
 import { BE_ENDPOINT } from "../../../settings/localVars";
 import PostCard from "../../../components/postCard";
 import ServiceCard from "../../../components/serviceCard";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function ServicePostSection() {
   const [servicePost, setServicePost] = useState([]);
 
-  useEffect(() => {
-    fetch(BE_ENDPOINT + "/servicePost/get")
-      .then((res) => res.json())
-      .then((data) => {
-        setServicePost(data);
-      })
-      .catch((error) => {
-        cconsole.error("Error fetching service posts:", error.response?.data?.message);
-      });
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetch(BE_ENDPOINT + "/servicePost/get")
+        .then((res) => res.json())
+        .then((data) => {
+          setServicePost(data);
+        })
+        .catch((error) => {
+          cconsole.error(
+            "Error fetching service posts:",
+            error.response?.data?.message
+          );
+        });
+    }, [])
+  );
+
+
   return (
     <View>
       <View style={styles.textSection}>
@@ -44,7 +52,7 @@ export default function ServicePostSection() {
       >
         {servicePost.map((item) => (
           <View key={item.id}>
-            <ServiceCard post={item.post} />
+            <ServiceCard post={item.post} start={item.start} />
           </View>
         ))}
       </ScrollView>
