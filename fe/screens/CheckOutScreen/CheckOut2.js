@@ -13,6 +13,9 @@ import { getUserShopcart } from "../../redux/shopCartService";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteCheckedItemFunction } from "../../redux/checkShopCart";
 import { setCoin } from "../../redux/authSlice";
+import { StatusBar } from "react-native";
+import { scaleWidth } from "../../assets/constant/responsive";
+import mainStyles from "../../styles/mainStyles";
 export default function CheckOut2({ route }) {
   const navigation = useNavigation();
   const handleGoBack = () => {
@@ -68,20 +71,22 @@ export default function CheckOut2({ route }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+      <View style={mainStyles.headerContainer}>
+        <StatusBar
+          translucent={true}
+          backgroundColor="white"
+          barStyle="dark-content"
+        />
         <Ionicons
           name="chevron-back"
-          size={24}
+          size={scaleWidth(30)}
           color={"#E30414"}
           onPress={handleGoBack}
+          style={mainStyles.headerIcon}
         />
-        <Text>Tổng quan đơn hàng</Text>
-        <Ionicons
-          name="chevron-back"
-          size={24}
-          color={"white"}
-          onPress={handleGoBack}
-        />
+        <Text style={[mainStyles.headerCenterText, { color: "black" }]}>
+          Tổng quan đơn hàng
+        </Text>
       </View>
       <ScrollView style={styles.scrollView}>
         <Address newUser={newUser} isOne={true} />

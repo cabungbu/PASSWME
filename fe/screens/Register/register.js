@@ -7,6 +7,7 @@ import {
   Platform,
   KeyboardAvoidingView,
   ScrollView,
+  Image,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { CheckBox } from "@rneui/themed";
@@ -70,7 +71,14 @@ const RegisterPage = () => {
                 navigation.navigate("Welcome");
               }}
             />
-            <Text style={[mainStyles.headerCenterText, {marginRight: scaleWidth(30)}]}>Đăng ký</Text>
+            <Text
+              style={[
+                mainStyles.headerCenterText,
+                { marginRight: scaleWidth(30) },
+              ]}
+            >
+              Đăng ký
+            </Text>
           </View>
         </>
       ) : (
@@ -96,9 +104,17 @@ const RegisterPage = () => {
           flexGrow: 1,
           alignItems: "center",
           justifyContent: "center",
-          marginTop: scaleHeight(50),
+          marginTop: scaleHeight(0),
         }}
       >
+        <Image
+          source={require("../../assets/logoPasswme1.png")}
+          style={{
+            width: scaleHeight(150),
+            height: scaleHeight(150),
+            marginBottom: scaleHeight(30),
+          }}
+        />
         {error && (
           <Text
             style={{
@@ -178,8 +194,8 @@ const RegisterPage = () => {
             }}
           />
           <Text style={styles.CheckBoxText}>
-            Bằng việc đăng ký, bạn đã đọc và chấp nhận với Điều khoản sử dụng và
-            chính sách bảo mật của Passwme
+            Bằng việc đăng ký, bạn đã đọc và chấp nhận với <Text style={{fontFamily: 'italic', color: '#0092E7'}}>Điều khoản sử dụng và
+            chính sách bảo mật</Text> của Passwme
           </Text>
         </View>
         <TouchableOpacity style={styles.login} onPress={() => handleRegister()}>
@@ -212,18 +228,18 @@ const RegisterPage = () => {
             marginVertical: scaleHeight(25),
           }}
         >
-          <View style={styles.greyline} />
+          {/* <View style={styles.greyline} />
           <Text style={styles.or}>Hoặc</Text>
-          <View style={styles.greyline} />
+          <View style={styles.greyline} /> */}
         </View>
-        <TouchableOpacity style={styles.ggfbcontainer}>
+        {/* <TouchableOpacity style={styles.ggfbcontainer}>
           <GoogleBrandIcon size={scaleWidth(28)} />
           <Text style={styles.ggfbtext}>Tiếp tục với Google</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.ggfbcontainer}>
           <FacebookBrandIcon size={scaleWidth(28)} />
           <Text style={styles.ggfbtext}>Tiếp tục với Facebook</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </ScrollView>
     </View>
   );

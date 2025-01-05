@@ -51,20 +51,6 @@ const Header = React.memo(() => {
             style={{ marginLeft: scaleWidth(10), fontFamily: "regular" }}
           />
         </View>
-        <TouchableOpacity style={{ flexDirection: "row" }}>
-          <Feather name="filter" size={24} color="white" />
-          <View style={styles.numberOfNoti}>
-            <Text
-              style={{
-                fontFamily: "medium",
-                fontSize: 10,
-                color: COLOR.mainColor,
-              }}
-            >
-              5
-            </Text>
-          </View>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

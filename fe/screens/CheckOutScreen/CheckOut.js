@@ -1,4 +1,4 @@
-import { View, Text, Modal, ActivityIndicator } from "react-native";
+import { View, Text, Modal, ActivityIndicator, StatusBar } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import styles from "./style";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,6 +14,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteCheckedItemFunction } from "../../redux/checkShopCart";
 import OrderDataNoShopCart from "./OrderDataNoShopCart";
 import { setCoin } from "../../redux/authSlice";
+import mainStyles from "../../styles/mainStyles";
+import { scaleWidth } from "../../assets/constant/responsive";
 export default function CheckOut({ route }) {
   const navigation = useNavigation();
   const handleGoBack = () => {
@@ -70,21 +72,23 @@ export default function CheckOut({ route }) {
   }, [route.params?.newUser, route.params?.post]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <View style={styles.container}>
+      <View style={mainStyles.headerContainer}>
+        <StatusBar
+          translucent={true}
+          backgroundColor="white"
+          barStyle="dark-content"
+        />
         <Ionicons
           name="chevron-back"
-          size={24}
+          size={scaleWidth(30)}
           color={"#E30414"}
           onPress={handleGoBack}
+          style={mainStyles.headerIcon}
         />
-        <Text>Tổng quan đơn hàng</Text>
-        <Ionicons
-          name="chevron-back"
-          size={24}
-          color={"white"}
-          onPress={handleGoBack}
-        />
+        <Text style={[mainStyles.headerCenterText, { color: "black" }]}>
+          Tổng quan đơn hàng
+        </Text>
       </View>
       <ScrollView style={styles.scrollView}>
         <Address newUser={newUser} />
@@ -131,6 +135,6 @@ export default function CheckOut({ route }) {
           </View>
         </Modal>
       )}
-    </SafeAreaView>
+    </View>
   );
 }

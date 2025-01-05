@@ -117,11 +117,11 @@ const SellerProfile = () => {
           </View>
           <View style={styles.row}>
             <Text style={styles.textInfor}>Số điện thoại</Text>
-            <Text style={[styles.textInfor, {color: COLOR.mainColor}]}>{seller.address}</Text>
+            <Text style={[styles.textInfor, {color: COLOR.mainColor}]}>{seller.phone}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.textInfor}>Địa chỉ</Text>
-            <Text style={[styles.textInfor, {color: COLOR.mainColor}]}>5 Tuần</Text>
+            <Text style={[styles.textInfor, {color: COLOR.mainColor}]}>{seller.address}</Text>
           </View>
         </View>
       </View>
@@ -300,7 +300,7 @@ const SellerProfile = () => {
             )}
             <Text style={styles.followsText}>
               {seller?.followers?.length} Người theo dõi {" | "}
-              <Text>{seller?.posts?.length} Sản phẩm</Text>
+              <Text>{seller?.posts?.length} Tin đăng</Text>
             </Text>
           </View>
         </View>

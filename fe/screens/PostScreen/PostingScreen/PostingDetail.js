@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Modal
 } from "react-native";
 import React, { useMemo } from "react";
 import styles from "./PostingDetailStyle";

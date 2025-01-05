@@ -197,7 +197,7 @@ export default function Profile() {
           <TouchableOpacity
             onPress={() => {
               navigation.navigate("OrderStatusScreen");
-            }}
+            }} 
             style={styles.iconTextPair}
           >
             <MaterialCommunityIcons name="cart-check" size={30} color="black" />

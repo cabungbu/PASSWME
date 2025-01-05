@@ -96,7 +96,7 @@ const LoginPage = () => {
             width: scaleHeight(150),
             height: scaleHeight(150),
             marginBottom: scaleHeight(30),
-            marginTop: scaleHeight(50),
+            marginTop: scaleHeight(100),
           }}
         />
         {error && (
@@ -142,6 +142,7 @@ const LoginPage = () => {
             alignItems: "baseline",
             width: "80%",
             flexDirection: "row",
+            marginBottom: scaleHeight(50)
           }}
         >
           <TouchableOpacity onPress={moveToRegister}>
@@ -156,7 +157,7 @@ const LoginPage = () => {
           <Text style={styles.logintext}>Đăng nhập</Text>
         </TouchableOpacity>
 
-        <View
+        {/* <View
           style={{
             display: "flex",
             justifyContent: "space-between",
@@ -169,15 +170,15 @@ const LoginPage = () => {
           <View style={styles.greyline} />
           <Text style={styles.or}>Hoặc</Text>
           <View style={styles.greyline} />
-        </View>
-        <TouchableOpacity style={styles.ggfbcontainer}>
+        </View> */}
+        {/* <TouchableOpacity style={styles.ggfbcontainer}>
           <GoogleBrandIcon size={24} />
           <Text style={styles.ggfbtext}>Tiếp tục với Google</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.ggfbcontainer}>
           <FacebookBrandIcon size={24} />
           <Text style={styles.ggfbtext}>Tiếp tục với Facebook</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );

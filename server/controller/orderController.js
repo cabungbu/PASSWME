@@ -21,7 +21,7 @@ const OrderController = {
     const data = req.body;
 
     const newOrderData = {
-      // buyer: doc(db, "users", data.buyerId),
+      buyer: doc(db, "users", data.buyerId),
       buyerAvatar: data.buyerAvatar,
       buyerId: data.buyerId,
       buyerName: data.buyerName,

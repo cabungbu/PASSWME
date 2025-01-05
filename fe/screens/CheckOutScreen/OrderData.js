@@ -75,7 +75,7 @@ const OrderData = forwardRef((props, ref) => {
           <View key={index} style={styles.cardContainer}>
             <Image
               source={{ uri: item.product.image }}
-              style={{ width: 100, height: 100, borderRadius: 20 }}
+              style={{ width: 100, height: 100, borderRadius: 10 }}
             />
             <View
               style={{

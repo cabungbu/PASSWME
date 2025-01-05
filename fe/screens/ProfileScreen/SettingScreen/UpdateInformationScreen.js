@@ -37,6 +37,8 @@ const UpdateInformation = () => {
   const refreshTokenRedux = useSelector((state) => state.auth.refreshToken);
   const accessToken = useSelector((state) => state.auth.accessToken);
   const route = useRoute();
+  const isOrder = route.params?.isOrder;
+
   const handleUpdateInformation = () => {
     const newUser = {
       email: email ? email : user?.email,
@@ -66,7 +68,6 @@ const UpdateInformation = () => {
         accessToken
       );
     }
-
   };
 
   return (
@@ -85,7 +86,9 @@ const UpdateInformation = () => {
           size={scaleWidth(30)}
           color={COLOR.mainColor}
         />
-        <Text style={mainStyles.headerText}>Cài đặt tài khoản</Text>
+        <Text style={mainStyles.headerText}>
+          {isOrder ? "Cập nhật thông tin nhận hàng" : "Cài đặt tài khoản"}
+        </Text>
       </View>
       <ScrollView contentContainerStyle={styles.content}>
         <Information_TextInput
@@ -127,7 +130,7 @@ const UpdateInformation = () => {
           iconSize={scaleWidth(28)}
           width={"90%"}
           borderColor={error ? "red" : "#ccc"}
-          placeholder={user ? `${user.address}` : "Địa chỉ"}
+          placeholder={user?.address ? `${user.address}` : "Địa chỉ"}
           Address={true}
           updateAddress={updateAddress}
           onUpdateAddressChange={(newUpdateState) =>

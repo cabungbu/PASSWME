@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, Image } from "react-native";
+import { View, Text, StatusBar, Image, Modal, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import mainStyles from "../../../styles/mainStyles";
 

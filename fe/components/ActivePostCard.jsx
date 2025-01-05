@@ -24,8 +24,6 @@ export default function ActiveListingCard({ post, isActive }) {
   const [isMenuVisible, setMenuVisible] = useState(false);
   const [isUse, setIsUse] = useState("Đẩy tin đề xuất");
   const handleClick = async () => {
-    console.log("vao");
-
     const check = await fetch(BE_ENDPOINT + "/servicePost/get/" + post.id);
 
     console.log("hihi" + check);
@@ -242,6 +240,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderBottomWidth: 0.5,
     borderColor: "#CFCFCF",
+    width: scaleWidth(200)
   },
   textInfor: {
     fontFamily: "regular",
