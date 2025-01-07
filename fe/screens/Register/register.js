@@ -5,7 +5,7 @@ import {
   Text,
   StatusBar,
   Platform,
-  KeyboardAvoidingView,
+  Image,
   ScrollView,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -70,7 +70,14 @@ const RegisterPage = () => {
                 navigation.navigate("Welcome");
               }}
             />
-            <Text style={[mainStyles.headerCenterText, {marginRight: scaleWidth(30)}]}>Đăng ký</Text>
+            <Text
+              style={[
+                mainStyles.headerCenterText,
+                { marginRight: scaleWidth(30) },
+              ]}
+            >
+              Đăng ký
+            </Text>
           </View>
         </>
       ) : (
@@ -95,10 +102,19 @@ const RegisterPage = () => {
         contentContainerStyle={{
           flexGrow: 1,
           alignItems: "center",
-          justifyContent: "center",
-          marginTop: scaleHeight(50),
+
+          marginTop: scaleHeight(10),
         }}
       >
+        <Image
+          source={require("../../assets/logoPasswme1.png")}
+          style={{
+            width: scaleHeight(150),
+            height: scaleHeight(150),
+            marginBottom: scaleHeight(30),
+            marginTop: scaleHeight(50),
+          }}
+        />
         {error && (
           <Text
             style={{
@@ -202,28 +218,6 @@ const RegisterPage = () => {
             <Text style={styles.loginSmallText}>Đăng nhập</Text>
           </TouchableOpacity>
         </View>
-        <View
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "80%",
-            flexDirection: "row",
-            marginVertical: scaleHeight(25),
-          }}
-        >
-          <View style={styles.greyline} />
-          <Text style={styles.or}>Hoặc</Text>
-          <View style={styles.greyline} />
-        </View>
-        <TouchableOpacity style={styles.ggfbcontainer}>
-          <GoogleBrandIcon size={scaleWidth(28)} />
-          <Text style={styles.ggfbtext}>Tiếp tục với Google</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.ggfbcontainer}>
-          <FacebookBrandIcon size={scaleWidth(28)} />
-          <Text style={styles.ggfbtext}>Tiếp tục với Facebook</Text>
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );

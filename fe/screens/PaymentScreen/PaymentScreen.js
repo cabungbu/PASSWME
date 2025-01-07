@@ -108,7 +108,7 @@ const PaymentScreen = ({ route }) => {
         </View>
         <View style={styles.onerow}>
           <Text style={styles.lightText}>Mã đơn hàng</Text>
-          <Text style={styles.lightText}>Orrderid</Text>
+          <Text style={styles.lightText}>PASSWME07720037</Text>
         </View>
         <View style={styles.onerow}>
           <Text style={styles.lightText}>Mô tả</Text>

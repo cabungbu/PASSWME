@@ -29,32 +29,33 @@ export default function CheckOut({ route }) {
   const orderDataRef = useRef(null); // Create a ref to access OrderData
   const dispatch = useDispatch();
   const handleDataFromOrderData = async (data) => {
-    setLoading(true); // Show loading indicator when the data is being sent
-    setError(null); // Clear any previous error
+    // setLoading(true); // Show loading indicator when the data is being sent
+    // setError(null); // Clear any previous error
 
-    try {
-      const res = await fetch(`${BE_ENDPOINT}/order/addOrder`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+    navigation.navigate("OrderSuccess");
+    // try {
+    //   const res = await fetch(`${BE_ENDPOINT}/order/addOrder`, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(data),
+    //   });
 
-      if (res.ok) {
-        console.log("Thêm đơn hàng thành công trên server.");
-        navigation.navigate("OrderSuccess");
-        dispatch(setCoin(user.coin - data.coin));
-        // deleteCheckedItemFunction(data.buyerId, dispatch);
-      } else {
-        const errorData = await res.json();
-        setError(errorData.message || "Đã xảy ra lỗi khi thêm đơn hàng.");
-      }
-    } catch (error) {
-      setError("Lỗi khi thêm đơn hàng: " + error.message);
-    } finally {
-      setLoading(false); // Hide loading indicator after the request is finished
-    }
+    //   if (res.ok) {
+    //     console.log("Thêm đơn hàng thành công trên server.");
+    //     navigation.navigate("OrderSuccess");
+    //     dispatch(setCoin(user.coin - data.coin));
+    //     // deleteCheckedItemFunction(data.buyerId, dispatch);
+    //   } else {
+    //     const errorData = await res.json();
+    //     setError(errorData.message || "Đã xảy ra lỗi khi thêm đơn hàng.");
+    //   }
+    // } catch (error) {
+    //   setError("Lỗi khi thêm đơn hàng: " + error.message);
+    // } finally {
+    //   setLoading(false); // Hide loading indicator after the request is finished
+    // }
   };
 
   useEffect(() => {

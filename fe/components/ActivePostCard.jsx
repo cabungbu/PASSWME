@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Image,
   Modal,
@@ -23,6 +23,7 @@ export default function ActiveListingCard({ post, isActive }) {
   const navigation = useNavigation();
   const [isMenuVisible, setMenuVisible] = useState(false);
   const [isUse, setIsUse] = useState("Đẩy tin đề xuất");
+
   const handleClick = async () => {
     console.log("vao");
 
@@ -46,6 +47,26 @@ export default function ActiveListingCard({ post, isActive }) {
       setIsUse("Đang được đẩy tin");
     }
   };
+
+  const [infoText, setInfoText] = useState("Chưa dùng dịch vụ nào"); // State để lưu thông tin
+
+  // Gọi API để lấy thông tin
+  useEffect(() => {
+    const fetchInfo = async () => {
+      try {
+        const check = await fetch(BE_ENDPOINT + "/servicePost/get/" + post.id); // Thay thế bằng endpoint của bạn
+        if (check.status != 200) {
+          setInfoText("Đang đẩy tin");
+        }
+      } catch (error) {
+        console.error("Error fetching info:", error);
+        setInfoText("undefined");
+      }
+    };
+
+    fetchInfo();
+  }, [post.id]);
+
   const [products, setProduct] = useState(post.products);
 
   const handleEdit = async () => {
@@ -173,14 +194,19 @@ export default function ActiveListingCard({ post, isActive }) {
         )}
       </View>
       {isActive && (
-        <View style={[styles.horizontalSpacerContainer, { marginTop: scaleHeight(10)}]}>
+        <View
+          style={[
+            styles.horizontalSpacerContainer,
+            { marginTop: scaleHeight(10) },
+          ]}
+        >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Ionicons
               name="information-circle-outline"
               size={24}
               color="grey"
             />
-            <Text style={styles.textInfor}>Thông tin</Text>
+            <Text style={styles.textInfor}>{infoText}</Text>
           </View>
           <CustomButton
             width={scaleWidth(160)}
@@ -204,7 +230,7 @@ export default function ActiveListingCard({ post, isActive }) {
 const styles = StyleSheet.create({
   container_card: {
     width: "100%",
-    height:"auto",
+    height: "auto",
     backgroundColor: "#FFFFFF",
     justifyContent: "space-between",
     paddingVertical: scaleHeight(20),
