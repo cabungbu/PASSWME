@@ -45,7 +45,9 @@ const LoginPage = () => {
   const moveToRegister = () => {
     navigation.navigate("Register");
   };
-
+  const moveToForgotPassword = () => {
+    navigation.navigate("ForgotPassword");
+  };
   return (
     <View style={{ flex: 1 }}>
       {Platform.OS === "android" ? (
@@ -65,7 +67,14 @@ const LoginPage = () => {
                 navigation.navigate("Welcome");
               }}
             />
-            <Text style={[mainStyles.headerCenterText, {marginRight: scaleWidth(30)}]}>Đăng nhập</Text>
+            <Text
+              style={[
+                mainStyles.headerCenterText,
+                { marginRight: scaleWidth(30) },
+              ]}
+            >
+              Đăng nhập
+            </Text>
           </View>
         </>
       ) : (
@@ -147,7 +156,7 @@ const LoginPage = () => {
           <TouchableOpacity onPress={moveToRegister}>
             <Text style={styles.register}>Đăng ký</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => moveToForgotPassword()}>
             <Text style={styles.forgot}>Quên mật khẩu</Text>
           </TouchableOpacity>
         </View>

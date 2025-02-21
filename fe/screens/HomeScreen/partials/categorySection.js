@@ -100,7 +100,7 @@ export default function CategorySection() {
             height={24}
             uri="https://firebasestorage.googleapis.com/v0/b/passwme-ec9f7.appspot.com/o/tabler_coin.svg?alt=media&token=602b1ca1-16d2-4674-9f51-e53c769cbef3"
           />
-          <Text style={styles.coin}>{user.coin ? user.coin : 0}</Text>
+          <Text style={styles.coin}>{user?.coin ? user?.coin : 0}</Text>
         </View>
         <Text style={styles.coinText}>Nhấn để nhận xu mỗi ngày</Text>
       </TouchableOpacity>

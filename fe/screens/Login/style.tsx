@@ -26,6 +26,11 @@ const styles = StyleSheet.create({
     left: 20,
     top: 50,
   },
+  headerText: {
+    fontSize: 15,
+    fontFamily: "semiBold",
+    color: "white",
+  },
   inputContainer: {
     backgroundColor: "#F2F2F2",
     width: "80%",

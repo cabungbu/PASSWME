@@ -42,7 +42,7 @@ const ChangePassword = ({ isModalVisible = false, closeModal }) => {
         refreshTokenRedux,
         accessToken
       );
-      closeModal();
+      // closeModal();
     } catch (error) {
       console.log("Lỗi r bà cố ơi");
     }

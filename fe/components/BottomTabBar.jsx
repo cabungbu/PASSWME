@@ -27,6 +27,7 @@ import Setting from "../screens/ProfileScreen/SettingScreen/Setting";
 import MyRatings from "../screens/ProfileScreen/MyRatingsScreen/MyRatings";
 import OrderStatus from "../screens/ProfileScreen/OrderStatusScreen/OrderStatus";
 
+import ForgotPassword from "../screens/ForgotPassword/ForgotPassword";
 import PostsDisplay from "../screens/postsDisplay/mainSection/PostsDisplay";
 import WelcomePage from "../screens/WelcomeScreen/welcome";
 import LoginPage from "../screens/Login/Login";
@@ -65,7 +66,7 @@ function HomeStack() {
 const MyStoreStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MyStoreScreen" component={MyStore} /> 
+      <Stack.Screen name="MyStoreScreen" component={MyStore} />
     </Stack.Navigator>
   );
 };
@@ -303,12 +304,14 @@ export default function MainContainer() {
           <Stack.Screen name="Welcome" component={WelcomePage} />
           <Stack.Screen name="Login" component={LoginPage} />
           <Stack.Screen name="Register" component={RegisterPage} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
           <Stack.Screen name="BottomBar" component={BottomBar} />
         </>
       ) : (
         <>
           <Stack.Screen name="BottomBar" component={BottomBar} />
           <Stack.Screen name="Login" component={LoginPage} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
           <Stack.Screen name="Register" component={RegisterPage} />
           <Stack.Screen name="Welcome" component={WelcomePage} />
           <Stack.Screen name="PostDetail" component={PostDetailScreen} />
